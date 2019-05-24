@@ -115,7 +115,6 @@ var initCmd = &cobra.Command{
 			log.Println("create app dir error:", err.Error())
 		}
 		var src string
-		fmt.Println(useMod)
 		if useMod {
 			src = fmt.Sprintf("%s/pkg/mod/github.com/hulklab/yago@%s/example/app", os.Getenv("GOPATH"), Version)
 		} else {
