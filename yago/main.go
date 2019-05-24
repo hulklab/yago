@@ -17,14 +17,14 @@ func GenDir(srcPath string, destPath, app string) error {
 		return err
 	} else {
 		if !srcInfo.IsDir() {
-			return errors.New("srcPath 不是一个正确的目录！")
+			return errors.New("src path is not a correct directory！")
 		}
 	}
 	if destInfo, err := os.Stat(destPath); err != nil {
 		return err
 	} else {
 		if !destInfo.IsDir() {
-			return errors.New("destPath 不是一个正确的目录！")
+			return errors.New("dest path is not a correct directory！")
 		}
 	}
 
@@ -102,6 +102,11 @@ func pathExists(path string) (bool, error) {
 	return false, err
 }
 
+func getCurDir() string {
+	dir, _ := filepath.Abs(filepath.Dir("."))
+	return strings.Replace(dir, "\\", "/", -1)
+}
+
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Init app",
@@ -130,10 +135,17 @@ var initCmd = &cobra.Command{
 
 var newCmd = &cobra.Command{
 	Use:   "new",
-	Short: "new module",
-	Long:  `new a module named by input`,
+	Short: "New module",
+	Long:  `New a module named by input`,
 	Run: func(cmd *cobra.Command, args []string) {
-		app, _ := cmd.Flags().GetString("app")
+		if exist, _ := pathExists("go.mod"); !exist {
+			log.Println("current directory is not a go mod root path")
+			return
+		}
+
+		curDir := strings.Split(getCurDir(), "/")
+		app := curDir[len(curDir)-1]
+
 		module, _ := cmd.Flags().GetString("module")
 
 		log.Println("create module", module)
@@ -201,14 +213,12 @@ func main() {
 
 func init() {
 	// init cmd
-	initCmd.Flags().BoolP("mod", "", true, "是否使用go mod")
+	initCmd.Flags().BoolP("mod", "", true, "use go mod ? only for dev user")
 	// init cmd
-	initCmd.Flags().StringP("app", "a", "", "应用名称")
+	initCmd.Flags().StringP("app", "a", "", "app name")
 	_ = initCmd.MarkFlagRequired("app")
 
 	// module cmd
-	newCmd.Flags().StringP("app", "a", "", "应用名称")
-	_ = newCmd.MarkFlagRequired("app")
-	newCmd.Flags().StringP("module", "m", "", "模块名称")
+	newCmd.Flags().StringP("module", "m", "", "module name")
 	_ = newCmd.MarkFlagRequired("module")
 }

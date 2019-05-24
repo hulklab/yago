@@ -8,15 +8,15 @@ export GOPROXY=
 ## 依赖
 go >= 1.11(由于使用了 go mod 管理版本依赖)
 
+##### 如果想在GOPATH下用mod, 请设置 GO111MODULE=on 则在 GOPATH/src 目录下使用 go get 时也默认采用 go mod
 ```shell
-# 如果想在GOPATH下用mod, 请设置 GO111MODULE=on 则在 GOPATH/src 目录下使用 go get 时也默认采用 go mod
 export GO111MODULE=on
 ```
 
 ## 开始
 ```
 // 1. 获取 yago
-go get github.com/hulklab/yago
+go get github.com/hulklab/yago/yago
 
 // 2. 用 yago 在当前目录创建你的项目 myapp
 yago init -a myapp
@@ -112,10 +112,11 @@ go mod init
 dao model http rpc task cmd
 ```
 ##### 2. 创建新模块
-使用yago创建模块会自动将路由加载到myapp/routes 下
+在项目根目录下，使用yago创建模块
+新创建的模块会自动将路由加载到myapp/routes中
 ```
 cd myapp
-yago new -a myapp -m newmodule
+yago new -m newmodule
 ```
 
 ## 错误
