@@ -1,0 +1,76 @@
+package homeapi
+
+import (
+	"context"
+	"fmt"
+	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/common/basethird"
+	"google.golang.org/grpc"
+
+	"github.com/hulklab/yago/example/app/third/homeapi/protobuf/homepb"
+)
+
+type HomeApi struct {
+	basethird.HttpThird
+	basethird.RpcThird
+}
+
+// Usage: New().GetUserById()
+func New() *HomeApi {
+
+	api := new(HomeApi)
+
+	// http 配置
+	api.Domain = yago.Config.GetString("home_api.domain")
+	api.Hostname = yago.Config.GetString("home_api.hostname")
+
+	// rpc 配置
+	api.Address = yago.Config.GetString("home_api.rpc_address")
+	return api
+}
+
+func (a *HomeApi) GetUserById(id int64) string {
+
+	params := map[string]interface{}{
+		"id": id,
+	}
+
+	req, err := a.Get("/home/user/detail", params)
+	if err != nil {
+		return err.Error()
+	} else {
+		s, _ := req.String()
+		return s
+	}
+}
+
+func (a *HomeApi) UploadFile(filepath string) string {
+
+	params := map[string]interface{}{
+		"file": basethird.PostFile(filepath),
+	}
+
+	req, err := a.Post("/home/user/upload", params)
+	if err != nil {
+		return err.Error()
+	} else {
+		s, _ := req.String()
+		return s
+	}
+}
+
+// eg. homeapi.New().RpcHello()
+func (a *HomeApi) RpcHello() {
+
+	var name = "zhangsan"
+
+	rep, err := a.Call(func(conn *grpc.ClientConn, ctx context.Context) (response basethird.IResponse, e error) {
+
+		c := homepb.NewHomeClient(conn)
+
+		return c.Hello(ctx, &homepb.HelloRequest{Name: name})
+
+	}, name)
+
+	fmt.Println(err, rep)
+}
