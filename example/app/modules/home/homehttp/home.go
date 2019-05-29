@@ -15,7 +15,7 @@ type HomeHttp struct {
 
 func init() {
 	homeHttp := new(HomeHttp)
-	yago.AddHttpRouter("/home/hello", http.MethodGet, homeHttp.AddAction, homeHttp)
+	yago.AddHttpRouter("/home/hello", http.MethodGet, homeHttp.HelloAction, homeHttp)
 	yago.AddHttpRouter("/home/add", http.MethodPost, homeHttp.AddAction, homeHttp)
 	yago.AddHttpRouter("/home/delete", http.MethodPost, homeHttp.DeleteAction, homeHttp)
 	yago.AddHttpRouter("/home/detail", http.MethodGet, homeHttp.DetailAction, homeHttp)

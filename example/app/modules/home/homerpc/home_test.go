@@ -36,5 +36,5 @@ func TestHomeRpc_Hello(t *testing.T) {
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("Greeting: %s", r.Message)
+	log.Printf("Greeting: %s", r.Data)
 }

@@ -24,6 +24,15 @@ yago init -a myapp
 // 3. 进入目录初始化
 cd myapp/
 go mod init
+
+// 4. build
+go build
+
+// 5. 启动
+./myapp -c conf/app.toml
+
+// #如果需要在此机器上开启task任务, 需要设置环境变量
+export {{配置文件中的app_name}}_IS_TASK_HOST=1
 ```
 
 ## 目录结构
