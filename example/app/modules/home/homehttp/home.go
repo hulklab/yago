@@ -6,7 +6,7 @@ import (
 	"github.com/hulklab/yago/libs/validator"
 	"net/http"
 
-	"github.com/hulklab/yago/example/app/app/modules/home/homemodel"
+	"github.com/hulklab/yago/example/app/modules/home/homemodel"
 )
 
 type HomeHttp struct {

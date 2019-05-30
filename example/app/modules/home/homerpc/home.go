@@ -5,7 +5,7 @@ import (
 	"github.com/hulklab/yago"
 	"log"
 
-	pb "github.com/hulklab/yago/example/app/app/modules/home/homerpc/protobuf/homepb"
+	pb "github.com/hulklab/yago/example/app/modules/home/homerpc/protobuf/homepb"
 )
 
 type HomeRpc struct {
