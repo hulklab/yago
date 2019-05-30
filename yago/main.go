@@ -83,7 +83,7 @@ func GenFile(src, dest, app string) (err error) {
 		return err
 	}
 
-	contentStr := strings.ReplaceAll(string(content), "github.com/hulklab/yago/example/app", app)
+	contentStr := strings.ReplaceAll(string(content), "github.com/hulklab/yago/example", app)
 
 	if _, err := dstFile.WriteString(contentStr); err != nil {
 		return err
@@ -123,7 +123,7 @@ var initCmd = &cobra.Command{
 		if useMod {
 			src = fmt.Sprintf("%s/pkg/mod/github.com/hulklab/yago@%s/example/app", os.Getenv("GOPATH"), Version)
 		} else {
-			src = fmt.Sprintf("%s/src/github.com/hulklab/yago/example/app", os.Getenv("GOPATH"))
+			src = fmt.Sprintf("%s/src/github.com/hulklab/yago/example", os.Getenv("GOPATH"))
 		}
 		dest := app
 
@@ -166,7 +166,7 @@ var newCmd = &cobra.Command{
 
 		routes := []string{"cmd", "http", "rpc", "task"}
 		for _, d := range routes {
-			routePath := fmt.Sprintf("routes/%sroute/%s.go", d, d)
+			routePath := fmt.Sprintf("app/routes/%sroute/%s.go", d, d)
 			var routeBody []byte
 			var err error
 			if routeBody, err = ioutil.ReadFile(routePath); err != nil {
