@@ -1,4 +1,4 @@
-package main // import "github.com/hulklab/yago/example/app"
+package example // import "github.com/hulklab/yago/example"
 
 import (
 	"github.com/hulklab/yago"

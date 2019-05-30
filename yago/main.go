@@ -83,7 +83,7 @@ func GenFile(src, dest, app string) (err error) {
 		return err
 	}
 
-	contentStr := strings.ReplaceAll(string(content), "github.com/hulklab/yago/example/app", app)
+	contentStr := strings.ReplaceAll(string(content), "github.com/hulklab/yago/example", app)
 
 	if _, err := dstFile.WriteString(contentStr); err != nil {
 		return err
@@ -121,9 +121,9 @@ var initCmd = &cobra.Command{
 		}
 		var src string
 		if useMod {
-			src = fmt.Sprintf("%s/pkg/mod/github.com/hulklab/yago@%s/example/app", os.Getenv("GOPATH"), Version)
+			src = fmt.Sprintf("%s/pkg/mod/github.com/hulklab/yago@%s/example", os.Getenv("GOPATH"), Version)
 		} else {
-			src = fmt.Sprintf("%s/src/github.com/hulklab/yago/example/app", os.Getenv("GOPATH"))
+			src = fmt.Sprintf("%s/src/github.com/hulklab/yago/example", os.Getenv("GOPATH"))
 		}
 		dest := app
 
@@ -151,7 +151,7 @@ var newCmd = &cobra.Command{
 		log.Println("create module", module)
 		dirs := []string{"cmd", "dao", "http", "model", "rpc", "task"}
 		for _, d := range dirs {
-			dirPath := fmt.Sprintf("modules/%s/%s", module, module+d)
+			dirPath := fmt.Sprintf("app/modules/%s/%s%s", module, module, d)
 			if err := os.MkdirAll(dirPath, 0755); err != nil {
 				log.Println(fmt.Sprintf("create module dir %s error:", dirPath), err.Error())
 				return
@@ -166,14 +166,14 @@ var newCmd = &cobra.Command{
 
 		routes := []string{"cmd", "http", "rpc", "task"}
 		for _, d := range routes {
-			routePath := fmt.Sprintf("routes/%sroute/%s.go", d, d)
+			routePath := fmt.Sprintf("app/routes/%sroute/%s.go", d, d)
 			var routeBody []byte
 			var err error
 			if routeBody, err = ioutil.ReadFile(routePath); err != nil {
 				log.Println(fmt.Sprintf("read route file %s error:", routePath), err.Error())
 				return
 			}
-			newRoute := fmt.Sprintf("\t_ \"%s/modules/%s/%s%s\"\n)", app, module, module, d)
+			newRoute := fmt.Sprintf("\t_ \"%s/app/modules/%s/%s%s\"\n)", app, module, module, d)
 			contentStr := strings.ReplaceAll(string(routeBody), ")", newRoute)
 			if err = ioutil.WriteFile(routePath, []byte(contentStr), 0644); err != nil {
 				log.Println(fmt.Sprintf("write route file %s error:", routePath), err.Error())
