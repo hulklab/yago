@@ -7,7 +7,7 @@ import (
 	"github.com/hulklab/yago/common/basethird"
 	"google.golang.org/grpc"
 
-	"github.com/hulklab/yago/example/app/third/homeapi/protobuf/homepb"
+	"github.com/hulklab/yago/example/app/app/third/homeapi/protobuf/homepb"
 )
 
 type HomeApi struct {

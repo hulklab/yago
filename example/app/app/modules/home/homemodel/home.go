@@ -5,7 +5,7 @@ import (
 	"github.com/hulklab/yago/libs/date"
 	"github.com/hulklab/yago/libs/orm"
 
-	"github.com/hulklab/yago/example/app/modules/home/homedao"
+	"github.com/hulklab/yago/example/app/app/modules/home/homedao"
 )
 
 type HomeModel struct {
