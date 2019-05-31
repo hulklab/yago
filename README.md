@@ -37,48 +37,50 @@ export {{配置文件中的app_name}}_IS_TASK_HOST=1
 
 ## 目录结构
 ```
-.
+├── app
+│   ├── g
+│   │   └── errors.go
+│   ├── modules
+│   │   └── home
+│   │       ├── homecmd
+│   │       │   └── home.go
+│   │       ├── homedao
+│   │       │   └── home.go
+│   │       ├── homehttp
+│   │       │   └── home.go
+│   │       ├── homemodel
+│   │       │   └── home.go
+│   │       ├── homerpc
+│   │       │   ├── home.go
+│   │       │   ├── home_test.go
+│   │       │   ├── protobuf
+│   │       │   │   └── homepb
+│   │       │   │       ├── home.pb.go
+│   │       │   │       └── home.proto
+│   │       │   └── README.md
+│   │       └── hometask
+│   │           └── home.go
+│   ├── routes
+│   │   ├── cmdroute
+│   │   │   └── cmd.go
+│   │   ├── httproute
+│   │   │   └── http.go
+│   │   ├── rpcroute
+│   │   │   └── rpc.go
+│   │   └── taskroute
+│   │       └── task.go
+│   └── third
+│       └── homeapi
+│           ├── home.go
+│           └── protobuf
+│               └── homepb
+│                   ├── home.pb.go
+│                   └── home.proto
 ├── cmd
 │   └── main.go
 ├── conf
 │   └── app.toml
 ├── main.go
-├── modules
-│   └── home
-│       ├── homecmd
-│       │   └── home.go
-│       ├── homedao
-│       │   └── home.go
-│       ├── homehttp
-│       │   └── home.go
-│       ├── homemodel
-│       │   └── home.go
-│       ├── homerpc
-│       │   ├── home.go
-│       │   ├── home_test.go
-│       │   ├── protobuf
-│       │   │   └── homepb
-│       │   │       ├── home.pb.go
-│       │   │       └── home.proto
-│       │   └── README.md
-│       └── hometask
-│           └── home.go
-├── routes
-│   ├── cmdroute
-│   │   └── cmd.go
-│   ├── httproute
-│   │   └── http.go
-│   ├── rpcroute
-│   │   └── rpc.go
-│   └── taskroute
-│       └── task.go
-├── third
-│   └── homeapi
-│       ├── home.go
-│       └── protobuf
-│           └── homepb
-│               ├── home.pb.go
-│               └── home.proto
 └── tools
     └── build.sh
 ```
