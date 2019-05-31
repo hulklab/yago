@@ -2,8 +2,11 @@ package orm
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
 	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/libs/logger"
+	"github.com/sirupsen/logrus"
 	"net/url"
 	"time"
 )
@@ -33,8 +36,9 @@ func Ins(id ...string) *Orm {
 		dbUser := conf["user"].(string)
 		dbPassword := conf["password"].(string)
 		dbName := conf["database"].(string)
+		charset := conf["charset"].(string)
 
-		dsn := dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName + "?charset=utf8"
+		dsn := dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName + "?charset=" + charset
 
 		timezone, ok := conf["timezone"]
 		if ok {
@@ -70,8 +74,48 @@ func Ins(id ...string) *Orm {
 			orm.DB().SetMaxOpenConns(int(maxOpen.(int64)))
 		}
 
+		// 设置日志
+		showLog, ok := conf["show_log"]
+		if ok {
+			orm.ShowSQL(showLog.(bool))
+			orm.SetLogger(getLogger())
+		}
+
 		return orm
 	})
 
 	return v.(*Orm)
+}
+
+func getLogger() *Logger {
+
+	entry := logger.Ins().WithFields(logrus.Fields{"category": "orm.sql"})
+
+	lg := &Logger{
+		Entry: entry,
+	}
+
+	return lg
+}
+
+type Logger struct {
+	*logrus.Entry
+	show bool
+}
+
+func (l *Logger) Level() core.LogLevel {
+	return 0
+}
+
+func (l *Logger) SetLevel(c core.LogLevel) {
+}
+
+func (l *Logger) ShowSQL(show ...bool) {
+	if len(show) > 0 {
+		l.show = show[0]
+	}
+}
+
+func (l *Logger) IsShowSQL() bool {
+	return l.show
 }

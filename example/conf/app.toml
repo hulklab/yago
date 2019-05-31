@@ -56,9 +56,11 @@ port = "3306"
 database = "db"
 prefix =""
 timezone = "Asia/Shanghai"
+charset = "utf8"
 max_life_time = 8
 max_idle_conn = 20
 max_open_conn = 500
+show_log = true
 
 ##########################################
 # 以下是 api 区
