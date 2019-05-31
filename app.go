@@ -125,17 +125,33 @@ func (a *App) loadHttpRouter() error {
 
 	a.httpEngine.Use(func(c *gin.Context) {
 		req := c.Request
+
 		query := req.URL.Query()
+
 		for k, v := range query {
 			c.Set(k, v[0])
 		}
 
-		err := req.ParseForm()
-		if err != nil {
-			return
-		}
-		for k, v := range req.PostForm {
-			c.Set(k, v[0])
+		switch c.ContentType() {
+		case "application/x-www-form-urlencoded":
+			err := req.ParseForm()
+			if err != nil {
+				log.Println("parse form", err.Error())
+				return
+			}
+			for k, v := range req.PostForm {
+				c.Set(k, v[0])
+			}
+		case "multipart/form-data":
+			err := req.ParseMultipartForm(a.httpEngine.MaxMultipartMemory)
+			if err != nil{
+				log.Println("parse multi form", err.Error())
+				return
+			}else if req.MultipartForm != nil{
+				for k, v := range req.MultipartForm.Value{
+					c.Set(k, v[0])
+				}
+			}
 		}
 	})
 
