@@ -161,3 +161,13 @@ func (c *Ctx) SetError(err Err, msgEx ...string) {
 		Data:   nil,
 	})
 }
+
+func (c *Ctx) SetDataOrErr(data interface{}, err Err) {
+
+	if err.HasErr() {
+		c.SetError(err)
+		return
+	}
+
+	c.SetData(data)
+}
