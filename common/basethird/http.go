@@ -119,8 +119,14 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 			if len(val) > 1000 {
 				logParams[k] = val[:1000] + "..."
 			}
-		case int64, int, uint64, uint:
-			a.req.Param(k, strconv.Itoa(int(val.(int64))))
+		case int64:
+			a.req.Param(k, strconv.Itoa(int(val)))
+		case int:
+			a.req.Param(k, strconv.Itoa(val))
+		case uint64:
+			a.req.Param(k, strconv.Itoa(int(val)))
+		case uint:
+			a.req.Param(k, strconv.Itoa(int(val)))
 		case float64:
 			a.req.Param(k, fmt.Sprintf("%v", val))
 		case []byte:
