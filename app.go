@@ -158,9 +158,10 @@ func (a *App) loadHttpRouter() error {
 	for _, r := range HttpRouterMap {
 		method := strings.ToUpper(r.Method)
 		action := r.Action
+		controller := r.h
 		handler := func(c *gin.Context) {
 			if ctx, err := NewCtx(c); err == nil {
-				if e := r.h.BeforeAction(ctx); e.HasErr() {
+				if e := controller.BeforeAction(ctx); e.HasErr() {
 					ctx.SetError(e)
 				} else {
 					action(ctx)
