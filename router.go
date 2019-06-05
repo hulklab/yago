@@ -22,6 +22,7 @@ var HttpRouterMap = make(map[string]*HttpRouter)
 type HttpInterface interface {
 	Labels() validator.Label
 	Rules() []validator.Rule
+	BeforeAction(c *Ctx) Err
 }
 
 func AddHttpRouter(url, method string, action HttpHandlerFunc, h HttpInterface) {

@@ -144,11 +144,11 @@ func (a *App) loadHttpRouter() error {
 			}
 		case "multipart/form-data":
 			err := req.ParseMultipartForm(a.httpEngine.MaxMultipartMemory)
-			if err != nil{
+			if err != nil {
 				log.Println("parse multi form", err.Error())
 				return
-			}else if req.MultipartForm != nil{
-				for k, v := range req.MultipartForm.Value{
+			} else if req.MultipartForm != nil {
+				for k, v := range req.MultipartForm.Value {
 					c.Set(k, v[0])
 				}
 			}
@@ -160,7 +160,11 @@ func (a *App) loadHttpRouter() error {
 		action := r.Action
 		handler := func(c *gin.Context) {
 			if ctx, err := NewCtx(c); err == nil {
-				action(ctx)
+				if e := r.h.BeforeAction(ctx); e.HasErr() {
+					ctx.SetError(e)
+				} else {
+					action(ctx)
+				}
 			} else {
 				if ctx != nil {
 					ctx.SetError(ErrParam, err.Error())
