@@ -83,7 +83,7 @@ type JSONValidator struct {
 }
 
 func (v JSONValidator) Check(value interface{}) (bool, error) {
-	if !json.Valid(value.([]byte)) {
+	if !json.Valid([]byte(value.(string))) {
 		return false, errors.New("不是一个有效的JSON串")
 	}
 	return true, nil
@@ -94,7 +94,7 @@ type MatchValidator struct {
 }
 
 func (v MatchValidator) Check(value interface{}) (bool, error) {
-	matched, _ := regexp.Match(v.Pattern, value.([]byte))
+	matched, _ := regexp.Match(v.Pattern, []byte(value.(string)))
 	if !matched {
 		return false, errors.New("不合法")
 	}
