@@ -13,6 +13,7 @@ type Rule struct {
 	Min     int
 	Max     int
 	Pattern string
+	Message string
 }
 
 type Label map[string]string
@@ -47,7 +48,7 @@ func ValidateHttp(c *gin.Context, action string, labels Label, rules []Rule) (bo
 						return false, fmt.Errorf("%s 不存在", labels.Get(p))
 					}
 					if valid, err := (RequiredValidator{}).Check(pv); !valid {
-						return false, fmt.Errorf("%s %s", labels.Get(p), err)
+						return false, getErr(labels.Get(p), err, rule.Message)
 					}
 				}
 			case String:
@@ -57,7 +58,7 @@ func ValidateHttp(c *gin.Context, action string, labels Label, rules []Rule) (bo
 						return false, fmt.Errorf("%s 不存在", labels.Get(p))
 					}
 					if valid, err := (StringValidator{Min: rule.Min, Max: rule.Max}).Check(pv); !valid {
-						return false, fmt.Errorf("%s %s", labels.Get(p), err)
+						return false, getErr(labels.Get(p), err, rule.Message)
 					}
 				}
 			case Number:
@@ -71,14 +72,14 @@ func ValidateHttp(c *gin.Context, action string, labels Label, rules []Rule) (bo
 						return false, fmt.Errorf("%s 不是个整数", labels.Get(p))
 					}
 					if valid, err := (NumberValidator{Min: rule.Min, Max: rule.Max}).Check(pvInt); !valid {
-						return false, fmt.Errorf("%s %s", labels.Get(p), err)
+						return false, getErr(labels.Get(p), err, rule.Message)
 					}
 				}
 			case JSON:
 				for _, p := range rule.Params {
 					pv, _ := c.Get(p)
 					if valid, err := (JSONValidator{}).Check(pv); !valid {
-						return false, fmt.Errorf("%s %s", labels.Get(p), err)
+						return false, getErr(labels.Get(p), err, rule.Message)
 					}
 				}
 			case IP:
@@ -88,7 +89,7 @@ func ValidateHttp(c *gin.Context, action string, labels Label, rules []Rule) (bo
 						return false, fmt.Errorf("%s 不存在", labels.Get(p))
 					}
 					if valid, err := (IPValidator{}).Check(pv); !valid {
-						return false, fmt.Errorf("%s %s", labels.Get(p), err)
+						return false, getErr(labels.Get(p), err, rule.Message)
 					}
 				}
 			case Match:
@@ -98,11 +99,19 @@ func ValidateHttp(c *gin.Context, action string, labels Label, rules []Rule) (bo
 						return false, fmt.Errorf("%s 不存在", labels.Get(p))
 					}
 					if valid, err := (MatchValidator{Pattern: rule.Pattern}).Check(pv); !valid {
-						return false, fmt.Errorf("%s %s", labels.Get(p), err)
+						return false, getErr(labels.Get(p), err, rule.Message)
 					}
 				}
 			}
 		}
 	}
 	return true, nil
+}
+
+func getErr(label string, err error, message string) error {
+	if message == "" {
+		return fmt.Errorf("%s %s", label, err)
+	}
+	return fmt.Errorf("%s %s", label, message)
+
 }
