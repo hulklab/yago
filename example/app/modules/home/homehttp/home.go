@@ -47,13 +47,13 @@ func (h *HomeHttp) Rules() []validator.Rule {
 		},
 		{
 			Params: []string{"page"},
-			Method: validator.Number,
+			Method: validator.Int,
 			Min:    1,
 			On:     []string{"list"},
 		},
 		{
 			Params: []string{"pagesize"},
-			Method: validator.Number,
+			Method: validator.Int,
 			Max:    100,
 			On:     []string{"list"},
 		},

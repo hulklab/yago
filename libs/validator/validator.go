@@ -9,7 +9,8 @@ import (
 
 const (
 	Required = iota
-	Number
+	Int
+	Float
 	String
 	JSON
 	IP
@@ -45,16 +46,39 @@ func (v StringValidator) Check(value interface{}) (bool, error) {
 	return true, nil
 }
 
-type NumberValidator struct {
+type IntValidator struct {
 	Min int
 	Max int
 }
 
-func (v NumberValidator) Check(value interface{}) (bool, error) {
+func (v IntValidator) Check(value interface{}) (bool, error) {
 	num, ok := value.(int)
 
 	if !ok {
 		return false, errors.New("不是个整数")
+	}
+
+	if v.Min != 0 && num < v.Min {
+		return false, fmt.Errorf("最小不能小于 %v", v.Min)
+	}
+
+	if v.Max != 0 && v.Max >= v.Min && num > v.Max {
+		return false, fmt.Errorf("最大不能大于 %v", v.Max)
+	}
+
+	return true, nil
+}
+
+type FloatValidator struct {
+	Min float64
+	Max float64
+}
+
+func (v FloatValidator) Check(value interface{}) (bool, error) {
+	num, ok := value.(float64)
+
+	if !ok {
+		return false, errors.New("不是个浮点数")
 	}
 
 	if v.Min != 0 && num < v.Min {

@@ -10,8 +10,8 @@ type Rule struct {
 	Params  []string
 	Method  int
 	On      []string
-	Min     int
-	Max     int
+	Min     float64
+	Max     float64
 	Pattern string
 	Message string
 }
@@ -55,29 +55,47 @@ func ValidateHttp(c *gin.Context, action string, labels Label, rules []Rule) (bo
 				for _, p := range rule.Params {
 					pv, exist := c.Get(p)
 					if !exist {
-						return false, fmt.Errorf("%s 不存在", labels.Get(p))
+						continue
 					}
-					if valid, err := (StringValidator{Min: rule.Min, Max: rule.Max}).Check(pv); !valid {
+					if valid, err := (StringValidator{Min: int(rule.Min), Max: int(rule.Max)}).Check(pv); !valid {
 						return false, getErr(labels.Get(p), err, rule.Message)
 					}
 				}
-			case Number:
+			case Int:
 				for _, p := range rule.Params {
 					pv, exist := c.Get(p)
 					if !exist {
-						return false, fmt.Errorf("%s 不存在", labels.Get(p))
+						continue
 					}
 					pvInt, err := strconv.Atoi(pv.(string))
 					if err != nil {
 						return false, fmt.Errorf("%s 不是个整数", labels.Get(p))
 					}
-					if valid, err := (NumberValidator{Min: rule.Min, Max: rule.Max}).Check(pvInt); !valid {
+					if valid, err := (IntValidator{Min: int(rule.Min), Max: int(rule.Max)}).Check(pvInt); !valid {
+						return false, getErr(labels.Get(p), err, rule.Message)
+					}
+				}
+			case Float:
+				for _, p := range rule.Params {
+					pv, exist := c.Get(p)
+					if !exist {
+						continue
+					}
+
+					pvFloat, err := strconv.ParseFloat(pv.(string), 64)
+					if err != nil {
+						return false, fmt.Errorf("%s 不是个浮点数", labels.Get(p))
+					}
+					if valid, err := (FloatValidator{Min: rule.Min, Max: rule.Max}).Check(pvFloat); !valid {
 						return false, getErr(labels.Get(p), err, rule.Message)
 					}
 				}
 			case JSON:
 				for _, p := range rule.Params {
-					pv, _ := c.Get(p)
+					pv, exist := c.Get(p)
+					if !exist {
+						continue
+					}
 					if valid, err := (JSONValidator{}).Check(pv); !valid {
 						return false, getErr(labels.Get(p), err, rule.Message)
 					}
@@ -86,7 +104,7 @@ func ValidateHttp(c *gin.Context, action string, labels Label, rules []Rule) (bo
 				for _, p := range rule.Params {
 					pv, exist := c.Get(p)
 					if !exist {
-						return false, fmt.Errorf("%s 不存在", labels.Get(p))
+						continue
 					}
 					if valid, err := (IPValidator{}).Check(pv); !valid {
 						return false, getErr(labels.Get(p), err, rule.Message)
@@ -96,7 +114,7 @@ func ValidateHttp(c *gin.Context, action string, labels Label, rules []Rule) (bo
 				for _, p := range rule.Params {
 					pv, exist := c.Get(p)
 					if !exist {
-						return false, fmt.Errorf("%s 不存在", labels.Get(p))
+						continue
 					}
 					if valid, err := (MatchValidator{Pattern: rule.Pattern}).Check(pv); !valid {
 						return false, getErr(labels.Get(p), err, rule.Message)
