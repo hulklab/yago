@@ -138,7 +138,7 @@ func (c *Ctx) RequestBool(key string, def ...bool) bool {
 func (c *Ctx) SetData(data interface{}) {
 	errCode, errMsg := OK.GetError()
 	c.JSON(http.StatusOK, ResponseBody{
-		Node:   Hostname(),
+		//Node:   Hostname(),
 		ErrNo:  errCode,
 		ErrMsg: errMsg,
 		Data:   data,
@@ -155,7 +155,7 @@ func (c *Ctx) SetError(err Err, msgEx ...string) {
 		}
 	}
 	c.JSON(http.StatusOK, ResponseBody{
-		Node:   Hostname(),
+		//Node:   Hostname(),
 		ErrNo:  errCode,
 		ErrMsg: errMsg,
 		Data:   nil,
