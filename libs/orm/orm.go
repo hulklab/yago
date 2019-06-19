@@ -18,7 +18,7 @@ type Orm struct {
 }
 
 // 扩展了一个事务功能
-func (orm *Orm) Transactional(f func() error) (err error) {
+func (orm *Orm) Transactional(f func(session *xorm.Session) error) (err error) {
 	session := orm.NewSession()
 	defer session.Close()
 	err = session.Begin()
@@ -40,7 +40,7 @@ func (orm *Orm) Transactional(f func() error) (err error) {
 		}
 	}()
 
-	err = f()
+	err = f(session)
 	return err
 }
 
