@@ -1,18 +1,47 @@
 package orm
 
 import (
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/libs/logger"
 	"github.com/sirupsen/logrus"
+	"log"
 	"net/url"
 	"time"
 )
 
 type Orm struct {
 	*xorm.Engine
+}
+
+// 扩展了一个事务功能
+func (orm *Orm) Transactional(f func() error) (err error) {
+	session := orm.NewSession()
+	defer session.Close()
+	err = session.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			err1 := session.Rollback()
+			log.Println("err occur in db transaction:", err1.Error())
+			panic(p)
+		} else if err != nil {
+			if err2 := session.Rollback(); err2 != nil {
+				err = fmt.Errorf("execute %s, rollback err: %s", err.Error(), err2.Error())
+			}
+		} else {
+			err = session.Commit()
+		}
+	}()
+
+	err = f()
+	return err
 }
 
 // 返回 orm 组件单例
