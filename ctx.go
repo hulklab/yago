@@ -158,7 +158,7 @@ func (c *Ctx) SetError(err Err, msgEx ...string) {
 		Node:   Hostname(),
 		ErrNo:  errCode,
 		ErrMsg: errMsg,
-		Data:   nil,
+		Data:   map[string]interface{}{},
 	})
 }
 
