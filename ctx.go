@@ -155,7 +155,7 @@ func (c *Ctx) SetError(err Err, msgEx ...string) {
 	c.JSON(http.StatusOK, ResponseBody{
 		ErrNo:  errCode,
 		ErrMsg: errMsg,
-		Data:   nil,
+		Data:   map[string]interface{}{},
 	})
 }
 
