@@ -29,6 +29,7 @@ type HttpThird struct {
 	headers          map[string]string
 	username         string
 	password         string
+	logInfoOff       bool
 }
 
 func (a *HttpThird) newRequest(method string, api string) *Request {
@@ -100,6 +101,15 @@ func (a *HttpThird) SetBaseAuth(username, password string) {
 
 func (a *HttpThird) SetHeader(headers map[string]string) {
 	a.headers = headers
+}
+
+// 设置是否要关闭 info 日志
+func (a *HttpThird) SetLogInfoFlag(on bool) {
+	if on {
+		a.logInfoOff = false
+	} else {
+		a.logInfoOff = true
+	}
 }
 
 func (a *HttpThird) call(method string, api string, params map[string]interface{}) error {
@@ -174,7 +184,10 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 		return errors.New("http status error")
 	}
 
-	logger.Ins().WithFields(logInfo).Info()
+	// 默认是日志没关
+	if !a.logInfoOff {
+		logger.Ins().WithFields(logInfo).Info()
+	}
 
 	return nil
 }
