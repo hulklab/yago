@@ -26,6 +26,10 @@ func (e Err) Error() string {
 }
 
 func (e Err) GetError() (int, string) {
+	if e == OK {
+		return 0, ""
+	}
+
 	err := strings.SplitN(e.Error(), "=", 2)
 	if len(err) != 2 {
 		return 1, "Error 格式不正确"
