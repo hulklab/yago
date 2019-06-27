@@ -2,6 +2,7 @@ package homemodel
 
 import (
 	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/example/app/g"
 	"github.com/hulklab/yago/libs/date"
 	"github.com/hulklab/yago/libs/orm"
 
@@ -49,7 +50,7 @@ func (m *HomeModel) UpdateById(id int64, options map[string]interface{}) (*homed
 		return nil, yago.ErrNotFound
 	}
 
-	attrs := make(map[string]interface{})
+	attrs := g.Hash{}
 
 	// 更新姓名
 	name, ok := options["name"]
