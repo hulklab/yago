@@ -26,9 +26,9 @@ func (e Err) Error() string {
 }
 
 func (e Err) GetError() (int, string) {
-	err := strings.Split(e.Error(), "=")
+	err := strings.SplitN(e.Error(), "=", 2)
 	if len(err) != 2 {
-		return 0, ""
+		return 1, "Error 格式不正确"
 	}
 	code, _ := strconv.Atoi(err[0])
 	return code, err[1]
