@@ -1,11 +1,9 @@
 package yago
 
 import (
-	"flag"
 	"fmt"
 	"github.com/spf13/viper"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -40,11 +38,4 @@ func Hostname() string {
 		endpoint, _ = os.Hostname()
 	}
 	return endpoint
-}
-
-func init() {
-	defaultDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
-	cfgPath := flag.String("c", fmt.Sprintf("%s/app.toml", defaultDir), "config file path")
-	flag.Parse()
-	Config = NewAppConfig(*cfgPath)
 }

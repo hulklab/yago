@@ -1,8 +1,10 @@
 package yago
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -14,9 +16,17 @@ type Cmd struct {
 
 func NewCmd() *Cmd {
 	cmd := &Cmd{&cobra.Command{
-		Use:   Config.GetString("app.app_name") + "-cmd",
-		Short: "cmd 命令执行工具",
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			conf, _ := cmd.Flags().GetString("c")
+			Config = NewAppConfig(conf)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			NewApp().Run()
+		},
 	}}
+	defaultDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	cmd.PersistentFlags().StringP("c", "c", fmt.Sprintf("%s/app.toml", defaultDir), "config file path")
+
 	return cmd
 }
 
@@ -41,7 +51,7 @@ func (c *Cmd) LoadCmdRouter() {
 			baseCmdSlice = useSlice
 			cmd = ""
 		}
-		if length > 2 {
+		if length >= 2 {
 			baseCmdSlice = useSlice[:(length - 1)]
 			cmd = useSlice[length-1]
 		}
@@ -52,7 +62,8 @@ func (c *Cmd) LoadCmdRouter() {
 
 		if _, ok := baseCmdMap[baseCmdStr]; !ok {
 			baseCmd = &cobra.Command{
-				Use: baseCmdStr,
+				Use:   baseCmdStr,
+				Short: fmt.Sprintf("Help about %s command", baseCmdStr),
 			}
 			baseCmdMap[baseCmdStr] = baseCmd
 			c.AddCommand(baseCmd)

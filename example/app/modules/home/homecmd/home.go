@@ -14,7 +14,7 @@ type HomeCmd struct {
 func init() {
 	homeCmd := new(HomeCmd)
 	// 注册路由
-	yago.AddCmdRouter("demo", "demo action", homeCmd.DemoAction, yago.CmdArg{
+	yago.AddCmdRouter("demo", "Demo action", homeCmd.DemoAction, yago.CmdArg{
 		Name: "arg", Shorthand: "a", Value: "value", Usage: "参数", Required: true,
 	})
 }
