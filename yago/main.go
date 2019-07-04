@@ -164,9 +164,10 @@ var newCmd = &cobra.Command{
 			}
 		}
 
+		routePath := "app/route/route.go"
 		routes := []string{"cmd", "http", "rpc", "task"}
 		for _, d := range routes {
-			routePath := fmt.Sprintf("app/routes/%sroute/%s.go", d, d)
+			// routePath := fmt.Sprintf("app/routes/%sroute/%s.go", d, d)
 			var routeBody []byte
 			var err error
 			if routeBody, err = ioutil.ReadFile(routePath); err != nil {
