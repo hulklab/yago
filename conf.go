@@ -11,6 +11,14 @@ type AppConfig struct {
 	*viper.Viper
 }
 
+func IsEnvProd() bool {
+	return Config.GetString("app.env") == "prod"
+}
+
+func IsEnvDev() bool {
+	return Config.GetString("app.env") == "dev"
+}
+
 var Config *AppConfig
 
 func NewAppConfig(cfgPath string) *AppConfig {
