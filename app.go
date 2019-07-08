@@ -245,7 +245,7 @@ func (a *App) runTask() {
 	c := cron.New()
 	wg := sync.WaitGroup{}
 	for _, router := range TaskRouterList {
-		if !Config.GetBool("is_task_host") {
+		if !Config.GetBool("app.task_enable") {
 			continue
 		}
 		action := router.Action
