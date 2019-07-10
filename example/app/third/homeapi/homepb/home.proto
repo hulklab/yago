@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package homepb;
+package app.homepb;
 
 service Home {
     rpc Hello (HelloRequest) returns (HelloReply) {}

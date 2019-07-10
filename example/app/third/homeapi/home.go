@@ -7,7 +7,7 @@ import (
 	"github.com/hulklab/yago/common/basethird"
 	"google.golang.org/grpc"
 
-	"github.com/hulklab/yago/example/app/third/homeapi/protobuf/homepb"
+	pb "github.com/hulklab/yago/example/app/third/homeapi/homepb"
 )
 
 type HomeApi struct {
@@ -66,9 +66,9 @@ func (a *HomeApi) RpcHello() {
 
 	rep, err := a.Call(func(conn *grpc.ClientConn, ctx context.Context) (response basethird.IResponse, e error) {
 
-		c := homepb.NewHomeClient(conn)
+		c := pb.NewHomeClient(conn)
 
-		return c.Hello(ctx, &homepb.HelloRequest{Name: name})
+		return c.Hello(ctx, &pb.HelloRequest{Name: name})
 
 	}, name)
 

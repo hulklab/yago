@@ -69,3 +69,4 @@ show_log = true
 [home_api]
 domain = "http://127.0.0.1:8080"
 hostname = ""
+rpc_address = "127.0.0.1:50051"
