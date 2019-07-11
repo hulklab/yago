@@ -10,6 +10,10 @@ http_enable = true
 http_addr = ":8080"
 # http服务关闭最大等待时长, 秒
 http_stop_time_wait = 10
+# http ssl config
+# http_ssl_on = true
+# http_cert_file = "./yourdomain.crt"
+# http_key_file = "./yourdomain.key"
 
 # rpc
 # 是否开启rpc服务
