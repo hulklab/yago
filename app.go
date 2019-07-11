@@ -33,6 +33,9 @@ type App struct {
 	// http close chan
 	httpCloseChan     chan int
 	httpCloseDoneChan chan int
+	HttpSslOn         bool
+	HttpCertFile      string
+	HttpKeyFile       string
 
 	// 开启task服务
 	TaskEnable bool
@@ -76,6 +79,12 @@ func NewApp() *App {
 		app.httpEngine.Use(gin.Logger())
 		app.httpCloseChan = make(chan int, 1)
 		app.httpCloseDoneChan = make(chan int, 1)
+	}
+
+	app.HttpSslOn = Config.GetBool("app.http_ssl_on")
+	if app.HttpSslOn {
+		app.HttpCertFile = Config.GetString("app.http_cert_file")
+		app.HttpKeyFile = Config.GetString("app.http_key_file")
 	}
 
 	// init rpc
@@ -201,18 +210,29 @@ func (a *App) runHttp() {
 		a.httpCloseDoneChan <- 1
 		return
 	}
+
 	// listen and serve
 	srv := &http.Server{
 		Addr:    Config.GetString("app.http_addr"),
 		Handler: a.httpEngine,
 	}
 
-	go func() {
-		// service connections
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
-		}
-	}()
+	if a.HttpSslOn {
+		go func() {
+			// service connections
+			if err := srv.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("listen: %s\n", err)
+			}
+		}()
+
+	} else {
+		go func() {
+			// service connections
+			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("listen: %s\n", err)
+			}
+		}()
+	}
 
 	select {
 	case <-a.httpCloseChan:
