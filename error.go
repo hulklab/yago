@@ -46,6 +46,10 @@ func (e Err) HasErr() bool {
 
 // 生成通用错误, 接受通用的 error 类型或者是 string 类型
 func NewErr(err interface{}) Err {
+	if err == nil {
+		return OK
+	}
+
 	var s string
 	switch e := err.(type) {
 	case error:
