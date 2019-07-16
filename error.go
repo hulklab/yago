@@ -1,6 +1,7 @@
 package yago
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -32,7 +33,7 @@ func (e Err) GetError() (int, string) {
 
 	err := strings.SplitN(e.Error(), "=", 2)
 	if len(err) != 2 {
-		return 1, "Error 格式不正确"
+		return 1, fmt.Sprintf("Error 格式不正确: %s", e.Error())
 	}
 	code, _ := strconv.Atoi(err[0])
 	return code, err[1]
