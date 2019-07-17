@@ -33,9 +33,13 @@ type App struct {
 	// http close chan
 	httpCloseChan     chan int
 	httpCloseDoneChan chan int
-	HttpSslOn         bool
-	HttpCertFile      string
-	HttpKeyFile       string
+	// https 证书配置
+	HttpSslOn    bool
+	HttpCertFile string
+	HttpKeyFile  string
+	// http html 模版配置
+	HttpViewRender bool
+	HttpViewPath   string
 
 	// 开启task服务
 	TaskEnable bool
@@ -79,6 +83,14 @@ func NewApp() *App {
 		app.httpEngine.Use(gin.Logger())
 		app.httpCloseChan = make(chan int, 1)
 		app.httpCloseDoneChan = make(chan int, 1)
+
+		app.HttpViewRender = Config.GetBool("app.http_view_render")
+		if app.HttpViewRender {
+			app.HttpViewPath = Config.GetString("app.http_view_path")
+			if app.HttpViewPath != "" {
+				app.httpEngine.LoadHTMLGlob(app.HttpViewPath)
+			}
+		}
 	}
 
 	app.HttpSslOn = Config.GetBool("app.http_ssl_on")
