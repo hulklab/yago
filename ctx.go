@@ -3,6 +3,7 @@ package yago
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hulklab/yago/libs/validator"
+	"mime/multipart"
 	"net/http"
 	"strconv"
 	"strings"
@@ -132,6 +133,24 @@ func (c *Ctx) RequestBool(key string, def ...bool) bool {
 		return false
 	}
 	return false
+}
+
+func (c *Ctx) RequestFileContent(key string) ([]byte, error) {
+	formFile, err := c.FormFile(key)
+	if err != nil {
+		return nil, err
+	}
+	var file multipart.File
+	file, err = formFile.Open()
+	if err != nil {
+		return nil, err
+	}
+	content := make([]byte, formFile.Size)
+	_, err = file.Read(content)
+	if err != nil {
+		return nil, err
+	}
+	return content, nil
 }
 
 func (c *Ctx) SetData(data interface{}) {
