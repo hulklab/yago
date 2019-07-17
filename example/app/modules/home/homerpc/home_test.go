@@ -4,11 +4,10 @@ import (
 	"context"
 	"google.golang.org/grpc"
 	"log"
-	"os"
 	"testing"
 	"time"
 
-	"github.com/hulklab/yago/example/app/modules/home/homerpc/homepb"
+	pb "github.com/hulklab/yago/example/app/modules/home/homerpc/homepb"
 )
 
 const (
@@ -23,18 +22,15 @@ func TestHomeRpc_Hello(t *testing.T) {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := homepb.NewHomeClient(conn)
+	c := pb.NewHomeClient(conn)
 
 	// Contact the server and print out its response.
 	name := defaultName
-	if len(os.Args) > 1 {
-		name = os.Args[1]
-	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
-	r, err := c.Hello(ctx, &homepb.HelloRequest{Name: name})
+	r, err := c.Hello(ctx, &pb.HelloRequest{Name: name})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		t.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("Greeting: %s", r.Data)
+	t.Logf("Greeting: %s", r.Data)
 }

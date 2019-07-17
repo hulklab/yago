@@ -22,7 +22,7 @@ func (t *HomeTask) HelloAction() {
 	t.RunLoop(func() {
 		log.Println("start task")
 		log.Println("doing")
-		time.Sleep(time.Second * time.Duration(10))
+		time.Sleep(time.Second * time.Duration(5))
 		log.Println("end task")
 	})
 }

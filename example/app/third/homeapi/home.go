@@ -3,6 +3,7 @@ package homeapi
 import (
 	"context"
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/common/basethird"
 	"google.golang.org/grpc"
@@ -64,7 +65,7 @@ func (a *HomeApi) RpcHello() {
 
 	var name = "zhangsan"
 
-	rep, err := a.Call(func(conn *grpc.ClientConn, ctx context.Context) (response basethird.IResponse, e error) {
+	rep, err := a.Call(func(conn *grpc.ClientConn, ctx context.Context) (rep proto.Message, e error) {
 
 		c := pb.NewHomeClient(conn)
 
@@ -72,5 +73,15 @@ func (a *HomeApi) RpcHello() {
 
 	}, name)
 
-	fmt.Println(err, rep)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	v, ok := rep.(*pb.HelloReply)
+	if ok {
+		fmt.Println("ok:", v.Data)
+	} else {
+		fmt.Println("not match", v)
+	}
 }

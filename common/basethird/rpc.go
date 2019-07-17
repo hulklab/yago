@@ -2,20 +2,13 @@ package basethird
 
 import (
 	"context"
+	"github.com/golang/protobuf/proto"
 	"github.com/hulklab/yago/libs/logger"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"sync"
 	"time"
 )
-
-type IResponse interface {
-	GetErrno() int32
-
-	GetErrmsg() string
-
-	GetData() string
-}
 
 // 封装 rpc 的基础类
 type RpcThird struct {
@@ -46,14 +39,14 @@ func (a *RpcThird) GetCtx() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), time.Duration(a.Timeout)*time.Second)
 }
 
-func (a *RpcThird) Call(f func(conn *grpc.ClientConn, ctx context.Context) (IResponse, error), params interface{}) (IResponse, error) {
+func (a *RpcThird) Call(f func(conn *grpc.ClientConn, ctx context.Context) (proto.Message, error), params interface{}) (proto.Message, error) {
 	logInfo := logrus.Fields{
 		"address":     a.Address,
 		"timeout":     a.Timeout,
 		"params":      params,
 		"consume(ms)": 0,
 		"error":       "",
-		"result":      nil,
+		"result":      "",
 		"category":    "third.rpc",
 	}
 
@@ -78,11 +71,7 @@ func (a *RpcThird) Call(f func(conn *grpc.ClientConn, ctx context.Context) (IRes
 	logInfo["consume"] = consume
 
 	if rep != nil {
-		logInfo["result"] = map[string]interface{}{
-			"errno":  rep.GetErrno(),
-			"errmsg": rep.GetErrmsg(),
-			"data":   rep.GetData(),
-		}
+		logInfo["result"] = rep.String()
 	}
 
 	if err != nil {
