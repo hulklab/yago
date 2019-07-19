@@ -40,6 +40,7 @@ type App struct {
 	// http html 模版配置
 	HttpViewRender bool
 	HttpViewPath   string
+	HttpStaticPath string
 
 	// 开启task服务
 	TaskEnable bool
@@ -89,6 +90,10 @@ func NewApp() *App {
 			app.HttpViewPath = Config.GetString("app.http_view_path")
 			if app.HttpViewPath != "" {
 				app.httpEngine.LoadHTMLGlob(app.HttpViewPath)
+			}
+			app.HttpStaticPath = Config.GetString("app.http_static_path")
+			if app.HttpStaticPath != "" {
+				app.httpEngine.Static("/static", app.HttpStaticPath)
 			}
 		}
 	}

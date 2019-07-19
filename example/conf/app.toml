@@ -19,6 +19,7 @@ http_stop_time_wait = 10
 # http html 模版配置
 #http_view_render = true
 #http_view_path = "views/*"
+#http_static_path = "static/js"
 
 # rpc
 # 是否开启rpc服务
