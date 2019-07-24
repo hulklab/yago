@@ -67,6 +67,13 @@ func Ins(id ...string) *Orm {
 		dbName := conf["database"].(string)
 		charset := conf["charset"].(string)
 
+		if dbHost == "" {
+			log.Fatalf("Fatal error: Sql host is empty")
+		}
+		if dbPort == "" {
+			log.Fatalf("Fatal error: Sql port is empty")
+		}
+
 		dsn := dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName + "?charset=" + charset
 
 		timezone, ok := conf["timezone"]

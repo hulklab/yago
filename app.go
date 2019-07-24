@@ -186,15 +186,14 @@ func (a *App) loadHttpRouter() error {
 		action := r.Action
 		controller := r.h
 		handler := func(c *gin.Context) {
-			if ctx, err := NewCtx(c); err == nil {
-				if e := controller.BeforeAction(ctx); e.HasErr() {
-					ctx.SetError(e)
+			ctx := NewCtx(c)
+			if e := controller.BeforeAction(ctx); e.HasErr() {
+				ctx.SetError(e)
+			} else {
+				if err := ctx.Validate(); err != nil {
+					ctx.SetError(ErrParam, err.Error())
 				} else {
 					action(ctx)
-				}
-			} else {
-				if ctx != nil {
-					ctx.SetError(ErrParam, err.Error())
 				}
 			}
 		}

@@ -36,6 +36,10 @@ func initRedisConnPool(name string) *redis.Pool {
 
 	addr := config["addr"].(string)
 
+	if addr == "" {
+		log.Fatalf("Fatal error: Redis addr is empty")
+	}
+
 	var maxIdle = 5
 	mIdle, ok := config["max_idle"]
 	if ok {

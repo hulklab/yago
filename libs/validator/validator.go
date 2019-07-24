@@ -32,9 +32,6 @@ func (v StringValidator) Check(value interface{}) (bool, error) {
 		return false, errors.New("不是个字符串")
 	}
 	strLen := len(str)
-	if strLen == 0 {
-		return false, fmt.Errorf("不能为空")
-	}
 
 	if v.Min != 0 && strLen < v.Min {
 		return false, fmt.Errorf("至少应该有 %v 个字符长", v.Min)

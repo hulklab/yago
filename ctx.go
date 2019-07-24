@@ -19,14 +19,8 @@ type ResponseBody struct {
 	Data   interface{} `json:"data"`
 }
 
-func NewCtx(c *gin.Context) (*Ctx, error) {
-	ctx := &Ctx{c}
-
-	if err := ctx.Validate(); err != nil {
-		return ctx, err
-	}
-
-	return ctx, nil
+func NewCtx(c *gin.Context) *Ctx {
+	return &Ctx{c}
 }
 
 func (c *Ctx) Validate() error {
