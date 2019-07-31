@@ -3,6 +3,7 @@ package rds
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
+	"github.com/hulklab/yago"
 	"log"
 	"testing"
 	"time"
@@ -11,6 +12,8 @@ import (
 // go test -v ./app/libs/rds -test.run TestString -args "-c=${PWD}/app.toml"
 
 func TestString(t *testing.T) {
+	yago.Config = yago.NewAppConfig("/Users/zhangjiulong/projects/go/src/github.com/hulklab/yago/example/conf/app.toml")
+
 	rc := Ins()
 
 	// 用完后返回连接池

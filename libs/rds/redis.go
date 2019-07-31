@@ -8,8 +8,12 @@ import (
 	"time"
 )
 
+type Rds struct {
+	redis.Conn
+}
+
 // 返回 redis 的一个连接
-func Ins(id ...string) redis.Conn {
+func Ins(id ...string) *Rds {
 
 	var name string
 
@@ -27,7 +31,8 @@ func Ins(id ...string) redis.Conn {
 
 	redisPool := v.(*redis.Pool)
 
-	return redisPool.Get()
+	rds := redisPool.Get()
+	return &Rds{Conn: rds}
 }
 
 func initRedisConnPool(name string) *redis.Pool {
