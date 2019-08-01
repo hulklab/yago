@@ -3,20 +3,133 @@ package rds
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
+	"github.com/hulklab/yago"
 	"log"
 	"testing"
 	"time"
 )
 
 // go test -v ./app/libs/rds -test.run TestString -args "-c=${PWD}/app.toml"
+func init() {
+	yago.Config = yago.NewAppConfig("/Users/zhangjiulong/projects/go/src/github.com/hulklab/yago/example/conf/app.toml")
+}
+
+func TestApi(t *testing.T) {
+	rc := Ins()
+	defer rc.Close()
+	// 测试 keys
+	b, err := redis.Bool(rc.Exists("zjl_test_001"))
+	if err != nil {
+		t.Error("test exists err:", err.Error())
+	} else {
+		if b == false {
+			t.Log("test exists ok")
+		} else {
+			t.Error("test exists fail")
+
+		}
+	}
+
+	// 测试 strings
+	s, err := redis.String(rc.Set("zjl_test_string", "hello", "ex", 10))
+	if err != nil {
+		t.Error("test strings set err:", err.Error())
+	} else {
+		t.Log("test set ok ", s)
+	}
+
+	s2, err := redis.String(rc.Get("zjl_test_string"))
+	if err != nil {
+		t.Error("test strings get err:", err.Error())
+	} else {
+		t.Log("test get ok ", s2)
+	}
+
+	// 测试 list
+	i, err := redis.Int(rc.Rpush("zjl_test_list", "zjl"))
+	if err != nil {
+		t.Error("test rpush err:", err.Error())
+	} else {
+		t.Log("test rpush ok ", i)
+	}
+
+	ls, err := redis.String(rc.Lpop("zjl_test_list"))
+	if err != nil {
+		t.Error("test lpop err:", err.Error())
+	} else {
+		t.Log("test lpop ok ", ls)
+	}
+
+	// 测试 hash
+	hi, err := redis.Int(rc.Hset("zjl_test_hash", "name", []byte("zjl")))
+	if err != nil {
+		t.Error("test hset err:", err.Error())
+	} else {
+		t.Log("test hset ok ", hi)
+	}
+
+	hbs, err := redis.Bytes(rc.Hget("zjl_test_hash", "name"))
+	if err != nil {
+		t.Error("test hget err:", err.Error())
+	} else {
+		t.Log("test hget ok ", hbs)
+	}
+
+	hsm, err := redis.StringMap(rc.Hgetall("zjl_test_hash"))
+	if err != nil {
+		t.Error("test hgetall err:", err.Error())
+	} else {
+		t.Logf("test hgetall ok %T, %v", hsm, hsm)
+	}
+
+	// 测试 set
+	si, err := redis.Int(rc.Sadd("zjl_test_set", "zjl"))
+	if err != nil {
+		t.Error("test sadd err:", err.Error())
+	} else {
+		t.Log("test sadd ok", si)
+	}
+
+	ssl, err := redis.Strings(rc.Smembers("zjl_test_set"))
+	if err != nil {
+		t.Error("test smembers err:", err.Error())
+	} else {
+		t.Logf("test smembers ok %T, %v", ssl, ssl)
+	}
+
+	// 测试 order set
+	zi, err := redis.Int(rc.Zadd("zjl_test_zset", 1, "php", 2, "go", 3, "python"))
+	if err != nil {
+		t.Error("test zadd err:", err.Error())
+	} else {
+		t.Log("test zadd ok", zi)
+	}
+
+	zsm, err := redis.StringMap(rc.Zrange("zjl_test_zset", 0, -1, "WITHSCORES"))
+	if err != nil {
+		t.Error("test zrang err:", err.Error())
+	} else {
+		t.Logf("test zrang ok, %T, %v", zsm, zsm)
+	}
+
+	// 删除 key
+	li, err := redis.Int(rc.Del("zjl_test_list", "zjl_test_string", "zjl_test_001", "zjl_test_hash"))
+	if err != nil {
+		t.Error("test del err:", err.Error())
+	} else {
+		t.Log("test del ok ", li)
+	}
+}
 
 func TestString(t *testing.T) {
+
 	rc := Ins()
 
 	// 用完后返回连接池
 	defer rc.Close()
 
-	rc.Do("set", "test_key", "zjl")
+	reply, err := rc.Do("set", "test_key", "zjl", "XX")
+	fmt.Printf("%T,%v,%T,%s\n", reply, reply, err, err)
 
 	v, err := redis.String(rc.Do("get", "test_key"))
 
@@ -189,7 +302,7 @@ func TestSet(t *testing.T) {
 func TestPubSub(t *testing.T) {
 	topic := "test_subscribe"
 
-	subscriber, err := NewSubscriber(Ins(), topic)
+	subscriber, err := Ins().NewSubscriber(topic)
 	if err != nil {
 		log.Println(err.Error())
 		return
@@ -204,6 +317,7 @@ func TestPubSub(t *testing.T) {
 
 	err = subscriber.Subscribe(func(bytes []byte) {
 		fmt.Println("msg:", string(bytes))
+		subscriber.Close()
 	})
 
 	if err != nil {

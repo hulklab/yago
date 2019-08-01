@@ -72,6 +72,13 @@ max_idle_conn = 20
 max_open_conn = 500
 show_log = true
 
+[redis]
+addr = "127.0.0.1:6379"
+auth = ""
+db = 0
+max_idle = 5
+idle_timeout = 30
+
 ##########################################
 # 以下是 api 区
 ##########################################

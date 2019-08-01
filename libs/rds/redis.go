@@ -8,8 +8,12 @@ import (
 	"time"
 )
 
+type Rds struct {
+	redis.Conn
+}
+
 // 返回 redis 的一个连接
-func Ins(id ...string) redis.Conn {
+func Ins(id ...string) *Rds {
 
 	var name string
 
@@ -27,7 +31,8 @@ func Ins(id ...string) redis.Conn {
 
 	redisPool := v.(*redis.Pool)
 
-	return redisPool.Get()
+	rds := redisPool.Get()
+	return &Rds{Conn: rds}
 }
 
 func initRedisConnPool(name string) *redis.Pool {
@@ -113,11 +118,11 @@ type Subscriber struct {
 	closeChan chan bool
 }
 
-func NewSubscriber(conn redis.Conn, topic string) (*Subscriber, error) {
+func (r *Rds) NewSubscriber(topic string) (*Subscriber, error) {
 	s := new(Subscriber)
-	s.closeChan = make(chan bool)
+	s.closeChan = make(chan bool, 1)
 	s.topic = topic
-	prc := redis.PubSubConn{Conn: conn}
+	prc := redis.PubSubConn{Conn: r}
 	err := prc.Subscribe(s.topic)
 	if err != nil {
 		log.Println("redis: ", err.Error())
