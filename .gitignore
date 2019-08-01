@@ -6,3 +6,4 @@ mem-*.memprof
 vendor
 nohup.out
 .vendor-new
+go.sum
