@@ -5,13 +5,14 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/hulklab/yago"
 	"log"
+	"os"
 	"testing"
 	"time"
 )
 
-// go test -v ./app/libs/rds -test.run TestString -args "-c=${PWD}/app.toml"
+// go test -v ./libs/rds -test.run TestString
 func init() {
-	yago.Config = yago.NewAppConfig("/Users/zhangjiulong/projects/go/src/github.com/hulklab/yago/example/conf/app.toml")
+	yago.Config = yago.NewAppConfig(os.Getenv("GOPATH") + "/src/github.com/hulklab/yago/example/conf/app.toml")
 }
 
 func TestApi(t *testing.T) {
@@ -46,14 +47,14 @@ func TestApi(t *testing.T) {
 	}
 
 	// 测试 list
-	i, err := redis.Int(rc.Rpush("zjl_test_list", "zjl"))
+	i, err := redis.Int(rc.RPush("zjl_test_list", "zjl"))
 	if err != nil {
 		t.Error("test rpush err:", err.Error())
 	} else {
 		t.Log("test rpush ok ", i)
 	}
 
-	ls, err := redis.String(rc.Lpop("zjl_test_list"))
+	ls, err := redis.String(rc.LPop("zjl_test_list"))
 	if err != nil {
 		t.Error("test lpop err:", err.Error())
 	} else {
@@ -61,21 +62,21 @@ func TestApi(t *testing.T) {
 	}
 
 	// 测试 hash
-	hi, err := redis.Int(rc.Hset("zjl_test_hash", "name", []byte("zjl")))
+	hi, err := redis.Int(rc.HSet("zjl_test_hash", "name", []byte("zjl")))
 	if err != nil {
 		t.Error("test hset err:", err.Error())
 	} else {
 		t.Log("test hset ok ", hi)
 	}
 
-	hbs, err := redis.Bytes(rc.Hget("zjl_test_hash", "name"))
+	hbs, err := redis.Bytes(rc.HGet("zjl_test_hash", "name"))
 	if err != nil {
 		t.Error("test hget err:", err.Error())
 	} else {
 		t.Log("test hget ok ", hbs)
 	}
 
-	hsm, err := redis.StringMap(rc.Hgetall("zjl_test_hash"))
+	hsm, err := redis.StringMap(rc.HGetAll("zjl_test_hash"))
 	if err != nil {
 		t.Error("test hgetall err:", err.Error())
 	} else {
@@ -83,14 +84,14 @@ func TestApi(t *testing.T) {
 	}
 
 	// 测试 set
-	si, err := redis.Int(rc.Sadd("zjl_test_set", "zjl"))
+	si, err := redis.Int(rc.SAdd("zjl_test_set", "zjl"))
 	if err != nil {
 		t.Error("test sadd err:", err.Error())
 	} else {
 		t.Log("test sadd ok", si)
 	}
 
-	ssl, err := redis.Strings(rc.Smembers("zjl_test_set"))
+	ssl, err := redis.Strings(rc.SMembers("zjl_test_set"))
 	if err != nil {
 		t.Error("test smembers err:", err.Error())
 	} else {
@@ -98,14 +99,14 @@ func TestApi(t *testing.T) {
 	}
 
 	// 测试 order set
-	zi, err := redis.Int(rc.Zadd("zjl_test_zset", 1, "php", 2, "go", 3, "python"))
+	zi, err := redis.Int(rc.ZAdd("zjl_test_zset", 1, "php", 2, "go", 3, "python"))
 	if err != nil {
 		t.Error("test zadd err:", err.Error())
 	} else {
 		t.Log("test zadd ok", zi)
 	}
 
-	zsm, err := redis.StringMap(rc.Zrange("zjl_test_zset", 0, -1, "WITHSCORES"))
+	zsm, err := redis.StringMap(rc.ZRange("zjl_test_zset", 0, -1, "WITHSCORES"))
 	if err != nil {
 		t.Error("test zrang err:", err.Error())
 	} else {
@@ -128,7 +129,7 @@ func TestString(t *testing.T) {
 	// 用完后返回连接池
 	defer rc.Close()
 
-	reply, err := rc.Do("set", "test_key", "zjl", "XX")
+	reply, err := rc.Do("set", "test_key", "zjl", "NX")
 	fmt.Printf("%T,%v,%T,%s\n", reply, reply, err, err)
 
 	v, err := redis.String(rc.Do("get", "test_key"))
