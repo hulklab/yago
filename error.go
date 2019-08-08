@@ -45,7 +45,10 @@ func (e Err) HasErr() bool {
 }
 
 // 生成通用错误, 接受通用的 error 类型或者是 string 类型
-func NewErr(err interface{}) Err {
+// eg. yago.NewErr(errors.New("err occur"))
+// eg. yago.NewErr("something is error")
+// eg. yago.NewErr("%s is err","query")
+func NewErr(err interface{}, args ...interface{}) Err {
 	if err == nil {
 		return OK
 	}
@@ -59,7 +62,11 @@ func NewErr(err interface{}) Err {
 			s = E.Error() + e.Error()
 		}
 	case string:
-		s = E.Error() + e
+		if len(args) > 0 {
+			s = E.Error() + fmt.Sprintf(e, args...)
+		} else {
+			s = E.Error() + e
+		}
 	}
 	return Err(s)
 }
