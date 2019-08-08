@@ -10,16 +10,16 @@ type Err string
 
 const (
 	// 1-1000 系统错误, 1000 - 9999 业务公共错误, 10000 - .... 业务错误
-	OK          = Err("0")
-	E           = Err("1=") // 自定义错误信息
-	ErrParam    = Err("2=参数错误")
-	ErrSign     = Err("3=签名认证失败")
-	ErrAuth     = Err("4=权限不足")
-	ErrNotLogin = Err("5=用户未登录")
-	ErrNotFound = Err("6=记录不存在")
-	ErrSystem   = Err("7=系统错误")
-	ErrOperate  = Err("8=操作失败")
-	ErrUnknown  = Err("9=未知错误")
+	OK           = Err("0")
+	E            = Err("1=") // 自定义错误信息
+	ErrParam     = Err("2=")
+	ErrSign      = Err("3=sign failed")
+	ErrAuth      = Err("4=auth failed")
+	ErrForbidden = Err("5=forbidden")
+	ErrNotLogin  = Err("6=user not login")
+	ErrSystem    = Err("7=system error")
+	ErrOperate   = Err("8=")
+	ErrUnknown   = Err("9=unknown error")
 )
 
 func (e Err) Error() string {

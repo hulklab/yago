@@ -47,7 +47,7 @@ func (m *HomeModel) UpdateById(id int64, options map[string]interface{}) (*homed
 	}
 
 	if !b {
-		return nil, yago.ErrNotFound
+		return nil, yago.NewErr("用户不存在")
 	}
 
 	attrs := g.Hash{}
