@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"net"
 	"net/http"
@@ -121,8 +122,13 @@ func NewApp() *App {
 	return app
 }
 
+// 此 init 最先执行，配置文件此处初始化
 func init() {
+	initConfig()
+
 	log.SetFlags(log.LstdFlags)
+
+	initGrpcServer()
 }
 
 func (a *App) Run() {
@@ -319,7 +325,28 @@ func (a *App) runTask() {
 	}
 }
 
-var RpcServer = grpc.NewServer()
+var RpcServer *grpc.Server
+
+func initGrpcServer() {
+	isSslOn := Config.GetBool("app.rpc_ssl_on")
+	if isSslOn {
+		certFile := Config.GetString("app.rpc_cert_file")
+		keyFile := Config.GetString("app.rpc_key_file")
+		if certFile == "" || keyFile == "" {
+			log.Fatalln("rpc ssl cert file or key file is required when rpc ssl on")
+		}
+		creds, err := credentials.NewServerTLSFromFile(certFile, keyFile)
+		if err != nil {
+			log.Fatalf("Failed to generate credentials %v", err)
+		}
+
+		// 实例化 grpc Server, 并开启 TSL 认证
+		RpcServer = grpc.NewServer(grpc.Creds(creds))
+
+	} else {
+		RpcServer = grpc.NewServer()
+	}
+}
 
 // rpc
 func (a *App) runRpc() {

@@ -3,17 +3,12 @@ package rds
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/hulklab/yago"
 	"log"
-	"os"
 	"testing"
 	"time"
 )
 
-// go test -v ./libs/rds -test.run TestString
-func init() {
-	yago.Config = yago.NewAppConfig(os.Getenv("GOPATH") + "/src/github.com/hulklab/yago/example/conf/app.toml")
-}
+// go test -v ./libs/rds -test.run TestString -args "-c=${PWD}/app.toml"
 
 func TestApi(t *testing.T) {
 	rc := Ins()

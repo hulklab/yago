@@ -28,6 +28,11 @@ rpc_enable = true
 rpc_addr = ":50051"
 # rpc 服务关闭最大等待时长, 秒
 rpc_stop_time_wait = 10
+# rpc ssl config
+#rpc_ssl_on = true
+#rpc_cert_file = "./conf/server.pem"
+#rpc_key_file = "./conf/server.key"
+
 
 # 是否开启task任务
 task_enable = true
@@ -85,5 +90,7 @@ idle_timeout = 30
 
 [home_api]
 domain = "http://127.0.0.1:8080"
-hostname = ""
+hostname = "localhost"
 rpc_address = "127.0.0.1:50051"
+#ssl_on = true
+#cert_file = "./conf/server.pem"

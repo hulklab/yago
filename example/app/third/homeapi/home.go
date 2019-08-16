@@ -23,10 +23,14 @@ func New() *HomeApi {
 
 	// http 配置
 	api.Domain = yago.Config.GetString("home_api.domain")
-	api.Hostname = yago.Config.GetString("home_api.hostname")
+	api.HttpThird.Hostname = yago.Config.GetString("home_api.hostname")
 
 	// rpc 配置
 	api.Address = yago.Config.GetString("home_api.rpc_address")
+	api.SslOn = yago.Config.GetBool("home_api.ssl_on")
+	api.CertFile = yago.Config.GetString("home_api.cert_file")
+	api.RpcThird.Hostname = yago.Config.GetString("home_api.hostname")
+
 	return api
 }
 

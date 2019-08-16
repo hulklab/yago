@@ -22,3 +22,12 @@ protoc -I homepb home.proto --go_out=plugins=grpc:homepb
 * 原生 client 样例参考 app/modules/home/homerpc/home_test.go
 
 * 封装 client 样例参考 app/third/homeapi/home.go::Hello
+
+#### SSL
+
+```
+// 服务端生成证书
+// openssl genrsa -out server.key 2048
+// openssl req -new -x509 -sha256 -key server.key -out server.pem -days 3650
+
+```
