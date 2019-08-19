@@ -10,13 +10,10 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
-	"os/signal"
 	"reflect"
 	"runtime"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 )
 
@@ -377,48 +374,29 @@ func (a *App) runRpc() {
 	}
 }
 
+func (a *App) Close() {
+	if a.TaskEnable {
+		close(TaskCloseChan)
+		a.taskCloseChan <- 1
+		<-a.taskCloseDoneChan
+		log.Println("Task Server Stop OK")
+	}
+	if a.HttpEnable {
+		a.httpCloseChan <- 1
+		<-a.httpCloseDoneChan
+		log.Println("Http Server Stop OK")
+	}
+
+	if a.RpcEnable {
+		a.rpcCloseChan <- 1
+		<-a.rpcCloseDoneChan
+		log.Println("Rpc Server Stop OK")
+	}
+
+	// broad close chan
+	close(GlobalCloseChan)
+}
+
 var TaskCloseChan = make(chan int)
 
 var GlobalCloseChan = make(chan int)
-
-func (a *App) startSignal() {
-	pid := os.Getpid()
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-
-	for {
-		s := <-signals
-		log.Println("recv", s)
-
-		switch s {
-		case syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT:
-			log.Println("Graceful Shutdown...")
-			if a.TaskEnable {
-				close(TaskCloseChan)
-				a.taskCloseChan <- 1
-				<-a.taskCloseDoneChan
-				log.Println("Task Server Stop OK")
-			}
-			if a.HttpEnable {
-				a.httpCloseChan <- 1
-				<-a.httpCloseDoneChan
-				log.Println("Http Server Stop OK")
-			}
-
-			if a.RpcEnable {
-				a.rpcCloseChan <- 1
-				<-a.rpcCloseDoneChan
-				log.Println("Rpc Server Stop OK")
-			}
-
-			// broad close chan
-			close(GlobalCloseChan)
-
-			log.Println("Process", pid, "Exit OK")
-			os.Exit(0)
-		case syscall.SIGUSR2:
-			log.Println("Restart...")
-			log.Println("Process", pid, "Restart ok")
-		}
-	}
-}
