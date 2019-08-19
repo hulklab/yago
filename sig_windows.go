@@ -2,6 +2,13 @@
 
 package yago
 
+import (
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+)
+
 func (a *App) startSignal() {
 	pid := os.Getpid()
 	signals := make(chan os.Signal, 1)
