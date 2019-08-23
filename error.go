@@ -27,7 +27,7 @@ func (e Err) Error() string {
 }
 
 func (e Err) GetError() (int, string) {
-	if e == OK {
+	if e == OK || e == "" {
 		return 0, ""
 	}
 
