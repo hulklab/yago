@@ -3,6 +3,8 @@
 app_name = "app"
 env = "dev"
 debug = true
+# 如果不设置则不会创建 pidfile
+#pidfile = "/var/run/app.pid"
 
 # 是否开启http服务
 http_enable = true

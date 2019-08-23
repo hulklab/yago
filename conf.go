@@ -62,3 +62,11 @@ func initConfig() {
 	flag.Parse()
 	Config = NewAppConfig(*cfgPath)
 }
+
+func getPidFile() (string, bool) {
+	pidfile := Config.GetString("app.pidfile")
+	if pidfile == "" {
+		return "", false
+	}
+	return pidfile, true
+}

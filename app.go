@@ -3,6 +3,7 @@ package yago
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron"
 	"google.golang.org/grpc"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"reflect"
 	"runtime"
 	"strings"
@@ -144,7 +146,38 @@ func (a *App) Run() {
 		go a.runHttp()
 	}
 
+	// 生成 pid
+	a.genPid()
+
 	a.startSignal()
+}
+
+func (a *App) genPid() {
+	pidfile, ok := getPidFile()
+	if !ok {
+		return
+	}
+
+	pf, err := os.Create(pidfile)
+
+	defer pf.Close()
+
+	if err != nil {
+		log.Fatalf("pidfile check err:%v\n", err)
+		return
+
+	} else {
+		newPid := os.Getpid()
+		_, err := pf.Write([]byte(fmt.Sprintf("%d", newPid)))
+		if err != nil {
+			log.Fatalf("write pid err:%v\n", err)
+			return
+		}
+
+		log.Println("app is running with pid:", newPid)
+		return
+	}
+	return
 }
 
 func (a *App) loadHttpRouter() error {
