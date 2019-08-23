@@ -276,6 +276,10 @@ func (a *App) loadTaskRouter() error {
 }
 
 func (a *App) runTask() {
+	if !Config.GetBool("app.task_enable") {
+		return
+	}
+
 	if err := a.loadTaskRouter(); err != nil {
 		a.taskCloseDoneChan <- 1
 		return
@@ -284,9 +288,6 @@ func (a *App) runTask() {
 	c := cron.New()
 	wg := sync.WaitGroup{}
 	for _, router := range TaskRouterList {
-		if !Config.GetBool("app.task_enable") {
-			continue
-		}
 		action := router.Action
 		if router.Spec == "@loop" {
 			go func() {
