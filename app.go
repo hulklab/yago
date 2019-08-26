@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron"
 	"google.golang.org/grpc"
@@ -41,6 +44,19 @@ type App struct {
 	HttpViewRender bool
 	HttpViewPath   string
 	HttpStaticPath string
+	// http cors 跨域配置
+	HttpCorsAllowAllOrigins  bool
+	HttpCorsAllowOrigins     []string
+	HttpCorsAllowMethods     []string
+	HttpCorsAllowHeaders     []string
+	HttpCorsExposeHeaders    []string
+	HttpCorsAllowCredentials bool
+	HttpCorsMaxAge           time.Duration
+	// http gzip 压缩
+	HttpGzipOn    bool
+	HttpGzipLevel int
+	// http pprof
+	HttpPprof bool
 
 	// 开启task服务
 	TaskEnable bool
@@ -96,12 +112,58 @@ func NewApp() *App {
 				app.httpEngine.Static("/static", app.HttpStaticPath)
 			}
 		}
-	}
 
-	app.HttpSslOn = Config.GetBool("app.http_ssl_on")
-	if app.HttpSslOn {
-		app.HttpCertFile = Config.GetString("app.http_cert_file")
-		app.HttpKeyFile = Config.GetString("app.http_key_file")
+		app.HttpSslOn = Config.GetBool("app.http_ssl_on")
+		if app.HttpSslOn {
+			app.HttpCertFile = Config.GetString("app.http_cert_file")
+			app.HttpKeyFile = Config.GetString("app.http_key_file")
+		}
+
+		app.HttpCorsAllowAllOrigins = true
+		app.HttpCorsAllowOrigins = []string{}
+		app.HttpCorsAllowHeaders = []string{"Origin", "Content-Length", "Content-Type"}
+		app.HttpCorsExposeHeaders = []string{}
+		app.HttpCorsAllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"}
+		app.HttpCorsAllowCredentials = false
+		app.HttpCorsMaxAge = time.Duration(12) * time.Hour
+
+		if Config.InConfig("http_cors_allow_all_origins") {
+			app.HttpCorsAllowAllOrigins = Config.GetBool("app.http_cors_allow_all_origins")
+		}
+		if Config.InConfig("app.http_cors_allow_origins") {
+			app.HttpCorsAllowOrigins = Config.GetStringSlice("app.http_cors_allow_origins")
+		}
+		if Config.InConfig("app.http_cors_allow_headers") {
+			app.HttpCorsAllowHeaders = Config.GetStringSlice("app.http_cors_allow_headers")
+		}
+		if Config.InConfig("app.http_cors_expose_headers") {
+			app.HttpCorsExposeHeaders = Config.GetStringSlice("app.http_cors_expose_headers")
+		}
+		if Config.InConfig("app.http_cors_allow_methods") {
+			app.HttpCorsAllowMethods = Config.GetStringSlice("app.http_cors_allow_methods")
+		}
+		if Config.InConfig("app.http_cors_allow_credentials") {
+			app.HttpCorsAllowCredentials = Config.GetBool("app.http_cors_allow_credentials")
+		}
+		if Config.InConfig("app.http_cors_max_age") {
+			app.HttpCorsMaxAge = Config.GetDuration("app.http_cors_max_age")
+		}
+
+		app.HttpGzipOn = Config.GetBool("app.http_gzip_on")
+		if app.HttpGzipOn {
+			switch Config.GetInt("app.http_gzip_level") {
+			case 1:
+				app.HttpGzipLevel = gzip.DefaultCompression
+			case 2:
+				app.HttpGzipLevel = gzip.BestSpeed
+			case 3:
+				app.HttpGzipLevel = gzip.BestCompression
+			default:
+				app.HttpGzipLevel = gzip.DefaultCompression
+			}
+		}
+
+		app.HttpPprof = Config.GetBool("app.http_pprof")
 	}
 
 	// init rpc
@@ -185,6 +247,26 @@ func (a *App) loadHttpRouter() error {
 		return errHttpRouteEmpty
 	}
 
+	// cors
+	a.httpEngine.Use(cors.New(cors.Config{
+		AllowAllOrigins:  a.HttpCorsAllowAllOrigins,
+		AllowOrigins:     a.HttpCorsAllowOrigins,
+		AllowMethods:     a.HttpCorsAllowMethods,
+		AllowHeaders:     a.HttpCorsAllowHeaders,
+		ExposeHeaders:    a.HttpCorsExposeHeaders,
+		AllowCredentials: a.HttpCorsAllowCredentials,
+		MaxAge:           a.HttpCorsMaxAge,
+	}))
+	// gzip
+	if a.HttpGzipOn {
+		a.httpEngine.Use(gzip.Gzip(a.HttpGzipLevel))
+	}
+	// pprof
+	if a.HttpPprof {
+		pprof.Register(a.httpEngine)
+	}
+
+	// params
 	a.httpEngine.Use(func(c *gin.Context) {
 		req := c.Request
 
