@@ -11,6 +11,7 @@ import (
 
 type Ctx struct {
 	*gin.Context
+	resp *ResponseBody
 }
 
 type ResponseBody struct {
@@ -20,7 +21,9 @@ type ResponseBody struct {
 }
 
 func NewCtx(c *gin.Context) *Ctx {
-	return &Ctx{c}
+	return &Ctx{
+		Context: c,
+	}
 }
 
 func (c *Ctx) Validate() error {
@@ -148,16 +151,18 @@ func (c *Ctx) RequestFileContent(key string) ([]byte, error) {
 }
 
 func (c *Ctx) SetData(data interface{}) {
-	errCode, errMsg := OK.GetError()
-	c.JSON(http.StatusOK, ResponseBody{
-		ErrNo:  errCode,
-		ErrMsg: errMsg,
+
+	c.resp = &ResponseBody{
+		ErrNo:  OK.Code(),
+		ErrMsg: OK.Error(),
 		Data:   data,
-	})
+	}
+
+	c.JSON(http.StatusOK, c.resp)
 }
 
 func (c *Ctx) SetError(err Err, msgEx ...string) {
-	errCode, errMsg := err.GetError()
+	errMsg := err.Error()
 	if len(msgEx) > 0 {
 		if errMsg == "" {
 			errMsg = msgEx[0]
@@ -165,11 +170,14 @@ func (c *Ctx) SetError(err Err, msgEx ...string) {
 			errMsg = errMsg + ": " + msgEx[0]
 		}
 	}
-	c.JSON(http.StatusOK, ResponseBody{
-		ErrNo:  errCode,
+
+	c.resp = &ResponseBody{
+		ErrNo:  err.Code(),
 		ErrMsg: errMsg,
 		Data:   map[string]interface{}{},
-	})
+	}
+
+	c.JSON(http.StatusOK, c.resp)
 }
 
 func (c *Ctx) SetDataOrErr(data interface{}, err Err) {
@@ -180,4 +188,12 @@ func (c *Ctx) SetDataOrErr(data interface{}, err Err) {
 	}
 
 	c.SetData(data)
+}
+
+func (c *Ctx) GetResponse() (*ResponseBody, bool) {
+	if c.resp == nil {
+		return c.resp, false
+	}
+
+	return c.resp, true
 }

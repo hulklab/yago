@@ -23,25 +23,34 @@ const (
 )
 
 func (e Err) Error() string {
+	_, err := e.getError()
+	return err
+}
+
+func (e Err) String() string {
 	return string(e)
 }
 
-func (e Err) GetError() (int, string) {
+func (e Err) Code() int {
+	code, _ := e.getError()
+	return code
+}
+
+func (e Err) getError() (int, string) {
 	if e == OK || e == "" {
 		return 0, ""
 	}
 
-	err := strings.SplitN(e.Error(), "=", 2)
+	err := strings.SplitN(e.String(), "=", 2)
 	if len(err) != 2 {
-		return 1, fmt.Sprintf("Error 格式不正确: %s", e.Error())
+		return 1, fmt.Sprintf("Error 格式不正确: %s", e.String())
 	}
 	code, _ := strconv.Atoi(err[0])
 	return code, err[1]
 }
 
 func (e Err) HasErr() bool {
-	errCode, _ := e.GetError()
-	return errCode != 0
+	return e.Code() != 0
 }
 
 // 生成通用错误, 接受通用的 error 类型或者是 string 类型
@@ -59,13 +68,13 @@ func NewErr(err interface{}, args ...interface{}) Err {
 		if e == nil {
 			return OK
 		} else {
-			s = E.Error() + e.Error()
+			s = E.String() + e.Error()
 		}
 	case string:
 		if len(args) > 0 {
-			s = E.Error() + fmt.Sprintf(e, args...)
+			s = E.String() + fmt.Sprintf(e, args...)
 		} else {
-			s = E.Error() + e
+			s = E.String() + e
 		}
 	}
 	return Err(s)

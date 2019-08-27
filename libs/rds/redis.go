@@ -1,9 +1,9 @@
 package rds
 
 import (
+	"errors"
 	"github.com/garyburd/redigo/redis"
 	"github.com/hulklab/yago"
-	"github.com/pkg/errors"
 	"log"
 	"time"
 )
