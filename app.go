@@ -127,7 +127,7 @@ func NewApp() *App {
 		app.HttpCorsAllowCredentials = false
 		app.HttpCorsMaxAge = time.Duration(12) * time.Hour
 
-		if Config.InConfig("http_cors_allow_all_origins") {
+		if Config.InConfig("app.http_cors_allow_all_origins") {
 			app.HttpCorsAllowAllOrigins = Config.GetBool("app.http_cors_allow_all_origins")
 		}
 		if Config.InConfig("app.http_cors_allow_origins") {
@@ -163,7 +163,7 @@ func NewApp() *App {
 			}
 		}
 
-		app.HttpPprof = Config.GetBool("app.http_pprof")
+		app.HttpPprof = Config.GetBool("app.http_pprof_on")
 	}
 
 	// init rpc
