@@ -3,7 +3,6 @@ package orm
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/libs/logger"
@@ -11,6 +10,7 @@ import (
 	"log"
 	"net/url"
 	"time"
+	"xorm.io/core"
 )
 
 type Orm struct {

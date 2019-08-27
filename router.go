@@ -23,6 +23,7 @@ type HttpInterface interface {
 	Labels() validator.Label
 	Rules() []validator.Rule
 	BeforeAction(c *Ctx) Err
+	AfterAction(c *Ctx)
 }
 
 func AddHttpRouter(url, method string, action HttpHandlerFunc, h HttpInterface) {

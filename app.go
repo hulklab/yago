@@ -314,7 +314,10 @@ func (a *App) loadHttpRouter() error {
 					action(ctx)
 				}
 			}
+
+			controller.AfterAction(ctx)
 		}
+
 		log.Println("[HTTP]", r.Url, runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name())
 		switch method {
 		case http.MethodGet:
