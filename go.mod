@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/gin-contrib/cors v1.3.0
+	github.com/gin-contrib/gzip v0.0.1
 	github.com/gin-contrib/pprof v1.2.1
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-sql-driver/mysql v1.4.1
@@ -18,3 +19,5 @@ require (
 	google.golang.org/grpc v1.23.0
 	xorm.io/core v0.7.0
 )
+
+replace github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
