@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron"
@@ -52,9 +51,6 @@ type App struct {
 	HttpCorsExposeHeaders    []string
 	HttpCorsAllowCredentials bool
 	HttpCorsMaxAge           time.Duration
-	// http gzip 压缩
-	HttpGzipOn    bool
-	HttpGzipLevel int
 	// http pprof
 	HttpPprof bool
 
@@ -149,20 +145,6 @@ func NewApp() *App {
 			app.HttpCorsMaxAge = Config.GetDuration("app.http_cors_max_age")
 		}
 
-		app.HttpGzipOn = Config.GetBool("app.http_gzip_on")
-		if app.HttpGzipOn {
-			switch Config.GetInt("app.http_gzip_level") {
-			case 1:
-				app.HttpGzipLevel = gzip.DefaultCompression
-			case 2:
-				app.HttpGzipLevel = gzip.BestSpeed
-			case 3:
-				app.HttpGzipLevel = gzip.BestCompression
-			default:
-				app.HttpGzipLevel = gzip.DefaultCompression
-			}
-		}
-
 		app.HttpPprof = Config.GetBool("app.http_pprof")
 	}
 
@@ -239,7 +221,6 @@ func (a *App) genPid() {
 		log.Println("app is running with pid:", newPid)
 		return
 	}
-	return
 }
 
 func (a *App) loadHttpRouter() error {
@@ -257,10 +238,7 @@ func (a *App) loadHttpRouter() error {
 		AllowCredentials: a.HttpCorsAllowCredentials,
 		MaxAge:           a.HttpCorsMaxAge,
 	}))
-	// gzip
-	if a.HttpGzipOn {
-		a.httpEngine.Use(gzip.Gzip(a.HttpGzipLevel))
-	}
+
 	// pprof
 	if a.HttpPprof {
 		pprof.Register(a.httpEngine)
