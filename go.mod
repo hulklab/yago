@@ -3,6 +3,7 @@ module github.com/hulklab/yago
 go 1.12
 
 require (
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-contrib/gzip v0.0.1
 	github.com/gin-contrib/pprof v1.2.1
