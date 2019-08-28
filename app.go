@@ -127,29 +127,33 @@ func NewApp() *App {
 		app.HttpCorsAllowCredentials = false
 		app.HttpCorsMaxAge = time.Duration(12) * time.Hour
 
-		if Config.InConfig("app.http_cors_allow_all_origins") {
+		if Config.IsSet("app.http_cors_allow_all_origins") {
 			app.HttpCorsAllowAllOrigins = Config.GetBool("app.http_cors_allow_all_origins")
 		}
-		if Config.InConfig("app.http_cors_allow_origins") {
+		if Config.IsSet("app.http_cors_allow_origins") {
 			app.HttpCorsAllowOrigins = Config.GetStringSlice("app.http_cors_allow_origins")
 		}
-		if Config.InConfig("app.http_cors_allow_headers") {
+		if Config.IsSet("app.http_cors_allow_headers") {
 			app.HttpCorsAllowHeaders = Config.GetStringSlice("app.http_cors_allow_headers")
 		}
-		if Config.InConfig("app.http_cors_expose_headers") {
+		if Config.IsSet("app.http_cors_expose_headers") {
 			app.HttpCorsExposeHeaders = Config.GetStringSlice("app.http_cors_expose_headers")
 		}
-		if Config.InConfig("app.http_cors_allow_methods") {
+		if Config.IsSet("app.http_cors_allow_methods") {
 			app.HttpCorsAllowMethods = Config.GetStringSlice("app.http_cors_allow_methods")
 		}
-		if Config.InConfig("app.http_cors_allow_credentials") {
+		if Config.IsSet("app.http_cors_allow_credentials") {
 			app.HttpCorsAllowCredentials = Config.GetBool("app.http_cors_allow_credentials")
 		}
-		if Config.InConfig("app.http_cors_max_age") {
+		if Config.IsSet("app.http_cors_max_age") {
 			app.HttpCorsMaxAge = Config.GetDuration("app.http_cors_max_age")
 		}
 
-		app.HttpGzipOn = Config.GetBool("app.http_gzip_on")
+		if Config.IsSet("app.http_gzip_on") {
+			app.HttpGzipOn = Config.GetBool("app.http_gzip_on")
+		} else {
+			app.HttpGzipOn = true
+		}
 		if app.HttpGzipOn {
 			switch Config.GetInt("app.http_gzip_level") {
 			case 1:
@@ -408,15 +412,15 @@ func (a *App) runTask() {
 	for _, router := range TaskRouterList {
 		action := router.Action
 		if router.Spec == "@loop" {
+			wg.Add(1)
 			go func() {
-				wg.Add(1)
 				action()
 				log.Println("[TASK]", "stop", runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name())
 				wg.Done()
 			}()
 		} else {
+			wg.Add(1)
 			err := c.AddFunc(router.Spec, func() {
-				wg.Add(1)
 				action()
 				wg.Done()
 			})
