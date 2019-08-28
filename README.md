@@ -17,7 +17,7 @@
 	- [模块](#模块)
 	- [错误处理](#错误处理)
 	- [第三方API调用](#第三方API调用)
-	- [Goland 使用 mod](#Goland 使用 mod)
+	- [Goland配置mod](#Goland配置mod)
 - [已知问题及解决方案](#已知问题及解决方案)
 
 ## 安装
@@ -162,7 +162,7 @@ yago new -m newmodule
 1. 目录规范 `@see example/app/third`
 2. 使用样例 `@reference example/app/third/homeapi/home.go`
 
-### Goland 使用 mod
+### Goland配置mod
 
 1. Preferences -> Go -> Go modules(vgo)
 
