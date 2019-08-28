@@ -412,15 +412,15 @@ func (a *App) runTask() {
 	for _, router := range TaskRouterList {
 		action := router.Action
 		if router.Spec == "@loop" {
-			wg.Add(1)
 			go func() {
+				wg.Add(1)
 				action()
 				log.Println("[TASK]", "stop", runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name())
 				wg.Done()
 			}()
 		} else {
-			wg.Add(1)
 			err := c.AddFunc(router.Spec, func() {
+				wg.Add(1)
 				action()
 				wg.Done()
 			})
