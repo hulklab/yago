@@ -3,7 +3,7 @@ package basethird
 import (
 	"context"
 	"github.com/golang/protobuf/proto"
-	"github.com/hulklab/yago/libs/logger"
+	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

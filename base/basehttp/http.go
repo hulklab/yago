@@ -2,7 +2,7 @@ package basehttp
 
 import (
 	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/libs/logger"
+	"github.com/hulklab/yago/coms/logger"
 	"github.com/hulklab/yago/libs/validator"
 	"github.com/sirupsen/logrus"
 )

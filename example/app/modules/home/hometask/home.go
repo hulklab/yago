@@ -2,7 +2,7 @@ package hometask
 
 import (
 	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/common/basetask"
+	"github.com/hulklab/yago/base/basetask"
 	"log"
 	"time"
 )

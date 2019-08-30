@@ -5,7 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/libs/logger"
+	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
 	"log"
 	"net/url"

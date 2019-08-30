@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// go test -v ./libs/rds -test.run TestString -args "-c=${PWD}/app.toml"
+// go test -v ./coms/rds -test.run TestString -args "-c=${PWD}/app.toml"
 
 func TestApi(t *testing.T) {
 	rc := Ins()

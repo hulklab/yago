@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// go test -v ./app/libs/kafka -test.run Test* -args "-c=${PWD}/app.toml"
+// go test -v ./app/coms/kafka -test.run Test* -args "-c=${PWD}/app.toml"
 
 func TestProduce(t *testing.T) {
 	k := Ins()
