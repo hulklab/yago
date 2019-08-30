@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego/httplib"
-	"github.com/hulklab/yago/libs/logger"
+	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
 	"strconv"
 	"strings"

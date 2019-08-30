@@ -5,7 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/libs/logger"
+	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
 	"log"
 	"net/url"
@@ -113,8 +113,7 @@ func Ins(id ...string) *Orm {
 		// 设置日志
 		showLog, ok := conf["show_log"]
 		if ok {
-			orm.ShowSQL(showLog.(bool))
-			orm.SetLogger(getLogger())
+			orm.SetLogger(getLogger(showLog.(bool)))
 		}
 
 		return orm
@@ -123,12 +122,13 @@ func Ins(id ...string) *Orm {
 	return v.(*Orm)
 }
 
-func getLogger() *Logger {
+func getLogger(show bool) *Logger {
 
 	entry := logger.Ins().WithFields(logrus.Fields{"category": "orm.sql"})
 
 	lg := &Logger{
 		Entry: entry,
+		show:  show,
 	}
 
 	return lg

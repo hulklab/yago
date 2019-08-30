@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/common/basethird"
+	"github.com/hulklab/yago/base/basethird"
 	"google.golang.org/grpc"
 
 	pb "github.com/hulklab/yago/example/app/third/homeapi/homepb"

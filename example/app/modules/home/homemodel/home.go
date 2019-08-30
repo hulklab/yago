@@ -4,7 +4,7 @@ import (
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/example/app/g"
 	"github.com/hulklab/yago/libs/date"
-	"github.com/hulklab/yago/libs/orm"
+	"github.com/hulklab/yago/coms/orm"
 
 	"github.com/hulklab/yago/example/app/modules/home/homedao"
 )

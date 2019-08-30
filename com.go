@@ -21,4 +21,4 @@ func (c *Components) Ins(key string, f func() interface{}) interface{} {
 
 var Component = new(Components)
 
-// example @see libs/kafka
+// example @see coms/kafka
