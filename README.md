@@ -18,6 +18,7 @@
 	- [错误处理](#错误处理)
 	- [第三方API调用](#第三方API调用)
 	- [Goland配置mod](#Goland配置mod)
+- [常用类库推荐](#常用类库推荐])
 - [已知问题及解决方案](#已知问题及解决方案)
 
 ## 安装
@@ -171,6 +172,18 @@ yago new -m newmodule
 2. 如果还有标红的提示，点击 Sync packages
 
 ![](http://p406.qhimgs4.com/t019f0fcae328f7a0e0.png)
+
+## 常用类库推荐
+1. 内存 cache 
+    >https://github.com/patrickmn/go-cache
+2. LRU cache
+    >https://github.com/golang/groupcache
+3. Converts a mysql table into a golang struct
+    >https://github.com/Shelnutt2/db2struct
+4. Struct copy to struct, map convert into struct
+    >https://github.com/mitchellh/mapstructure
+5. MessagePack encoding for Golang
+    >https://github.com/vmihailenco/msgpack
 
 ## 已知问题及解决方案
 
