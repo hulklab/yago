@@ -3,6 +3,7 @@ module github.com/hulklab/yago
 go 1.12
 
 require (
+	github.com/astaxie/beego v1.12.0 // indirect
 	github.com/bsm/sarama-cluster v2.1.15+incompatible // indirect
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/garyburd/redigo v1.6.0 // indirect

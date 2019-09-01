@@ -13,16 +13,22 @@ type HomeTask struct {
 
 func init() {
 	homeTask := new(HomeTask)
-	yago.AddTaskRouter("@loop", homeTask.HelloAction)
-	// yago.AddTaskRouter("0 * * * * *", homeTask.HelloAction)
-	// yago.AddTaskRouter("0 * * * * *", homeTask.HelloAction)
+	yago.AddTaskRouter("@loop", homeTask.HelloLoopAction)
+	yago.AddTaskRouter("0 */1 * * * *", homeTask.HelloSchduleAction)
 }
 
-func (t *HomeTask) HelloAction() {
+func (t *HomeTask) HelloLoopAction() {
 	t.RunLoop(func() {
-		log.Println("start task")
-		log.Println("doing")
+		log.Println("Start Task homeTask.HelloLoopAction")
+		log.Println("Doing Task homeTask.HelloLoopAction")
 		time.Sleep(time.Second * time.Duration(5))
-		log.Println("end task")
+		log.Println("End Task homeTask.HelloLoopAction")
 	})
+}
+
+func (t *HomeTask) HelloSchduleAction() {
+	log.Println("Start Task homeTask.HelloSchduleAction")
+	log.Println("Doing Task homeTask.HelloSchduleAction")
+	time.Sleep(time.Second * time.Duration(1))
+	log.Println("End Task homeTask.HelloSchduleAction")
 }
