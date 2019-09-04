@@ -4,7 +4,7 @@ app_name = "app"
 env = "dev"
 debug = true
 # 如果不设置则不会创建 pidfile
-#pidfile = "/var/run/app.pid"
+# pidfile = "/var/run/app.pid"
 
 # 是否开启http服务
 http_enable = true
@@ -39,21 +39,19 @@ http_stop_time_wait = 10
 # http_view_path = "views/*"
 # http_static_path = "static/js"
 
-# rpc
 # 是否开启rpc服务
 rpc_enable = true
-# rpc 服务地址
+# rpc服务地址
 rpc_addr = ":50051"
-# rpc 服务关闭最大等待时长, 秒
+# rpc服务关闭最大等待时长, 秒
 rpc_stop_time_wait = 10
 # rpc reflection
 # rpc_reflect_on = true
 
 # rpc ssl config
-#rpc_ssl_on = true
-#rpc_cert_file = "./conf/server.pem"
-#rpc_key_file = "./conf/server.key"
-
+# rpc_ssl_on = true
+# rpc_cert_file = "./conf/server.pem"
+# rpc_key_file = "./conf/server.key"
 
 # 是否开启task任务
 task_enable = true
@@ -105,6 +103,11 @@ db = 0
 max_idle = 5
 idle_timeout = 30
 
+[kafka]
+cluster = "127.0.0.1:9092"
+topic = "demo"
+topic_cloud = "cloud"
+
 ##########################################
 # 以下是 api 区
 ##########################################
@@ -113,5 +116,5 @@ idle_timeout = 30
 domain = "http://127.0.0.1:8080"
 hostname = "localhost"
 rpc_address = "127.0.0.1:50051"
-#ssl_on = true
-#cert_file = "./conf/server.pem"
+# ssl_on = true
+# cert_file = "./conf/server.pem"

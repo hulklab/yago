@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
+// http
 type HttpHandlerFunc func(c *Ctx)
 
-// http
 type HttpRouter struct {
 	Url    string
 	Method string
@@ -33,7 +33,7 @@ func AddHttpRouter(url, method string, action HttpHandlerFunc, h HttpInterface) 
 	HttpRouterMap[url] = &HttpRouter{url, method, action, h}
 }
 
-//  task
+// task
 type TaskHandlerFunc func()
 
 type TaskRouter struct {
@@ -47,7 +47,7 @@ func AddTaskRouter(spec string, action TaskHandlerFunc) {
 	TaskRouterList = append(TaskRouterList, &TaskRouter{spec, action})
 }
 
-//  cmd
+// cmd
 type CmdHandlerFunc func(cmd *cobra.Command, args []string)
 
 type CmdArg struct {
