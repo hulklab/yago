@@ -6,6 +6,7 @@ require (
 	github.com/astaxie/beego v1.12.0 // indirect
 	github.com/bsm/sarama-cluster v2.1.15+incompatible // indirect
 	github.com/bwmarrin/snowflake v0.3.0
+	github.com/fsnotify/fsnotify v1.4.7
 	github.com/garyburd/redigo v1.6.0 // indirect
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-contrib/gzip v0.0.1
@@ -20,6 +21,7 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.4.0
 	golang.org/x/net v0.0.0-20190603091049-60506f45cf65
+	golang.org/x/tools v0.0.0-20190606050223-4d9ae51c2468
 	google.golang.org/grpc v1.23.0
 	xorm.io/core v0.7.0
 )
