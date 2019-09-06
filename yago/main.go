@@ -289,7 +289,7 @@ func autoBuildApp(appName string) {
 	bcmd.Stdout = os.Stdout
 	err := bcmd.Run()
 	if err != nil {
-		log.Fatalln("[FATAL] rebuild app error: ", err)
+		log.Println("[ERROR] rebuild app error: ", err)
 		return
 	}
 
