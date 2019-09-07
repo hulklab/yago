@@ -1,27 +1,74 @@
 package basethird
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/astaxie/beego/httplib"
 	"github.com/hulklab/yago/coms/logger"
+	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
 type PostFile string
+
+func (p PostFile) Value(name string) (f grequests.FileUpload, e error) {
+	fd, err := os.Open(string(p))
+
+	if err != nil {
+		return f, err
+	}
+
+	return grequests.FileUpload{FileContents: fd, FileName: name}, nil
+}
+
 type Body string
 
-type Request struct {
-	*httplib.BeegoHTTPRequest
+func (b Body) Value() io.Reader {
+	bf := bytes.NewBufferString(string(b))
+	return ioutil.NopCloser(bf)
+}
+
+type Response struct {
+	*grequests.Response
+}
+
+// rewrite ToJSON then you can use ToJSON many times
+func (r *Response) ToJSON(v interface{}) error {
+	if r.Error != nil {
+		return r.Error
+	}
+
+	var reader io.Reader
+
+	reader = bytes.NewBuffer(r.Bytes())
+
+	jsonDecoder := json.NewDecoder(reader)
+
+	defer r.Close()
+
+	return jsonDecoder.Decode(&v)
+}
+
+func (r *Response) JSON(v interface{}) error {
+	return r.ToJSON(v)
+}
+
+func (r *Response) String() (string, error) {
+	return r.Response.String(), r.Error
 }
 
 // 封装 http 接口的基础类
-
 type HttpThird struct {
-	req              *Request
+	client           *http.Client
 	Domain           string
 	Hostname         string
 	ConnectTimeout   int
@@ -30,43 +77,26 @@ type HttpThird struct {
 	username         string
 	password         string
 	logInfoOff       bool
+	once             sync.Once
 }
 
-func (a *HttpThird) newRequest(method string, api string) *Request {
-	var uri string
-	if a.Domain != "" {
-		uri = strings.TrimRight(a.Domain, "/") + "/" + strings.TrimLeft(api, "/")
-	} else {
-		uri = api
-	}
+func (a *HttpThird) getClient() *http.Client {
+	// @todo tls, proxy
+	a.once.Do(func() {
+		a.client = &http.Client{
+			Transport: &http.Transport{
+				MaxIdleConnsPerHost: 100,
+				//TLSClientConfig:     TLSClientConfig,
+				//Proxy:               Proxy,
+			},
+			Timeout: time.Duration(5) * time.Second,
+		}
+	})
 
-	switch strings.ToLower(method) {
-	case "post":
-		a.req = &Request{
-			httplib.Post(uri),
-		}
-	case "get":
-		a.req = &Request{
-			httplib.Get(uri),
-		}
-	case "put":
-		a.req = &Request{
-			httplib.Put(uri),
-		}
-	case "delete":
-		a.req = &Request{
-			httplib.Delete(uri),
-		}
-	case "head":
-		a.req = &Request{
-			httplib.Head(uri),
-		}
-	}
+	return a.client
+}
 
-	if a.Hostname != "" {
-		a.req.SetHost(a.Hostname)
-	}
-
+func (a *HttpThird) newRo() *grequests.RequestOptions {
 	ctimeout := 3
 	wtimeout := 20
 
@@ -78,20 +108,37 @@ func (a *HttpThird) newRequest(method string, api string) *Request {
 		wtimeout = a.ReadWriteTimeout
 	}
 
-	// 设置超时时间
-	a.req.SetTimeout(time.Duration(ctimeout)*time.Second, time.Duration(wtimeout)*time.Second)
+	ro := &grequests.RequestOptions{
+		HTTPClient:     a.getClient(),
+		DialTimeout:    time.Duration(ctimeout) * time.Second,
+		RequestTimeout: time.Duration(wtimeout) * time.Second,
+		UserAgent:      "hulklab/yago",
+	}
+
+	if a.Hostname != "" {
+		ro.Host = a.Hostname
+	}
 
 	if a.username != "" && a.password != "" {
-		a.req.SetBasicAuth(a.username, a.password)
+		ro.Auth = []string{a.username, a.password}
 	}
 
 	if len(a.headers) > 0 {
-		for k, v := range a.headers {
-			a.req.Header(k, v)
-		}
+		ro.Headers = a.headers
 	}
 
-	return a.req
+	return ro
+}
+
+func (a *HttpThird) genUri(api string) string {
+	var uri string
+	if a.Domain != "" {
+		uri = strings.TrimRight(a.Domain, "/") + "/" + strings.TrimLeft(api, "/")
+	} else {
+		uri = api
+	}
+
+	return uri
 }
 
 func (a *HttpThird) SetBaseAuth(username, password string) {
@@ -112,120 +159,129 @@ func (a *HttpThird) SetLogInfoFlag(on bool) {
 	}
 }
 
-func (a *HttpThird) call(method string, api string, params map[string]interface{}) error {
-	a.newRequest(method, api)
+func (a *HttpThird) call(method string, api string, params map[string]interface{}) (*Response, error) {
+	log := logger.Ins().Category("third.http")
 
+	//a.newRequest(method, api)
+	ro := a.newRo()
 	logParams := make(map[string]interface{})
+	dataParams := make(map[string]string)
 
 	for k, v := range params {
 		logParams[k] = v
 		switch val := v.(type) {
 		case Body: // 原始 body, k 随意
-			a.req.Body(v)
+			ro.RequestBody = val.Value()
+			//a.req.Body(v)
 		case PostFile: // 文件上传
-			a.req.PostFile(k, string(val))
+			uf, err := val.Value(k)
+			if err != nil {
+				log.Error("post file params err:", err)
+				continue
+			}
+			ro.Files = append(ro.Files, uf)
 		case string:
-			a.req.Param(k, val)
+			dataParams[k] = val
 			if len(val) > 1000 {
 				logParams[k] = val[:1000] + "..."
 			}
 		case int64:
-			a.req.Param(k, strconv.Itoa(int(val)))
+			dataParams[k] = strconv.Itoa(int(val))
 		case int:
-			a.req.Param(k, strconv.Itoa(val))
+			dataParams[k] = strconv.Itoa(val)
 		case uint64:
-			a.req.Param(k, strconv.Itoa(int(val)))
+			dataParams[k] = strconv.Itoa(int(val))
 		case uint:
-			a.req.Param(k, strconv.Itoa(int(val)))
+			dataParams[k] = strconv.Itoa(int(val))
 		case float64:
-			a.req.Param(k, fmt.Sprintf("%v", val))
+			dataParams[k] = fmt.Sprintf("%v", val)
 		case []byte:
-			a.req.Param(k, string(val))
+			dataParams[k] = string(val)
 		default:
-			return errors.New("unsupported type" + fmt.Sprintf("%T", val))
+			return nil, errors.New("unsupported type" + fmt.Sprintf("%T", val))
 		}
 	}
 
+	if len(dataParams) > 0 {
+		if strings.ToUpper(method) == "GET" {
+			ro.Params = dataParams
+		} else {
+			ro.Data = dataParams
+		}
+	}
+
+	uri := a.genUri(api)
+
 	begin := time.Now()
 
-	res, err := a.req.Response()
+	res, err := grequests.Req(method, uri, ro)
+
+	//res, err := a.req.Response()
 
 	end := time.Now()
 	consume := end.Sub(begin).Nanoseconds() / 1e6
 
-	retStr, _ := a.req.String()
-
-	urlInfo := a.req.GetRequest().URL
+	retStr := res.String()
 
 	logInfo := logrus.Fields{
-		"url":            fmt.Sprintf("%s://%s/%s", urlInfo.Scheme, urlInfo.Host, strings.TrimLeft(urlInfo.Path, "/")),
+		"url":            uri,
 		"hostname":       a.Hostname,
 		"params":         logParams,
 		"consume(ms)":    consume,
-		"request_header": a.req.GetRequest().Header,
+		"request_header": ro.Headers,
 		"result":         retStr,
 		"error":          "",
-		"category":       "third.http",
 	}
 
 	if err != nil {
 		logInfo["error"] = err.Error()
 
-		logger.Ins().WithFields(logInfo).Error()
+		log.WithFields(logInfo).Error()
 
-		return errors.New("system err")
+		return nil, err
 
-	} else if res.StatusCode < 200 || res.StatusCode >= 300 {
+	} else if !res.Ok {
 
-		logInfo["error"] = fmt.Sprintf("http status err,code:%d,status:%s", res.StatusCode, res.Status)
+		logInfo["error"] = fmt.Sprintf("http status err,code:%d", res.StatusCode)
 
-		logger.Ins().WithFields(logInfo).Error()
+		log.WithFields(logInfo).Error()
 
-		return errors.New("http status error")
+		return nil, errors.New("http status error")
 	}
 
 	// 默认是日志没关
 	if !a.logInfoOff {
-		logger.Ins().WithFields(logInfo).Info()
+		log.WithFields(logInfo).Info()
 	}
 
-	return nil
+	return &Response{res}, nil
 }
 
-func (a *HttpThird) Post(api string, params map[string]interface{}) (*Request, error) {
+func (a *HttpThird) Post(api string, params map[string]interface{}) (*Response, error) {
 
 	//a.Req.Header("Expect", "")
 
-	err := a.call("post", api, params)
-
-	return a.req, err
+	return a.call("POST", api, params)
 }
 
-func (a *HttpThird) Get(api string, params map[string]interface{}) (*Request, error) {
+func (a *HttpThird) Get(api string, params map[string]interface{}) (*Response, error) {
 
-	err := a.call("get", api, params)
+	return a.call("GET", api, params)
 
-	return a.req, err
 }
 
-func (a *HttpThird) Put(api string, params map[string]interface{}) (*Request, error) {
+func (a *HttpThird) Put(api string, params map[string]interface{}) (*Response, error) {
 
-	err := a.call("put", api, params)
-
-	return a.req, err
+	return a.call("PUT", api, params)
 }
 
 // @todo 放在 url 上的参数
-func (a *HttpThird) Delete(api string, params map[string]interface{}) (*Request, error) {
+func (a *HttpThird) Delete(api string, params map[string]interface{}) (*Response, error) {
 
-	err := a.call("delete", api, params)
-
-	return a.req, err
+	return a.call("DELETE", api, params)
 }
 
-func (a *HttpThird) Head(api string, params map[string]interface{}) (*Request, error) {
+func (a *HttpThird) Head(api string, params map[string]interface{}) (*Response, error) {
 
-	err := a.call("head", api, params)
-
-	return a.req, err
+	return a.call("HEAD", api, params)
 }
