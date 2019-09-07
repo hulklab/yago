@@ -32,6 +32,7 @@ func (h *BaseHttp) AfterAction(c *yago.Ctx) {
 		logger.Ins().Category("http.biz.error").WithFields(logrus.Fields{
 			"url":     c.Request.URL.Path,
 			"params":  c.Keys,
+			"header":  c.Request.Header,
 			"user_ip": c.ClientIP(),
 		}).Error(resp.ErrMsg)
 
@@ -39,6 +40,7 @@ func (h *BaseHttp) AfterAction(c *yago.Ctx) {
 		logger.Ins().Category("http.biz.info").WithFields(logrus.Fields{
 			"url":     c.Request.URL.Path,
 			"params":  c.Keys,
+			"header":  c.Request.Header,
 			"user_ip": c.ClientIP(),
 			"resp":    resp,
 		}).Debug()
