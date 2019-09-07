@@ -2,6 +2,7 @@ package basethird
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -27,7 +28,7 @@ func (p PostFile) Value(name string) (f grequests.FileUpload, e error) {
 		return f, err
 	}
 
-	return grequests.FileUpload{FileContents: fd, FileName: name}, nil
+	return grequests.FileUpload{FileContents: fd, FileName: string(p), FieldName: name}, nil
 }
 
 type Body string
@@ -76,20 +77,21 @@ type HttpThird struct {
 	headers          map[string]string
 	username         string
 	password         string
+	tlsCfg           *tls.Config
 	logInfoOff       bool
 	once             sync.Once
 }
 
 func (a *HttpThird) getClient() *http.Client {
-	// @todo tls, proxy
+	// @todo proxy
 	a.once.Do(func() {
 		a.client = &http.Client{
 			Transport: &http.Transport{
 				MaxIdleConnsPerHost: 100,
-				//TLSClientConfig:     TLSClientConfig,
+				TLSClientConfig:     a.tlsCfg,
 				//Proxy:               Proxy,
 			},
-			Timeout: time.Duration(5) * time.Second,
+			//Timeout: time.Duration(5) * time.Second,
 		}
 	})
 
@@ -112,7 +114,7 @@ func (a *HttpThird) newRo() *grequests.RequestOptions {
 		HTTPClient:     a.getClient(),
 		DialTimeout:    time.Duration(ctimeout) * time.Second,
 		RequestTimeout: time.Duration(wtimeout) * time.Second,
-		UserAgent:      "hulklab/yago",
+		UserAgent:      "github.com-hulklab-yago",
 	}
 
 	if a.Hostname != "" {
@@ -148,6 +150,10 @@ func (a *HttpThird) SetBaseAuth(username, password string) {
 
 func (a *HttpThird) SetHeader(headers map[string]string) {
 	a.headers = headers
+}
+
+func (a *HttpThird) SetTLSClientConfig(cfg *tls.Config) {
+	a.tlsCfg = cfg
 }
 
 // 设置是否要关闭 info 日志
@@ -210,13 +216,13 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 		}
 	}
 
+	//fmt.Printf("%+v", ro)
+
 	uri := a.genUri(api)
 
 	begin := time.Now()
 
 	res, err := grequests.Req(method, uri, ro)
-
-	//res, err := a.req.Response()
 
 	end := time.Now()
 	consume := end.Sub(begin).Nanoseconds() / 1e6
@@ -275,7 +281,6 @@ func (a *HttpThird) Put(api string, params map[string]interface{}) (*Response, e
 	return a.call("PUT", api, params)
 }
 
-// @todo 放在 url 上的参数
 func (a *HttpThird) Delete(api string, params map[string]interface{}) (*Response, error) {
 
 	return a.call("DELETE", api, params)
