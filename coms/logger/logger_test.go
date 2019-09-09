@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+//  go test -v ./coms/logger -bench="."  -args "-c=${PWD}/example/conf/app.toml"
+
 func TestPlainText(t *testing.T) {
 	Ins().Info("this is a info level msg")
 	Ins().Warn("this is a warn level msg")
@@ -33,7 +35,14 @@ func TestLogHook(t *testing.T) {
 		"timestamp": time.Now().Unix(),
 		"endpoint":  yago.Hostname(),
 	})
-	for i := 0; i < 1000000000; i++ {
+	Ins().WithFields(logrus.Fields{
+		"hello": "logger",
+	}).Info()
+}
+
+func BenchmarkFile(b *testing.B) {
+
+	for i := 0; i < b.N; i++ {
 		Ins().WithFields(logrus.Fields{
 			"hello": "logger",
 		}).Info()
