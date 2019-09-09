@@ -22,6 +22,9 @@ require (
 	github.com/sirupsen/logrus v1.4.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.4.0
+	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
+	github.com/xdg/stringprep v1.0.0 // indirect
+	go.mongodb.org/mongo-driver v1.1.1
 	golang.org/x/net v0.0.0-20190603091049-60506f45cf65
 	google.golang.org/grpc v1.23.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
