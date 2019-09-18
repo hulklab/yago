@@ -11,6 +11,7 @@ import (
 	"github.com/robfig/cron"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"net/http"
@@ -482,6 +483,12 @@ func (a *App) runRpc() {
 		for _, method := range v.Methods {
 			log.Println("[GRPC]", k, method.Name)
 		}
+	}
+
+	// open rpc reflection, then you can use gpc_cli
+	rpcReflectOn := Config.GetBool("app.rpc_reflect_on")
+	if rpcReflectOn {
+		reflection.Register(RpcServer)
 	}
 
 	go func() {

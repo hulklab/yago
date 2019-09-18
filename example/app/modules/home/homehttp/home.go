@@ -2,7 +2,7 @@ package homehttp
 
 import (
 	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/common/basehttp"
+	"github.com/hulklab/yago/base/basehttp"
 	"github.com/hulklab/yago/libs/validator"
 	"net/http"
 

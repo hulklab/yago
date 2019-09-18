@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/bwmarrin/snowflake"
 	"math/rand"
+	"sort"
+	"strings"
 	"time"
 )
 
@@ -83,4 +85,56 @@ func Ucfirst(s string) string {
 		strSlice[0] -= 32
 	}
 	return string(strSlice)
+}
+
+func Str2kv(s, sep, pair string) map[string]string {
+	m := make(map[string]string)
+
+	// 先按 pair 分隔
+	ss := strings.Split(s, pair)
+	for _, v := range ss {
+		// 再按 sep 分隔
+		ms := strings.Split(v, sep)
+		if len(ms) == 2 {
+			m[ms[0]] = ms[1]
+		}
+	}
+
+	return m
+}
+
+func Kv2str(m map[string]string, sep, pair string, order ...string) string {
+	if len(m) == 0 {
+		return ""
+	}
+
+	s := ""
+
+	if len(order) > 0 {
+		o := strings.ToLower(order[0])
+
+		keys := make([]string, 0, len(m))
+		for k, _ := range m {
+			keys = append(keys, k)
+		}
+
+		if o == "asc" {
+			sort.Strings(keys)
+		} else {
+			sort.Sort(sort.Reverse(sort.StringSlice(keys)))
+		}
+
+		for _, key := range keys {
+			s += fmt.Sprintf("%s%s%s%s", key, sep, m[key], pair)
+		}
+
+	} else {
+		for k, v := range m {
+			s += fmt.Sprintf("%s%s%s%s", k, sep, v, pair)
+		}
+	}
+
+	s = strings.TrimRight(s, pair)
+
+	return s
 }

@@ -3,7 +3,7 @@ package homecmd
 import (
 	"fmt"
 	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/common/basecmd"
+	"github.com/hulklab/yago/base/basecmd"
 	"github.com/spf13/cobra"
 )
 
