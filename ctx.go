@@ -94,9 +94,9 @@ func (c *Ctx) RequestSliceInt(key string, def ...int) []int {
 	}
 	slice := strings.Split(val, ",")
 	sliceInt := make([]int, len(slice))
-	for _, v := range slice {
+	for k, v := range slice {
 		vInt, _ := strconv.Atoi(v)
-		sliceInt = append(sliceInt, vInt)
+		sliceInt[k] = vInt
 	}
 	return sliceInt
 }
@@ -111,9 +111,9 @@ func (c *Ctx) RequestSliceInt64(key string, def ...int64) []int64 {
 	}
 	slice := strings.Split(val, ",")
 	sliceInt64 := make([]int64, len(slice))
-	for _, v := range slice {
+	for k, v := range slice {
 		vInt64, _ := strconv.ParseInt(v, 10, 64)
-		sliceInt64 = append(sliceInt64, vInt64)
+		sliceInt64[k] = vInt64
 	}
 	return sliceInt64
 }
