@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	Required = iota
+	_ = iota
+	Required
 	Int
 	Float
 	String
