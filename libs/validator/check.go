@@ -6,9 +6,12 @@ import (
 	"strconv"
 )
 
+type CustomValidatorFunc func(reqData interface{}) (valid bool, err error)
+
 type Rule struct {
 	Params  []string
 	Method  int
+	CustomValidator CustomValidatorFunc
 	On      []string
 	Min     float64
 	Max     float64
@@ -121,6 +124,15 @@ func ValidateHttp(c *gin.Context, action string, labels Label, rules []Rule) (bo
 					}
 				}
 			}
+
+			// 自定义Validator
+			reqData, exist := c.Get(c.Request.URL.Path)
+			if !exist {
+				return false, fmt.Errorf("%s get no req data", c.Request.URL.Path)
+			}
+			if valid, err := rule.CustomValidator(reqData); !valid {
+				return false, err
+			}
 		}
 	}
 	return true, nil
@@ -131,5 +143,4 @@ func getErr(label string, err error, message string) error {
 		return fmt.Errorf("%s %s", label, err)
 	}
 	return fmt.Errorf("%s %s", label, message)
-
 }
