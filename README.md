@@ -20,6 +20,7 @@
 	- [Goland配置mod](#Goland配置mod)
 - [常用类库推荐](#常用类库推荐])
 - [已知问题及解决方案](#已知问题及解决方案)
+- [感谢](#感谢)
 
 ## 安装
 
@@ -199,3 +200,11 @@ yago new -m newmodule
 	replace github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
 	```
 
+
+## 感谢
+[gin](https://github.com/gin-gonic/gin)
+[cron](https://github.com/robfig/cron)
+[cobra](https://github.com/spf13/cobra)
+[xorm](http://github.com/go-xorm/xorm)
+[logrus](https://github.com/sirupsen/logrus)
+[beego](https://github.com/astaxie/beego)
