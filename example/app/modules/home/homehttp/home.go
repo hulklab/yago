@@ -1,6 +1,7 @@
 package homehttp
 
 import (
+	"fmt"
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basehttp"
 	"github.com/hulklab/yago/libs/validator"
@@ -33,6 +34,23 @@ func (h *HomeHttp) Labels() validator.Label {
 	}
 }
 
+func (h *HomeHttp) CheckNameExist(c *yago.Ctx, p string) (bool, error) {
+	fmt.Println("here")
+	val, _ := c.Get(p)
+	// check param p is exist
+	var exists bool
+
+	if val == "zhangsan" {
+		exists = true
+	}
+
+	if exists {
+		return false, fmt.Errorf("name %s is exists", val)
+	}
+	return true, nil
+
+}
+
 func (h *HomeHttp) Rules() []validator.Rule {
 	return []validator.Rule{
 		{
@@ -41,22 +59,27 @@ func (h *HomeHttp) Rules() []validator.Rule {
 			On:     []string{"add"},
 		},
 		{
-			Params: []string{"id"},
-			Method: validator.Required,
-			On:     []string{"delete", "detail", "update"},
+			Params: []string{"name"},
+			Method: h.CheckNameExist,
+			On:     []string{"add"},
 		},
-		{
-			Params: []string{"page"},
-			Method: validator.Int,
-			Min:    1,
-			On:     []string{"list"},
-		},
-		{
-			Params: []string{"pagesize"},
-			Method: validator.Int,
-			Max:    100,
-			On:     []string{"list"},
-		},
+		//{
+		//	Params: []string{"id"},
+		//	Method: validator.Required,
+		//	On:     []string{"delete", "detail", "update"},
+		//},
+		//{
+		//	Params: []string{"page"},
+		//	Method: validator.Int,
+		//	Min:    1,
+		//	On:     []string{"list"},
+		//},
+		//{
+		//	Params: []string{"pagesize"},
+		//	Method: validator.Int,
+		//	Max:    100,
+		//	On:     []string{"list"},
+		//},
 	}
 }
 

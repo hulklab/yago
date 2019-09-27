@@ -2,12 +2,12 @@ package yago
 
 import (
 	"fmt"
-	"log"
 	"github.com/gin-gonic/gin"
 	"github.com/hulklab/yago/libs/validator"
+	"log"
 	"mime/multipart"
-	"reflect"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -218,7 +218,9 @@ func ValidateHttp(c *Ctx, action string, labels validator.Label, rules []validat
 		if actionMatch {
 			switch method := rule.Method.(type) {
 			case int:
-				return validateByRule(c, labels, rule, method)
+				if valid, err := validateByRule(c, labels, rule, method); !valid {
+					return false, err
+				}
 			case CustomValidatorFunc:
 				for _, p := range rule.Params {
 					_, exist := c.Get(p)
