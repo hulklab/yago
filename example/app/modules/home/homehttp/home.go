@@ -35,7 +35,6 @@ func (h *HomeHttp) Labels() validator.Label {
 }
 
 func (h *HomeHttp) CheckNameExist(c *yago.Ctx, p string) (bool, error) {
-	fmt.Println("here")
 	val, _ := c.Get(p)
 	// check param p is exist
 	var exists bool
