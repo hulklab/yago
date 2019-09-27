@@ -1,9 +1,12 @@
 package yago
 
 import (
+	"fmt"
+	"log"
 	"github.com/gin-gonic/gin"
 	"github.com/hulklab/yago/libs/validator"
 	"mime/multipart"
+	"reflect"
 	"net/http"
 	"strconv"
 	"strings"
@@ -33,7 +36,7 @@ func (c *Ctx) Validate() error {
 	if router, ok := HttpRouterMap[url]; ok {
 		rules := router.h.Rules()
 		labels := router.h.Labels()
-		check, err := validator.ValidateHttp(c.Context, action, labels, rules)
+		check, err := ValidateHttp(c, action, labels, rules)
 		if !check {
 			return err
 		}
@@ -151,7 +154,6 @@ func (c *Ctx) RequestFileContent(key string) ([]byte, error) {
 }
 
 func (c *Ctx) SetData(data interface{}) {
-
 	c.resp = &ResponseBody{
 		ErrNo:  OK.Code(),
 		ErrMsg: OK.Error(),
@@ -181,7 +183,6 @@ func (c *Ctx) SetError(err Err, msgEx ...string) {
 }
 
 func (c *Ctx) SetDataOrErr(data interface{}, err Err) {
-
 	if err.HasErr() {
 		c.SetError(err)
 		return
@@ -196,4 +197,134 @@ func (c *Ctx) GetResponse() (*ResponseBody, bool) {
 	}
 
 	return c.resp, true
+}
+
+func ValidateHttp(c *Ctx, action string, labels validator.Label, rules []validator.Rule) (bool, error) {
+	type CustomValidatorFunc = func(c *Ctx, p string) (valid bool, err error)
+
+	for _, rule := range rules {
+		actionMatch := false
+		if len(rule.On) == 0 {
+			actionMatch = true
+		} else {
+			for _, a := range rule.On {
+				if a == action {
+					actionMatch = true
+					break
+				}
+			}
+		}
+
+		if actionMatch {
+			switch method := rule.Method.(type) {
+			case int:
+				return validateByRule(c, labels, rule, method)
+			case CustomValidatorFunc:
+				for _, p := range rule.Params {
+					_, exist := c.Get(p)
+					if !exist {
+						continue
+					}
+					if valid, err := method(c, p); !valid {
+						return false, err
+					}
+				}
+			default:
+				log.Fatalf("not support method: %s", reflect.TypeOf(rule.Method))
+			}
+		}
+	}
+	return true, nil
+}
+
+func validateByRule(c *Ctx, labels validator.Label, rule validator.Rule, method int) (bool, error) {
+	switch method {
+	case validator.Required:
+		for _, p := range rule.Params {
+			pv, exist := c.Get(p)
+			if !exist {
+				return false, fmt.Errorf("%s 不存在", labels.Get(p))
+			}
+			if valid, err := (validator.RequiredValidator{}).Check(pv); !valid {
+				return false, getErr(labels.Get(p), err, rule.Message)
+			}
+		}
+	case validator.String:
+		for _, p := range rule.Params {
+			pv, exist := c.Get(p)
+			if !exist {
+				continue
+			}
+			if valid, err := (validator.StringValidator{Min: int(rule.Min), Max: int(rule.Max)}).Check(pv); !valid {
+				return false, getErr(labels.Get(p), err, rule.Message)
+			}
+		}
+	case validator.Int:
+		for _, p := range rule.Params {
+			pv, exist := c.Get(p)
+			if !exist {
+				continue
+			}
+			pvInt, err := strconv.Atoi(pv.(string))
+			if err != nil {
+				return false, fmt.Errorf("%s 不是个整数", labels.Get(p))
+			}
+			if valid, err := (validator.IntValidator{Min: int(rule.Min), Max: int(rule.Max)}).Check(pvInt); !valid {
+				return false, getErr(labels.Get(p), err, rule.Message)
+			}
+		}
+	case validator.Float:
+		for _, p := range rule.Params {
+			pv, exist := c.Get(p)
+			if !exist {
+				continue
+			}
+
+			pvFloat, err := strconv.ParseFloat(pv.(string), 64)
+			if err != nil {
+				return false, fmt.Errorf("%s 不是个浮点数", labels.Get(p))
+			}
+			if valid, err := (validator.FloatValidator{Min: rule.Min, Max: rule.Max}).Check(pvFloat); !valid {
+				return false, getErr(labels.Get(p), err, rule.Message)
+			}
+		}
+	case validator.JSON:
+		for _, p := range rule.Params {
+			pv, exist := c.Get(p)
+			if !exist {
+				continue
+			}
+			if valid, err := (validator.JSONValidator{}).Check(pv); !valid {
+				return false, getErr(labels.Get(p), err, rule.Message)
+			}
+		}
+	case validator.IP:
+		for _, p := range rule.Params {
+			pv, exist := c.Get(p)
+			if !exist {
+				continue
+			}
+			if valid, err := (validator.IPValidator{}).Check(pv); !valid {
+				return false, getErr(labels.Get(p), err, rule.Message)
+			}
+		}
+	case validator.Match:
+		for _, p := range rule.Params {
+			pv, exist := c.Get(p)
+			if !exist {
+				continue
+			}
+			if valid, err := (validator.MatchValidator{Pattern: rule.Pattern}).Check(pv); !valid {
+				return false, getErr(labels.Get(p), err, rule.Message)
+			}
+		}
+	}
+	return true, nil
+}
+
+func getErr(label string, err error, message string) error {
+	if message == "" {
+		return fmt.Errorf("%s %s", label, err)
+	}
+	return fmt.Errorf("%s %s", label, message)
 }
