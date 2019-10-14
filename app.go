@@ -253,15 +253,18 @@ func (a *App) loadHttpRouter() error {
 	}
 
 	// cors
-	a.httpEngine.Use(cors.New(cors.Config{
-		AllowAllOrigins:  a.HttpCorsAllowAllOrigins,
-		AllowOrigins:     a.HttpCorsAllowOrigins,
-		AllowMethods:     a.HttpCorsAllowMethods,
-		AllowHeaders:     a.HttpCorsAllowHeaders,
-		ExposeHeaders:    a.HttpCorsExposeHeaders,
-		AllowCredentials: a.HttpCorsAllowCredentials,
-		MaxAge:           a.HttpCorsMaxAge,
-	}))
+	if a.HttpCorsAllowAllOrigins == true || len(a.HttpCorsAllowOrigins) != 0 {
+		a.httpEngine.Use(cors.New(cors.Config{
+			AllowAllOrigins:  a.HttpCorsAllowAllOrigins,
+			AllowOrigins:     a.HttpCorsAllowOrigins,
+			AllowMethods:     a.HttpCorsAllowMethods,
+			AllowHeaders:     a.HttpCorsAllowHeaders,
+			ExposeHeaders:    a.HttpCorsExposeHeaders,
+			AllowCredentials: a.HttpCorsAllowCredentials,
+			MaxAge:           a.HttpCorsMaxAge,
+		}))
+	}
+
 	// gzip
 	if a.HttpGzipOn {
 		a.httpEngine.Use(gzip.Gzip(a.HttpGzipLevel))
