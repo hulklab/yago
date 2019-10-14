@@ -25,7 +25,7 @@ http_stop_time_wait = 10
 # http_cors_allow_headers = ["Origin", "Content-Length", "Content-Type"]
 # http_cors_expose_headers = []
 # http_cors_allow_credentials = true
-# http_cors_max_age = 12h
+# http_cors_max_age = "12h"
 
 # gzip 模式 1:Default, 2:Best Speed, 3:Best Compression
 # http_gzip_on = true
