@@ -30,6 +30,9 @@ func New() *HomeApi {
 	api.SslOn = yago.Config.GetBool("home_api.ssl_on")
 	api.CertFile = yago.Config.GetString("home_api.cert_file")
 	api.RpcThird.Hostname = yago.Config.GetString("home_api.hostname")
+	api.Timeout = yago.Config.GetInt("home_api.timeout")
+	api.MaxRecvMsgsizeMb = yago.Config.GetInt("home_api.max_recv_msgsize_mb")
+	api.MaxSendMsgsizeMb = yago.Config.GetInt("home_api.max_send_msgsize_mb")
 
 	return api
 }
