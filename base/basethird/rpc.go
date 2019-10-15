@@ -45,7 +45,6 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 				grpc.WithInsecure(),
 				grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb  * 1024 * 1024)),
 				grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb  * 1024 * 1024)),
-				grpc.WithBlock(),
 			)
 
 		} else {
@@ -62,7 +61,6 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 				grpc.WithTransportCredentials(creds),
 				grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb * 1024 * 1024)),
 				grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb * 1024 * 1024)),
-				grpc.WithBlock(),
 			)
 		}
 	}
