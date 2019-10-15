@@ -18,6 +18,8 @@ type RpcThird struct {
 	sync.Mutex
 	Address  string
 	Timeout  int
+	MaxRecvMsgsizeMb int
+	MaxSendMsgsizeMb int
 	SslOn    bool
 	CertFile string
 	Hostname string
@@ -30,8 +32,21 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 
 	var err error
 	if a.c == nil {
+		if a.MaxRecvMsgsizeMb == 0 {
+			a.MaxRecvMsgsizeMb = 4
+		}
+		if a.MaxSendMsgsizeMb == 0 {
+			a.MaxSendMsgsizeMb = 4
+		}
+
 		if !a.SslOn {
-			a.c, err = grpc.Dial(a.Address, grpc.WithInsecure())
+			a.c, err = grpc.Dial(
+				a.Address,
+				grpc.WithInsecure(),
+				grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb  * 1024 * 1024)),
+				grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb  * 1024 * 1024)),
+				grpc.WithBlock(),
+			)
 
 		} else {
 			if a.CertFile == "" {
@@ -42,7 +57,13 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 				log.Fatalf("failed to create TLS credentials %v", err)
 			}
 
-			a.c, err = grpc.Dial(a.Address, grpc.WithTransportCredentials(creds))
+			a.c, err = grpc.Dial(
+				a.Address,
+				grpc.WithTransportCredentials(creds),
+				grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb * 1024 * 1024)),
+				grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb * 1024 * 1024)),
+				grpc.WithBlock(),
+			)
 		}
 	}
 
