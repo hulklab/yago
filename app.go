@@ -261,6 +261,7 @@ func (a *App) loadHttpRouter() error {
 		ExposeHeaders:    a.HttpCorsExposeHeaders,
 		AllowCredentials: a.HttpCorsAllowCredentials,
 		MaxAge:           a.HttpCorsMaxAge,
+		AllowWebSockets:  true,
 	}))
 	// gzip
 	if a.HttpGzipOn {
