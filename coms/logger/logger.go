@@ -32,6 +32,10 @@ func Ins(id ...string) *Logger {
 		maxAge := int(conf["max_age"].(int64))
 		level := logrus.Level(conf["level"].(int64))
 		compress := conf["compress"].(bool)
+		var stdoutEnable bool
+		if v, b := conf["stdout_enable"]; b {
+			stdoutEnable = v.(bool)
+		}
 
 		val := &Logger{logrus.New()}
 		// 设置最低log level
@@ -53,6 +57,9 @@ func Ins(id ...string) *Logger {
 			Compress:   compress,
 		}
 
+		if stdoutEnable {
+			val.AddHook(NewStdoutHook())
+		}
 		return val
 	})
 

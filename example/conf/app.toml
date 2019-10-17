@@ -81,6 +81,8 @@ max_age = 30
 max_size = 500
 # 是否开启压缩
 compress = true
+# write log to stdout
+# stdout_enable = true
 
 [db]
 host = "127.0.0.1"
