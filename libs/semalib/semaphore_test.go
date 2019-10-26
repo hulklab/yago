@@ -42,5 +42,6 @@ func TestTrySemaphore(t *testing.T) {
 
 	sema.Wait()
 	fmt.Printf("sema.AvailablePermits : %d \n", sema.AvailablePermits())
+
 	fmt.Println("---------- TestTrySemaphore done ----------")
 }

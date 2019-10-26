@@ -16,30 +16,30 @@ func New(concurrencyNum int) *semaphore {
 	}
 }
 
-func (this *semaphore) TryAcquire() bool {
+func (s *semaphore) TryAcquire() bool {
 	select {
-	case this.channel <- struct{}{}:
-		this.wg.Add(1)
+	case s.channel <- struct{}{}:
+		s.wg.Add(1)
 		return true
 	default:
 		return false
 	}
 }
 
-func (this *semaphore) Acquire() {
-	this.channel <- struct{}{}
-	this.wg.Add(1)
+func (s *semaphore) Acquire() {
+	s.channel <- struct{}{}
+	s.wg.Add(1)
 }
 
-func (this *semaphore) Release() {
-	<-this.channel
-	this.wg.Done()
+func (s *semaphore) Release() {
+	<-s.channel
+	s.wg.Done()
 }
 
-func (this *semaphore) Wait() {
-	this.wg.Wait()
+func (s *semaphore) Wait() {
+	s.wg.Wait()
 }
 
-func (this *semaphore) AvailablePermits() int {
-	return this.bufSize - len(this.channel)
+func (s *semaphore) AvailablePermits() int {
+	return s.bufSize - len(s.channel)
 }
