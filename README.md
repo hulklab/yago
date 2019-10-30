@@ -1,3 +1,3 @@
-# Yago
+![avatar](http://p0.qhimg.com/t0162ed78090852688f.png)
 
-This file file serves as your book's preface, a great place to describe your book's content and ideas.
+Yago, yet another go scafford.
