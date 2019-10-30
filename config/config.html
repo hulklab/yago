@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>创作背景 · yago 中文文档</title>
+        <title>配置 · yago 中文文档</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -73,10 +73,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="arch.html" />
+    <link rel="next" href="detail.html" />
     
     
-    <link rel="prev" href="../" />
+    <link rel="prev" href="../quick-start/start.html" />
     
 
     </head>
@@ -121,9 +121,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter active" data-level="1.1.1" data-path="intro.html">
+        <li class="chapter " data-level="1.1.1" data-path="../intro/intro.html">
             
-                <a href="intro.html">
+                <a href="../intro/intro.html">
             
                     
                         <b>1.1.1.</b>
@@ -136,9 +136,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.1.2" data-path="arch.html">
+        <li class="chapter " data-level="1.1.2" data-path="../intro/arch.html">
             
-                <a href="arch.html">
+                <a href="../intro/arch.html">
             
                     
                         <b>1.1.2.</b>
@@ -151,9 +151,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.1.3" data-path="dir.html">
+        <li class="chapter " data-level="1.1.3" data-path="../intro/dir.html">
             
-                <a href="dir.html">
+                <a href="../intro/dir.html">
             
                     
                         <b>1.1.3.</b>
@@ -222,9 +222,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.3" data-path="../config/config.html">
+        <li class="chapter active" data-level="1.3" data-path="config.html">
             
-                <a href="../config/config.html">
+                <a href="config.html">
             
                     
                         <b>1.3.</b>
@@ -238,9 +238,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.3.1" data-path="../config/detail.html">
+        <li class="chapter " data-level="1.3.1" data-path="detail.html">
             
-                <a href="../config/detail.html">
+                <a href="detail.html">
             
                     
                         <b>1.3.1.</b>
@@ -507,7 +507,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >创作背景</a>
+        <a href=".." >配置</a>
     </h1>
 </div>
 
@@ -522,7 +522,22 @@
     
                                 <section class="normal markdown-section">
                                 
-                                
+                                <h2 id="&#x914D;&#x7F6E;">1. &#x914D;&#x7F6E;</h2>
+<p>yago &#x6A21;&#x7248;&#x751F;&#x6210;&#x7684;&#x9879;&#x76EE;&#x9ED8;&#x8BA4;&#x91C7;&#x7528;toml&#x683C;&#x5F0F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#xFF0C;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x5728;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x540E;&#x4FBF;&#x5F00;&#x59CB;&#x89E3;&#x6790;&#xFF0C;&#x89E3;&#x6790;&#x5B8C;&#x6210;&#x540E;&#x5B58;&#x50A8;&#x5728;&#x5168;&#x5C40;yago.Config&#x4E2D;&#xFF0C;yago.Config&#x662F; <a href="https://github.com/spf13/viper" target="_blank">viper</a> &#x7684;&#x6269;&#x5C55;&#xFF0C;&#x539F;&#x751F;&#x91C7;&#x7528; <a href="https://github.com/spf13/viper" target="_blank">viper</a> &#x7684;&#x65B9;&#x6CD5;&#x6765;&#x83B7;&#x53D6;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x7684;&#x503C;&#x5373;&#x53EF;&#x3002;</p>
+<p>example:</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// &#x5B57;&#x7B26;&#x4E32;</span>
+confString <span class="token operator">:=</span> yago<span class="token punctuation">.</span>Config<span class="token punctuation">.</span><span class="token function">GetString</span><span class="token punctuation">(</span><span class="token string">&quot;conf_string&quot;</span><span class="token punctuation">)</span>
+<span class="token comment">// &#x6574;&#x6570;</span>
+confInt <span class="token operator">:=</span> yago<span class="token punctuation">.</span>Config<span class="token punctuation">.</span><span class="token function">GetInt</span><span class="token punctuation">(</span><span class="token string">&quot;conf_int&quot;</span><span class="token punctuation">)</span>
+<span class="token comment">// &#x6D6E;&#x70B9;&#x6570;</span>
+confFloat64 <span class="token operator">:=</span> yago<span class="token punctuation">.</span>Config<span class="token punctuation">.</span><span class="token function">GetFloat64</span><span class="token punctuation">(</span><span class="token string">&quot;conf_float64&quot;</span><span class="token punctuation">)</span>
+<span class="token comment">// &#x6301;&#x7EED;&#x65F6;&#x95F4;</span>
+confDuration <span class="token operator">:=</span> yago<span class="token punctuation">.</span>Config<span class="token punctuation">.</span><span class="token function">GetDuration</span><span class="token punctuation">(</span><span class="token string">&quot;conf_duration&quot;</span><span class="token punctuation">)</span>
+</code></pre>
+<ul>
+<li><a href="detail.html">&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x8BE6;&#x7EC6;&#x4ECB;&#x7ECD;</a></li>
+</ul>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#"></a></p><li><a href="#&#x914D;&#x7F6E;">1. &#x914D;&#x7F6E;</a></li></ul></div><a href="#&#x914D;&#x7F6E;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -549,12 +564,12 @@
 
             
                 
-                <a href="../" class="navigation navigation-prev " aria-label="Previous page: yago 简介">
+                <a href="../quick-start/start.html" class="navigation navigation-prev " aria-label="Previous page: Hello World">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="arch.html" class="navigation navigation-next " aria-label="Next page: 架构设计">
+                <a href="detail.html" class="navigation navigation-next " aria-label="Next page: 配置文件详细介绍">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -565,7 +580,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"创作背景","level":"1.1.1","depth":2,"next":{"title":"架构设计","level":"1.1.2","depth":2,"path":"intro/arch.md","ref":"intro/arch.md","articles":[]},"previous":{"title":"yago 简介","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[{"title":"创作背景","level":"1.1.1","depth":2,"path":"intro/intro.md","ref":"intro/intro.md","articles":[]},{"title":"架构设计","level":"1.1.2","depth":2,"path":"intro/arch.md","ref":"intro/arch.md","articles":[]},{"title":"目录结构","level":"1.1.3","depth":2,"path":"intro/dir.md","ref":"intro/dir.md","articles":[]}]},"dir":"neutral"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"intro/intro.md","mtime":"2019-10-30T11:49:46.240Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-10-30T12:28:53.253Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"配置","level":"1.3","depth":1,"next":{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"path":"config/detail.md","ref":"config/detail.md","articles":[]},"previous":{"title":"Hello World","level":"1.2.2","depth":2,"path":"quick-start/start.md","ref":"quick-start/start.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"config/config.md","mtime":"2019-10-30T12:22:45.846Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-10-30T12:28:53.253Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
