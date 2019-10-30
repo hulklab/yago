@@ -15,7 +15,7 @@ function build() {
 
 function deploy() {
 
-    echo "[INFO]发布到 gh-page 分支，发布后直接生效"
+    echo "[INFO]发布到 gh-pages 分支，发布后直接生效"
     if  read -p "确认要发布吗[y|n]，默认为 n: > " IS_PUSH;then
         if [[ -z ${IS_PUSH} ]];then
             IS_PUSH="n"
@@ -27,9 +27,9 @@ function deploy() {
     fi
 
     rm -rf /tmp/_book
-    cp -r _book /tmp/_book
+    mv _book /tmp/_book
     git checkout gh-pages
-    git branch
+    mv /tmp/_book/* ./
 }
 
 function main() {
