@@ -34,7 +34,7 @@ function deploy() {
     rm -rf /tmp/_book
     mv _book /tmp/_book
     git checkout gh-pages
-    mv /tmp/_book/* ./
+    \mv /tmp/_book/* ./
     git add .
     git commit -a -m "update"
     git push origin gh-pages
