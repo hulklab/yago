@@ -30,6 +30,7 @@ function deploy() {
         return
     fi
 
+    git pull
     rm -rf /tmp/_book
     mv _book /tmp/_book
     git checkout gh-pages
