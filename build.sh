@@ -28,7 +28,7 @@ function deploy() {
 
     rm -rf /tmp/_book
     cp -r _book /tmp/_book
-    git co gh-pages
+    git checkout gh-pages
     git branch
 }
 
