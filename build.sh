@@ -4,7 +4,11 @@ IS_PUSH=""
 
 function build() {
     rm -rf _book
-    gitbook install
+
+    if [[ ! -d "node_modules" ]];then
+        gitbook install
+    fi
+
     gitbook build
 
     if [[ ! -d "_book" ]];then
