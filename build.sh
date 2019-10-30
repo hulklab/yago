@@ -11,7 +11,7 @@ function build() {
 
     gitbook build
 
-    if [[ ! -d "_book" ]];then
+    if [[ $? != 0 ]] || [[ ! -d "_book" ]];then
         echo "[ERROR]编译 book 失败"
         exit 1
     fi
