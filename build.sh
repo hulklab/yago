@@ -33,6 +33,7 @@ function deploy() {
     git add .
     git commit -a -m "update"
     git push origin gh-pages
+    git checkout doc
 }
 
 function main() {
