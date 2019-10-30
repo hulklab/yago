@@ -1,0 +1,29 @@
+{
+  "author": "hulklab",
+  "description": "yago 中文文档",
+  "title": "yago 中文文档",
+  "plugins": [
+    "-sharing",
+    "expandable-chapters-interactive",
+    "theme-comscore",
+    "navigator",
+    "simple-page-toc",
+    "prism",
+    "prism-themes"
+  ],
+  "pluginsConfig": {
+    "theme-default": {
+      "showLevel": true
+    },
+    "fontsettings": {
+      "theme": "white",
+      "family": "serif",
+      "size": 2
+    },
+    "prism": {
+      "css": [
+        "prismjs/themes/prism-okaidia.css"
+      ]
+    }
+  }
+}
