@@ -2,10 +2,13 @@
 
 * [yago 简介](README.md)
     * [创作背景](intro/intro.md)
-* [快速开始](quick-start/README.md)
-    * [依赖](quick-start/required.md)
+    * [架构设计](intro/arch.md)
+    * [目录结构](intro/dir.md)
+* [快速开始](quick-start/quick-start.md)
     * [安装](quick-start/install.md)
-* [配置](config/README.md)
+    * [Hello World](quick-start/start.md)
+* [配置](config/config.md)
+    * [配置文件详细介绍](config/detail.md)
 * [路由](route/README.md)
     * [http 路由](route/http.md)
     * [rpc 路由](route/rpc.md)
@@ -19,5 +22,3 @@
     * [调用 http 接口](third/http.md)
     * [调用 rpc 接口](third/rpc.md)
 * [感谢](thanks.md)
-    
-
