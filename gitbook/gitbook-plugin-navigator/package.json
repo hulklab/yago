@@ -9,10 +9,12 @@
         "spec": "1.1.1",
         "type": "version"
       },
-      "/Users/luoxiaodong/Workspace/js/yago"
+      "/Users/zhangjiulong/projects/go/src/github.com/hulklab/yago"
     ]
   ],
+  "_cnpm_publish_time": 1469966399542,
   "_from": "gitbook-plugin-navigator@1.1.1",
+  "_hasShrinkwrap": false,
   "_id": "gitbook-plugin-navigator@1.1.1",
   "_inCache": true,
   "_installable": true,
@@ -39,11 +41,11 @@
   "_requiredBy": [
     "#USER"
   ],
-  "_resolved": "https://registry.npmjs.org/gitbook-plugin-navigator/-/gitbook-plugin-navigator-1.1.1.tgz",
+  "_resolved": "http://registry.npm.taobao.org/gitbook-plugin-navigator/download/gitbook-plugin-navigator-1.1.1.tgz",
   "_shasum": "b5e17ce78d89cbecce430599f91c9ee0450a0b95",
   "_shrinkwrap": null,
   "_spec": "gitbook-plugin-navigator@1.1.1",
-  "_where": "/Users/luoxiaodong/Workspace/js/yago",
+  "_where": "/Users/zhangjiulong/projects/go/src/github.com/hulklab/yago",
   "author": {
     "name": "zhangzq"
   },
@@ -57,8 +59,10 @@
   "devDependencies": {},
   "directories": {},
   "dist": {
+    "noattachment": false,
     "shasum": "b5e17ce78d89cbecce430599f91c9ee0450a0b95",
-    "tarball": "https://registry.npmjs.org/gitbook-plugin-navigator/-/gitbook-plugin-navigator-1.1.1.tgz"
+    "size": 16074,
+    "tarball": "https://registry.npm.taobao.org/gitbook-plugin-navigator/download/gitbook-plugin-navigator-1.1.1.tgz"
   },
   "engines": {
     "gitbook": "*"
@@ -80,6 +84,7 @@
   ],
   "name": "gitbook-plugin-navigator",
   "optionalDependencies": {},
+  "publish_time": 1469966399542,
   "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
