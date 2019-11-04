@@ -16,16 +16,16 @@ import (
 type RpcThird struct {
 	c *grpc.ClientConn
 	sync.Mutex
-	Address  string
-	Timeout  int
+	Address          string
+	Timeout          int
 	MaxRecvMsgsizeMb int
 	MaxSendMsgsizeMb int
-	SslOn    bool
-	CertFile string
-	Hostname string
+	SslOn            bool
+	CertFile         string
+	Hostname         string
+	logInfoOff       bool
 }
 
-// @todo reconnect
 func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 	a.Lock()
 	defer a.Unlock()
@@ -43,8 +43,8 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 			a.c, err = grpc.Dial(
 				a.Address,
 				grpc.WithInsecure(),
-				grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb  * 1024 * 1024)),
-				grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb  * 1024 * 1024)),
+				grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb*1024*1024)),
+				grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb*1024*1024)),
 			)
 
 		} else {
@@ -59,8 +59,8 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 			a.c, err = grpc.Dial(
 				a.Address,
 				grpc.WithTransportCredentials(creds),
-				grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb * 1024 * 1024)),
-				grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb * 1024 * 1024)),
+				grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb*1024*1024)),
+				grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb*1024*1024)),
 			)
 		}
 	}
@@ -116,8 +116,20 @@ func (a *RpcThird) Call(f func(conn *grpc.ClientConn, ctx context.Context) (prot
 		logInfo["error"] = err.Error()
 		logger.Ins().WithFields(logInfo).Error()
 	} else {
-		logger.Ins().WithFields(logInfo).Info()
+		// 默认是日志没关
+		if !a.logInfoOff {
+			logger.Ins().WithFields(logInfo).Info()
+		}
 	}
 
 	return rep, err
+}
+
+// 设置是否要关闭 info 日志
+func (a *RpcThird) SetLogInfoFlag(on bool) {
+	if on {
+		a.logInfoOff = false
+	} else {
+		a.logInfoOff = true
+	}
 }
