@@ -7,3 +7,4 @@ vendor
 nohup.out
 .vendor-new
 go.sum
+node_modules
