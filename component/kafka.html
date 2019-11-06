@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>调用 http 接口 · yago 中文文档</title>
+        <title>Kafka 组件 · yago 中文文档</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -73,10 +73,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="rpc.html" />
+    <link rel="next" href="mgo.html" />
     
     
-    <link rel="prev" href="./" />
+    <link rel="prev" href="rds.html" />
     
 
     </head>
@@ -339,9 +339,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5" data-path="../component/component.html">
+        <li class="chapter " data-level="1.5" data-path="component.html">
             
-                <a href="../component/component.html">
+                <a href="component.html">
             
                     
                         <b>1.5.</b>
@@ -355,9 +355,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.5.1" data-path="../component/logger.html">
+        <li class="chapter " data-level="1.5.1" data-path="logger.html">
             
-                <a href="../component/logger.html">
+                <a href="logger.html">
             
                     
                         <b>1.5.1.</b>
@@ -370,9 +370,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.2" data-path="../component/orm.html">
+        <li class="chapter " data-level="1.5.2" data-path="orm.html">
             
-                <a href="../component/orm.html">
+                <a href="orm.html">
             
                     
                         <b>1.5.2.</b>
@@ -385,9 +385,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.3" data-path="../component/rds.html">
+        <li class="chapter " data-level="1.5.3" data-path="rds.html">
             
-                <a href="../component/rds.html">
+                <a href="rds.html">
             
                     
                         <b>1.5.3.</b>
@@ -400,9 +400,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.4" data-path="../component/kafka.html">
+        <li class="chapter active" data-level="1.5.4" data-path="kafka.html">
             
-                <a href="../component/kafka.html">
+                <a href="kafka.html">
             
                     
                         <b>1.5.4.</b>
@@ -415,9 +415,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.5" data-path="../component/mgo.html">
+        <li class="chapter " data-level="1.5.5" data-path="mgo.html">
             
-                <a href="../component/mgo.html">
+                <a href="mgo.html">
             
                     
                         <b>1.5.5.</b>
@@ -471,9 +471,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7" data-path="./">
+        <li class="chapter " data-level="1.7" data-path="../third/">
             
-                <a href="./">
+                <a href="../third/">
             
                     
                         <b>1.7.</b>
@@ -487,9 +487,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter active" data-level="1.7.1" data-path="http.html">
+        <li class="chapter " data-level="1.7.1" data-path="../third/http.html">
             
-                <a href="http.html">
+                <a href="../third/http.html">
             
                     
                         <b>1.7.1.</b>
@@ -502,9 +502,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.2" data-path="rpc.html">
+        <li class="chapter " data-level="1.7.2" data-path="../third/rpc.html">
             
-                <a href="rpc.html">
+                <a href="../third/rpc.html">
             
                     
                         <b>1.7.2.</b>
@@ -567,7 +567,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >调用 http 接口</a>
+        <a href=".." >Kafka 组件</a>
     </h1>
 </div>
 
@@ -582,7 +582,45 @@
     
                                 <section class="normal markdown-section">
                                 
-                                
+                                <h1 id="kafka_&#x7EC4;&#x4EF6;">kafka &#x7EC4;&#x4EF6;</h1>
+<p>kafka &#x6D88;&#x606F;&#x961F;&#x5217;&#x7EC4;&#x4EF6;&#x6211;&#x4EEC;&#x4F9D;&#x8D56;&#x7684;&#x5F00;&#x6E90;&#x5305;&#x662F; <code>github.com/Shopify/sarama</code>&#x3002;</p>
+<p>&#x6309;&#x7167;&#x7EC4;&#x4EF6;&#x7684;&#x8BBE;&#x8BA1;&#xFF0C;&#x6211;&#x4EEC;&#x5B9A;&#x4E49;&#x4E86;&#x81EA;&#x5DF1;&#x7684; kafka &#x7ED3;&#x6784;&#x5BF9;&#x5176;&#x8FDB;&#x884C;&#x4E86;&#x7EC4;&#x5408;&#xFF0C;&#x5728;&#x4FDD;&#x7559;&#x5176;&#x539F;&#x751F;&#x7684;&#x529F;&#x80FD;&#x4E4B;&#x5916;&#xFF0C;&#x4EE5;&#x4FBF;&#x6269;&#x5C55;&#x3002;</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// yago/coms/kafka/kafka.go</span>
+<span class="token keyword">type</span> Kafka <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    connect <span class="token builtin">string</span>
+    config  <span class="token operator">*</span>cluster<span class="token punctuation">.</span>Config
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x6240;&#x4EE5;&#x4F60;&#x53EF;&#x4EE5;&#x67E5;&#x770B; <a href="https://github.com/Shopify/sarama" target="_blank">sarama &#x5B98;&#x65B9;&#x6587;&#x6863;</a> &#x6765;&#x83B7;&#x53D6;&#x6240;&#x6709;&#x652F;&#x6301;&#x7684; api&#x3002;</p>
+<p>&#x672C;&#x6587;&#x4E2D;&#x4EC5;&#x4ECB;&#x7ECD;&#x90E8;&#x5206;&#x5E38;&#x7528;&#x7684; api &#x4EE5;&#x53CA;&#x6269;&#x5C55;&#x7684; api&#x3002;</p>
+<h2 id="&#x914D;&#x7F6E;_kafka_&#x7EC4;&#x4EF6;">1. &#x914D;&#x7F6E; kafka &#x7EC4;&#x4EF6;</h2>
+<pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">kafka</span><span class="token punctuation">]</span>
+<span class="token key property">cluster</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:9092&quot;</span>
+<span class="token key property">topic</span> <span class="token punctuation">=</span> <span class="token string">&quot;demo&quot;</span>
+</code></pre>
+<p>&#x6211;&#x4EEC;&#x5728;&#x6A21;&#x7248; app.toml &#x4E2D;&#x9ED8;&#x8BA4;&#x914D;&#x7F6E;&#x5F00;&#x542F;&#x4E86; kafka &#x7EC4;&#x4EF6;&#xFF0C;&#x53EF;&#x6839;&#x636E;&#x5B9E;&#x9645;&#x60C5;&#x51B5;&#x8FDB;&#x884C;&#x8C03;&#x6574;&#x3002;</p>
+<h2 id="&#x4F7F;&#x7528;_kafka_&#x7EC4;&#x4EF6;">2. &#x4F7F;&#x7528; kafka &#x7EC4;&#x4EF6;</h2>
+<ul>
+<li><p>&#x751F;&#x4EA7;&#x6D88;&#x606F;</p>
+<pre class="language-"><code class="lang-go">kafka<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Product</span><span class="token punctuation">(</span><span class="token string">&quot;topic&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;value&quot;</span><span class="token punctuation">)</span>
+</code></pre>
+</li>
+<li><p>&#x6D88;&#x8D39;&#x6D88;&#x606F;</p>
+<pre class="language-"><code class="lang-go">consumer<span class="token punctuation">,</span> err <span class="token operator">:=</span> k<span class="token punctuation">.</span><span class="token function">NewConsumer</span><span class="token punctuation">(</span><span class="token string">&quot;topic&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;group&quot;</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+  <span class="token comment">// Consume &#x4F1A;&#x4E00;&#x76F4;&#x963B;&#x585E;&#x7B49;&#x5F85;&#x6D88;&#x606F;&#xFF0C;&#x76F4;&#x5230; err</span>
+  err <span class="token operator">:=</span> consumer<span class="token punctuation">.</span><span class="token function">Consume</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>bytes <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+      log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+</li>
+</ul>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#kafka_&#x7EC4;&#x4EF6;">kafka &#x7EC4;&#x4EF6;</a></p><li><a href="#&#x914D;&#x7F6E;_kafka_&#x7EC4;&#x4EF6;">1. &#x914D;&#x7F6E; kafka &#x7EC4;&#x4EF6;</a></li><li><a href="#&#x4F7F;&#x7528;_kafka_&#x7EC4;&#x4EF6;">2. &#x4F7F;&#x7528; kafka &#x7EC4;&#x4EF6;</a></li></ul></div><a href="#&#x914D;&#x7F6E;_kafka_&#x7EC4;&#x4EF6;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -609,12 +647,12 @@
 
             
                 
-                <a href="./" class="navigation navigation-prev " aria-label="Previous page: 第三方调用">
+                <a href="rds.html" class="navigation navigation-prev " aria-label="Previous page: Redis 组件">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="rpc.html" class="navigation navigation-next " aria-label="Next page: 调用 rpc 接口">
+                <a href="mgo.html" class="navigation navigation-next " aria-label="Next page: Mongo 组件">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -625,7 +663,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"调用 http 接口","level":"1.7.1","depth":2,"next":{"title":"调用 rpc 接口","level":"1.7.2","depth":2,"path":"third/rpc.md","ref":"third/rpc.md","articles":[]},"previous":{"title":"第三方调用","level":"1.7","depth":1,"path":"third/README.md","ref":"third/README.md","articles":[{"title":"调用 http 接口","level":"1.7.1","depth":2,"path":"third/http.md","ref":"third/http.md","articles":[]},{"title":"调用 rpc 接口","level":"1.7.2","depth":2,"path":"third/rpc.md","ref":"third/rpc.md","articles":[]}]},"dir":"neutral"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"third/http.md","mtime":"2019-11-06T12:11:43.145Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-06T12:11:50.029Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Kafka 组件","level":"1.5.4","depth":2,"next":{"title":"Mongo 组件","level":"1.5.5","depth":2,"path":"component/mgo.md","ref":"component/mgo.md","articles":[]},"previous":{"title":"Redis 组件","level":"1.5.3","depth":2,"path":"component/rds.md","ref":"component/rds.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"component/kafka.md","mtime":"2019-11-06T12:11:43.136Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-06T12:11:50.029Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
