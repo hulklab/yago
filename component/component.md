@@ -2,10 +2,10 @@
 组件解决的是项目中依赖开源社区第三方包的问题，yago 组件的中心思想是在完整保留第三方包的所有功能基础上，也能扩展，并对访问者提供简便统一的操作接口。
 应该说组件是 yago 最核心的思想之一。
 
-### 组件原理
+## 组件原理
 为了方便用户使用组件，我们定义了一个全局的变量：`yago.Component`
 
-```
+```go
 type components struct {
 	m sync.Map
 }
@@ -26,7 +26,8 @@ var Component = new(components)
 
 可以看到, components 的本质是一个安全 Map，我们把所有的组件都放到 map 里面，每个组件都会有一个对应的 key，
 这个 key，通常采用配置文件中的块名称，如下面日志组件 logger 的配置:
-```
+
+```toml
 # logger 会做为组件的 Key，logger 也是日志组件的默认名称，修改 logger 名字的话，调用时需要指定修改后的名称
 [logger]
 # json | text, default text
@@ -45,10 +46,11 @@ max_size = 500
 compress = true
 ```
 
-### 实现组件
+## 实现组件
 每个组件需要实现 Ins() 方法，在自己的 Ins 方法中调用 yago.Component.Ins()，注册到全局组件中。
 以 logger 组件为例：
-```
+
+```go
 // Logger 是对 logrus.Logger 的扩展
 type Logger struct {
     *logrus.Logger
@@ -103,16 +105,16 @@ func Ins(id ...string) *Logger {
 ```
 
 
-### 使用组件
+## 使用组件
 组件只有第一次调用 Ins() 时才会初始化组件，所以可以理解为每个组件都是一个单例。
 还是以 logger 组件为例：
-```
+```go
 logger.Ins().Info("this is a test msg")
 ```
 logger.Ins() 返回的是 yago 定义的 Logger，同时它又可以完整的使用 logrus.Logger 的方法。从上面定义 logger 的 Ins() 方法可以看出，Ins() 是可以传参的，参数就是全局组件容器里面的 key，
 这在项目需要多个同类型组件时是十分有用的，比如使用多个数据库连接，我们可以通过调用不同的 key 获取不同的数据库连接。
 
-### 组件组成
+## 组件组成
 yago 的组件分两部分，一部分十分常用的组件我们放在 `yago/coms` 下，
 还有一部分我们认为并不是每个项目都需要，单独开源了一个项目，`https://github.com/hulklab/yago-coms`，里面的每个组件可以单独下载。
 
