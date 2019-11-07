@@ -13,3 +13,9 @@
 
 
 不可避免的，yago 也会封装一些自己的类库，下面就为大家一一介绍这些类库。
+
+* [goroutine 限流](/library/sema.md)
+* [日期](/library/date.md)
+* [字符串](/library/str.md)
+* [数组切片](/library/arr.md)
+* [数学](/library/math.md)

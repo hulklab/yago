@@ -154,6 +154,7 @@ result, err := mgoClient.C("test").BulkWrite([]mongo.WriteModel{
 * 查找修改
 
 ```go
+
 findResult := mgo.Ins().C("test").FindOneAndUpdate(bson.M{"name": "lily"},bson.M{"$set":bson.M{"age":17}})
 if findResult.Err() != nil {
 	// deal err
@@ -163,24 +164,12 @@ result := bson.M{}
 if err := findResult.Decode(&result);err != nil {
 	// deal err
 }
-```
 
-* 查找替换
- ```go
-findResult := mgo.Ins().C("test").FindOneAndReplace(bson.M{"name": "lily"},bson.M{"$set":bson.M{"name":"lily","age":18}})
-if findResult.Err() != nil {
-	// deal err
-}
-
-result := bson.M{}
-if err := findResult.Decode(&result);err != nil {
-	// deal err
-}
 ```
 
 * 查找删除
 
- ```go
+```go
 findResult := mgo.Ins().C("test").FindOneAndDelete(bson.M{"name":"lily"}})
 if findResult.Err() != nil {
 	// deal err
@@ -192,4 +181,17 @@ if err := findResult.Decode(&result);err != nil {
 }
 ```
 
+* 查找替换
 
+```go
+ 
+findResult := mgo.Ins().C("test").FindOneAndReplace(bson.M{"name": "lily"},bson.M{"$set":bson.M{"name":"lily","age":18}})
+if findResult.Err() != nil {
+	// deal err
+}
+
+result := bson.M{}
+if err := findResult.Decode(&result);err != nil {
+	// deal err
+}
+```
