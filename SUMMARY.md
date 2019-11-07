@@ -9,6 +9,7 @@
     * [Hello World](quick-start/start.md)
 * [配置](config/config.md)
     * [配置文件详细介绍](config/detail.md)
+<<<<<<< HEAD
 * [路由](route/route.md)
 * [模块](module/module.md)
     * [控制器](module/controller.md)
@@ -19,10 +20,30 @@
     * [模型](module/model.md)
     * [数据映射](module/dao.md)
 * [组件](component/README.md)
+=======
+* [路由](route/README.md)
+    * [http 路由](route/http.md)
+    * [rpc 路由](route/rpc.md)
+    * [task 路由](route/task.md)
+    * [cmd 路由](route/cmd.md)
+* [组件](component/component.md)
+>>>>>>> 988930d0fb79264f79ac42bdf06e86958d51234d
     * [日志组件](component/logger.md)
-* [类库](library/README.md)
+    * [ORM 组件](component/orm.md)
+    * [Redis 组件](component/rds.md)
+    * [Kafka 组件](component/kafka.md)
+    * [Mongo 组件](component/mgo.md)
+* [类库](library/library.md)
     * [goroutine 限流](library/sema.md)
+<<<<<<< HEAD
 * [第三方API调用](third/README.md)
+=======
+    * [日期](library/date.md)
+    * [字符串](library/str.md)
+    * [数组切片](library/arr.md)
+    * [数学](library/math.md)
+* [第三方调用](third/README.md)
+>>>>>>> 988930d0fb79264f79ac42bdf06e86958d51234d
     * [调用 http 接口](third/http.md)
     * [调用 rpc 接口](third/rpc.md)
 * [已知问题](problem/problem.md)
