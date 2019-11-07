@@ -20,7 +20,7 @@
     * [Redis 组件](component/rds.md)
     * [Kafka 组件](component/kafka.md)
     * [Mongo 组件](component/mgo.md)
-* [类库](library/README.md)
+* [类库](library/library.md)
     * [goroutine 限流](library/sema.md)
 * [第三方调用](third/README.md)
     * [调用 http 接口](third/http.md)
