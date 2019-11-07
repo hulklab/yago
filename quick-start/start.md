@@ -1,4 +1,4 @@
-创建你的hello world
+## 创建你的hello world
 
 ### 用 Yago 在当前目录创建你的项目 my_app
 ```bash

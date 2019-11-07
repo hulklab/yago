@@ -25,7 +25,7 @@ func init() {
 }
 ```
 
-#### AddHttpRouter参数说明
+AddHttpRouter参数说明
 
 | 参数位置 | 参数类型 | 说明 |
 | ------- | ------- | ------- |
@@ -34,7 +34,7 @@ func init() {
 | 3 | Func | http接口对应的Action Func |
 | 4 | Struct | http控制器对象 |
 
-#### 上下文c *yago.Ctx
+#### HttpAction
 
 Http Action接收一个参数c *yago.Ctx，它是gin.Ctx的扩展，主要用来获取参数和返回响应。
 

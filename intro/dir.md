@@ -1,4 +1,4 @@
-一个yago程序的目录结构
+## Yago程序的目录结构
 
 ```bash
 tree

@@ -2,17 +2,26 @@
 
 task控制器内部调度使用了[cron](https://github.com/robfig/cron)，这使得task控制器可以实现类似crontab的定时任务功能。同时在此基础上我们增加了 @loop 关键字，用来支持常驻进程模式，应用场景就是一些异步队列消费永不退出的这种情况。
 
+#### 路由注册
+
 task init函数中通过AddTaskRouter完成路由注册。
 
-#### AddTaskRouter参数说明
+```go
+func init() {
+	homeTask := new(HomeTask)
+	yago.AddTaskRouter("@loop", homeTask.HelloLoopAction)
+	yago.AddTaskRouter("0 */1 * * * *", homeTask.HelloSchduleAction)
+}
+```
+
+AddTaskRouter参数说明
 
 | 参数位置 | 参数类型 | 说明 |
 | ------- | ------- | ------- |
 | 1 | String | task执行任务计划，参考Spec表|
 | 2 | Func | task接口对应的Action Func |
 
-
-#### Spec
+Spec
 ```bash
 # ┌─────────────── second (0 - 59)
 # | ┌───────────── minute (0 - 59)
@@ -40,27 +49,9 @@ task init函数中通过AddTaskRouter完成路由注册。
 
 在RunLoop函数内我们传递一个回调函数和一个可选的执行间隔参数，如果执行间隔不传，默认没有等待，直接进入下个loop。
 
+#### TaskAction
 
 ```go
-package hometask
-
-import (
-	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/base/basetask"
-	"log"
-	"time"
-)
-
-type HomeTask struct {
-	basetask.BaseTask
-}
-
-func init() {
-	homeTask := new(HomeTask)
-	yago.AddTaskRouter("@loop", homeTask.HelloLoopAction)
-	yago.AddTaskRouter("0 */1 * * * *", homeTask.HelloSchduleAction)
-}
-
 func (t *HomeTask) HelloLoopAction() {
 	t.RunLoop(func() {
 		log.Println("Start Task homeTask.HelloLoopAction")
