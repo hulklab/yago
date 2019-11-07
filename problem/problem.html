@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>目录结构 · yago 中文文档</title>
+        <title>已知问题 · yago 中文文档</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -73,10 +73,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="../quick-start/quick-start.html" />
+    <link rel="next" href="../thanks.html" />
     
     
-    <link rel="prev" href="arch.html" />
+    <link rel="prev" href="../third/" />
     
 
     </head>
@@ -121,9 +121,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.1.1" data-path="intro.html">
+        <li class="chapter " data-level="1.1.1" data-path="../intro/intro.html">
             
-                <a href="intro.html">
+                <a href="../intro/intro.html">
             
                     
                         <b>1.1.1.</b>
@@ -136,9 +136,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.1.2" data-path="arch.html">
+        <li class="chapter " data-level="1.1.2" data-path="../intro/arch.html">
             
-                <a href="arch.html">
+                <a href="../intro/arch.html">
             
                     
                         <b>1.1.2.</b>
@@ -151,9 +151,9 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.1.3" data-path="dir.html">
+        <li class="chapter " data-level="1.1.3" data-path="../intro/dir.html">
             
-                <a href="dir.html">
+                <a href="../intro/dir.html">
             
                     
                         <b>1.1.3.</b>
@@ -552,9 +552,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.10" data-path="../problem/problem.html">
+        <li class="chapter active" data-level="1.10" data-path="problem.html">
             
-                <a href="../problem/problem.html">
+                <a href="problem.html">
             
                     
                         <b>1.10.</b>
@@ -612,7 +612,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >目录结构</a>
+        <a href=".." >已知问题</a>
     </h1>
 </div>
 
@@ -627,143 +627,20 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <p>&#x4E00;&#x4E2A;yago&#x7A0B;&#x5E8F;&#x7684;&#x76EE;&#x5F55;&#x7ED3;&#x6784;</p>
-<pre class="language-"><code class="lang-bash">tree
-<span class="token builtin class-name">.</span>
-&#x251C;&#x2500;&#x2500; app
-&#x2502;   &#x251C;&#x2500;&#x2500; g
-&#x2502;   &#x2502;   &#x251C;&#x2500;&#x2500; errors.go
-&#x2502;   &#x2502;   &#x2514;&#x2500;&#x2500; type.go
-&#x2502;   &#x251C;&#x2500;&#x2500; modules
-&#x2502;   &#x2502;   &#x2514;&#x2500;&#x2500; home
-&#x2502;   &#x2502;       &#x251C;&#x2500;&#x2500; homecmd
-&#x2502;   &#x2502;       &#x2502;   &#x2514;&#x2500;&#x2500; home.go
-&#x2502;   &#x2502;       &#x251C;&#x2500;&#x2500; homedao
-&#x2502;   &#x2502;       &#x2502;   &#x2514;&#x2500;&#x2500; home.go
-&#x2502;   &#x2502;       &#x251C;&#x2500;&#x2500; homehttp
-&#x2502;   &#x2502;       &#x2502;   &#x2514;&#x2500;&#x2500; home.go
-&#x2502;   &#x2502;       &#x251C;&#x2500;&#x2500; homemodel
-&#x2502;   &#x2502;       &#x2502;   &#x2514;&#x2500;&#x2500; home.go
-&#x2502;   &#x2502;       &#x251C;&#x2500;&#x2500; homerpc
-&#x2502;   &#x2502;       &#x2502;   &#x251C;&#x2500;&#x2500; README.md
-&#x2502;   &#x2502;       &#x2502;   &#x251C;&#x2500;&#x2500; home.go
-&#x2502;   &#x2502;       &#x2502;   &#x251C;&#x2500;&#x2500; home_test.go
-&#x2502;   &#x2502;       &#x2502;   &#x2514;&#x2500;&#x2500; homepb
-&#x2502;   &#x2502;       &#x2502;       &#x251C;&#x2500;&#x2500; home.pb.go
-&#x2502;   &#x2502;       &#x2502;       &#x2514;&#x2500;&#x2500; home.proto
-&#x2502;   &#x2502;       &#x2514;&#x2500;&#x2500; hometask
-&#x2502;   &#x2502;           &#x2514;&#x2500;&#x2500; home.go
-&#x2502;   &#x251C;&#x2500;&#x2500; route
-&#x2502;   &#x2502;   &#x2514;&#x2500;&#x2500; route.go
-&#x2502;   &#x2514;&#x2500;&#x2500; third
-&#x2502;       &#x2514;&#x2500;&#x2500; homeapi
-&#x2502;           &#x251C;&#x2500;&#x2500; home.go
-&#x2502;           &#x2514;&#x2500;&#x2500; homepb
-&#x2502;               &#x251C;&#x2500;&#x2500; home.pb.go
-&#x2502;               &#x2514;&#x2500;&#x2500; home.proto
-&#x251C;&#x2500;&#x2500; app.toml -<span class="token operator">&gt;</span> conf/app.toml
-&#x251C;&#x2500;&#x2500; conf
-&#x2502;   &#x2514;&#x2500;&#x2500; app.toml
-&#x251C;&#x2500;&#x2500; env.init.sh
-&#x251C;&#x2500;&#x2500; go.mod
-&#x251C;&#x2500;&#x2500; go.sum
-&#x251C;&#x2500;&#x2500; logs
-&#x2502;   &#x2514;&#x2500;&#x2500; app.log
-&#x251C;&#x2500;&#x2500; main.go
-&#x2514;&#x2500;&#x2500; tools
-    &#x2514;&#x2500;&#x2500; build.sh
+                                <h2 id="&#x5DF2;&#x77E5;&#x95EE;&#x9898;&#x53CA;&#x89E3;&#x51B3;&#x65B9;&#x6848;">1. &#x5DF2;&#x77E5;&#x95EE;&#x9898;&#x53CA;&#x89E3;&#x51B3;&#x65B9;&#x6848;</h2>
+<ol>
+<li><p>unknown import path &quot;github.com/ugorji/go/codec&quot;: ambiguous import: found github.com/ugorji/go/codec in multiple modules &#x6A21;&#x5757;&#x51B2;&#x7A81;&#x95EE;&#x9898;</p>
+<p>&#x539F;&#x56E0;&#x53C2;&#x8003;&#xFF1A;</p>
+<blockquote>
+<p><a href="https://cloud.tencent.com/developer/article/1417112" target="_blank">https://cloud.tencent.com/developer/article/1417112</a></p>
+</blockquote>
+<p>&#x89E3;&#x51B3;&#x65B9;&#x6848;&#xFF1A;
+&#x5728;go.mod&#x6587;&#x4EF6;&#x6700;&#x4E0B;&#x9762;&#x6DFB;&#x52A0;&#x5982;&#x4E0B;&#x4EE3;&#x7801;</p>
+<pre class="language-"><code class="lang-go">replace github<span class="token punctuation">.</span>com<span class="token operator">/</span>ugorji<span class="token operator">/</span><span class="token keyword">go</span> v1<span class="token punctuation">.</span><span class="token number">1.4</span> <span class="token operator">=</span><span class="token operator">&gt;</span> github<span class="token punctuation">.</span>com<span class="token operator">/</span>ugorji<span class="token operator">/</span><span class="token keyword">go</span><span class="token operator">/</span>codec v0<span class="token punctuation">.</span><span class="token number">0.0</span><span class="token operator">-</span><span class="token number">20190204201341</span><span class="token operator">-</span>e444a5086c43
 </code></pre>
-<table>
-<thead>
-<tr>
-<th>&#x8DEF;&#x5F84;</th>
-<th>&#x8BF4;&#x660E;</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>app</td>
-<td>&#x7A0B;&#x5E8F;&#x7684;&#x4E3B;&#x4F53;&#x4EE3;&#x7801;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app.toml</td>
-<td>&#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#xFF0C;&#x901A;&#x5E38;&#x4E3A;&#x8F6F;&#x94FE;&#x7684;conf&#x76EE;&#x5F55;&#x4E2D;&#x7684;&#x67D0;&#x4E00;&#x4E2A;&#x6587;&#x4EF6;</td>
-</tr>
-<tr>
-<td>env.init.sh</td>
-<td>&#x7528;&#x4E8E;&#x521D;&#x59CB;&#x5316;&#x73AF;&#x5883;&#x548C;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x7684;&#x811A;&#x672C;</td>
-</tr>
-<tr>
-<td>go.mod, go.sum</td>
-<td>go mod &#x4F9D;&#x8D56;&#x6240;&#x9700;&#x6587;&#x4EF6;</td>
-</tr>
-<tr>
-<td>logs</td>
-<td>&#x9ED8;&#x8BA4;&#x7684;&#x65E5;&#x5FD7;&#x6587;&#x4EF6;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>main.go</td>
-<td>&#x7A0B;&#x5E8F;&#x7684;&#x603B;&#x5165;&#x53E3;</td>
-</tr>
-<tr>
-<td>tools</td>
-<td>&#x5B58;&#x653E;&#x811A;&#x672C;&#x5DE5;&#x5177;&#x7684;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app/g</td>
-<td>&#x5B58;&#x653E;&#x5168;&#x5C40;&#x7C7B;&#x578B;&#x5B9A;&#x4E49;&#x6216;&#x53D8;&#x91CF;&#x7684;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app/g/errors.go</td>
-<td>&#x5168;&#x5C40;&#x81EA;&#x5B9A;&#x4E49;&#x9519;&#x8BEF;&#x4FE1;&#x606F;&#x53CA;&#x9519;&#x8BEF;&#x7801;</td>
-</tr>
-<tr>
-<td>app/g/type.go</td>
-<td>&#x5168;&#x5C40;&#x81EA;&#x5B9A;&#x4E49;&#x7C7B;&#x578B;</td>
-</tr>
-<tr>
-<td>app/modules</td>
-<td>&#x6A21;&#x5757;&#x76EE;&#x5F55;&#xFF0C;yago&#x7684;&#x7A0B;&#x5E8F;&#x90FD;&#x662F;&#x6309;&#x6A21;&#x5757;&#x6765;&#x7F16;&#x5199;&#x7684;</td>
-</tr>
-<tr>
-<td>app/modules/home</td>
-<td>&#x9ED8;&#x8BA4;&#x7684;home&#x6A21;&#x5757;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app/modules/homecmd</td>
-<td>home&#x6A21;&#x5757;&#x7684;cmd&#xFF08;&#x547D;&#x4EE4;&#x884C;&#xFF09;&#x670D;&#x52A1;&#x63A7;&#x5236;&#x5668;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app/modules/homehttp</td>
-<td>home&#x6A21;&#x5757;&#x7684;http&#xFF08;web&#xFF09;&#x670D;&#x52A1;&#x63A7;&#x5236;&#x5668;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app/modules/homerpc</td>
-<td>home&#x6A21;&#x5757;&#x7684;rpc&#xFF08;&#x8FDC;&#x7A0B;&#x8C03;&#x7528;&#xFF09;&#x670D;&#x52A1;&#x63A7;&#x5236;&#x5668;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app/modules/hometask</td>
-<td>home&#x6A21;&#x5757;&#x7684;task&#xFF08;&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#xFF0C;&#x5E38;&#x9A7B;&#x8FDB;&#x7A0B;&#xFF09;&#x670D;&#x52A1;&#x63A7;&#x5236;&#x5668;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app/modules/homedao</td>
-<td>home&#x6A21;&#x5757;&#x7684;&#x6570;&#x636E;&#x5E93;&#x6620;&#x5C04;&#x548C;&#x64CD;&#x4F5C;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app/modules/homemodel</td>
-<td>home&#x6A21;&#x5757;&#x7684;&#x4E3B;&#x8981;&#x4E1A;&#x52A1;&#x903B;&#x8F91;&#x5904;&#x7406;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app/route</td>
-<td>&#x8DEF;&#x7531;&#x6CE8;&#x518C;&#x5F00;&#x5173;&#x76EE;&#x5F55;</td>
-</tr>
-<tr>
-<td>app/third</td>
-<td>&#x7B2C;&#x4E09;&#x65B9;&#x8C03;&#x7528;api&#x76EE;&#x5F55;</td>
-</tr>
-</tbody>
-</table>
-
+</li>
+</ol>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#"></a></p><li><a href="#&#x5DF2;&#x77E5;&#x95EE;&#x9898;&#x53CA;&#x89E3;&#x51B3;&#x65B9;&#x6848;">1. &#x5DF2;&#x77E5;&#x95EE;&#x9898;&#x53CA;&#x89E3;&#x51B3;&#x65B9;&#x6848;</a></li></ul></div><a href="#&#x5DF2;&#x77E5;&#x95EE;&#x9898;&#x53CA;&#x89E3;&#x51B3;&#x65B9;&#x6848;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -790,12 +667,12 @@
 
             
                 
-                <a href="arch.html" class="navigation navigation-prev " aria-label="Previous page: 架构设计">
+                <a href="../third/" class="navigation navigation-prev " aria-label="Previous page: 第三方调用">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="../quick-start/quick-start.html" class="navigation navigation-next " aria-label="Next page: 快速开始">
+                <a href="../thanks.html" class="navigation navigation-next " aria-label="Next page: 感谢">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -806,7 +683,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"目录结构","level":"1.1.3","depth":2,"next":{"title":"快速开始","level":"1.2","depth":1,"path":"quick-start/quick-start.md","ref":"quick-start/quick-start.md","articles":[{"title":"安装","level":"1.2.1","depth":2,"path":"quick-start/install.md","ref":"quick-start/install.md","articles":[]},{"title":"Hello World","level":"1.2.2","depth":2,"path":"quick-start/start.md","ref":"quick-start/start.md","articles":[]}]},"previous":{"title":"架构设计","level":"1.1.2","depth":2,"path":"intro/arch.md","ref":"intro/arch.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"intro/dir.md","mtime":"2019-10-30T12:29:18.632Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-07T12:00:01.737Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"已知问题","level":"1.10","depth":1,"next":{"title":"感谢","level":"1.11","depth":1,"path":"thanks.md","ref":"thanks.md","articles":[]},"previous":{"title":"第三方调用","level":"1.9","depth":1,"path":"third/README.md","ref":"third/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"problem/problem.md","mtime":"2019-11-05T09:30:42.346Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-07T12:00:01.737Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
