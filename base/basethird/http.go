@@ -11,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -82,6 +83,22 @@ type HttpThird struct {
 	once             sync.Once
 }
 
+func (a *HttpThird) getConnTimeout() time.Duration {
+	ctimeout := 3
+	if a.ConnectTimeout != 0 {
+		ctimeout = a.ConnectTimeout
+	}
+	return time.Duration(ctimeout) * time.Second
+}
+
+func (a *HttpThird) getRequestTimeout() time.Duration {
+	wtimeout := 20
+	if a.ReadWriteTimeout != 0 {
+		wtimeout = a.ReadWriteTimeout
+	}
+	return time.Duration(wtimeout) * time.Second
+}
+
 func (a *HttpThird) getClient() *http.Client {
 	// @todo proxy
 	a.once.Do(func() {
@@ -89,9 +106,13 @@ func (a *HttpThird) getClient() *http.Client {
 			Transport: &http.Transport{
 				MaxIdleConnsPerHost: 100,
 				TLSClientConfig:     a.tlsCfg,
+				DialContext: (&net.Dialer{
+					Timeout: a.getConnTimeout(),
+					//KeepAlive: 30* time.Second,
+				}).DialContext,
 				//Proxy:               Proxy,
 			},
-			//Timeout: time.Duration(5) * time.Second,
+			Timeout: a.getRequestTimeout(),
 		}
 	})
 
@@ -99,21 +120,9 @@ func (a *HttpThird) getClient() *http.Client {
 }
 
 func (a *HttpThird) newRo() *grequests.RequestOptions {
-	ctimeout := 3
-	wtimeout := 20
-
-	if a.ConnectTimeout != 0 {
-		ctimeout = a.ConnectTimeout
-	}
-
-	if a.ReadWriteTimeout != 0 {
-		wtimeout = a.ReadWriteTimeout
-	}
 
 	ro := &grequests.RequestOptions{
 		HTTPClient:     a.getClient(),
-		DialTimeout:    time.Duration(ctimeout) * time.Second,
-		RequestTimeout: time.Duration(wtimeout) * time.Second,
 		UserAgent:      "github.com-hulklab-yago",
 	}
 
