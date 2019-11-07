@@ -1,6 +1,6 @@
 创建你的hello world
 
-### 用 yago 在当前目录创建你的项目 my_app
+### 用 Yago 在当前目录创建你的项目 my_app
 ```bash
 yago init -a my_app
 ```

@@ -1,6 +1,6 @@
 一个yago程序的配置文件
 
-```bash
+```toml
 [app]
 
 app_name = "app"
@@ -133,3 +133,109 @@ max_send_msgsize_mb =  10
 # cert_file = "./conf/server.pem"
 
 ```
+
+
+## 应用配置
+| 配置项 | 类型 | 说明 |
+| ------- | ------- |------- |
+| app.app_name | String | 程序名称， 默认 “APP”， 作为配置文件环境变量的前缀 <br/> 比如 export APP_APP_TASK_ENABLE=false，<br/>就相当于 app.task_enable=false，<br/>而且环境变量配置项会比配置文件的中的值有更高的优先级 |
+| app.env | String | 运行环境: dev, prod |
+| app.debug | Bool | 是否开启debug<br/>debug=true会输出更详细的控制台调试信息|
+| app.pidfile | String| 设置保存进程号的文件，默认不设置不创建 |
+| app.http_enable | Bool | 是否开启http服务 |
+| app.http_addr | String | http服务监听的ip地址和端口 |
+| app.http_stop_time_wait | Duration | http服务收到关闭信号时的最大等待时长，默认10s |
+| app.http_ssl_on | Bool | 是否开启https |
+| app.http_cert_file | String | https证书文件地址 |
+| app.http_cert_key | String | https证书私钥 |
+| app.http_cors_allow_all_origins | Bool | 是否允许所有origin访问 |
+| app.http_cors_allow_origins | StringSlice | 允许哪些指定的origin访问<br>使用时需要将app.http_cors_allow_all_origins 设为 false |
+| app.http_cors_allow_methods | StringSlice | 允许客户端使用哪些方法发起请求 |
+| app.http_cors_allow_headers | StringSlice | 服务器支持的所有头信息字段 |
+| app.http_cors_allow_credentials | Bool | 是否允许发送Cookie |
+| app.http_cors_max_age| Duration | 用来指定预检请求的有效期，单位为秒 |
+| app.http_gzip_on | Bool | 是否开启http压缩，默认为true |
+| app.http_gzip_level | Int | http压缩模式<br/>1：默认，2：速度优先 3：大小优先 |
+| app.http_pprof_on | Bool | 是否开启pprof，默认为false |
+| app.http_view_render | Bool | 是否开启模版渲染 |
+| app.http_view_path | String | 模版路径 |
+| app.http_static_path | String | 静态资源路径 |
+| app.rpc_enable | Bool | 是否开启grpc服务 |
+| app.rpc_addr | String | grpc服务监听的ip地址和端口 |
+| app.rpc_stop_time_wait | Duration | grpc服务收到关闭信号时的最大等待时长，默认10s | 
+| app.rpc_reflect_on | Bool | 开启grpc_cli调用 |
+| app.rpc_ssl_on | Bool | 是否grpc SSL服务 |
+| app.rpc_cert_file | String | grpc SSL证书文件地址 |
+| app.rpc_key_file | String | grpc SSL私钥文件地址 |
+| app.task_enable | Bool | 是否开启task服务 ｜
+| app.task_stop_time_wait | Duration | task服务收到关闭信号时的最大等待时长，默认10s |
+
+## 组件配置
+
+日志组件
+
+| 配置项 | 类型 | 说明 |
+| ------- | ------- |------- |
+| logger.formatter | String | logger组件的日志格式，默认text，还有json可选 |
+| logger.level | Int | 日志最低等级 <br> Panic = 0, Fatal = 1, Error = 2, Warn = 3, Info = 4, Debug = 5, Trace = 6 <br> 数字小于等于该值的日志才会显示 |
+| logger.file_path | String | 日志文件的输出地址 |
+| logger.max_backups | Int | 最大保留的备份数 |
+| logger.max_age | Duration | 日志最大保留天数 |
+| logger.max_size | Int | 文件最大大小(mb) |
+| logger.compress | Bool | 是否开启日志文件GZIP压缩 |
+| logger.stdout_enable | Bool | 是否打印到标准输出 |
+
+数据库组件
+
+| 配置项 | 类型 | 说明 |
+| ------- | ------- |------- |
+| db.host | String | 数据库ip地址，默认127.0.0.1 |
+| db.port | String | 数据库端口地址，默认3306 |
+| db.user | String | 数据库用户 |
+| db.password | String | 数据库用户密码 |
+| db.database | String | 默认数据库 |
+| db.prefix | String | 数据库表名前缀 |
+| db.timezone | String | 数据库时区 Asia/Shanghai |
+| db.charset | String | 默认字符集 |
+| db.max_life_time | Duration | 最大连接生命周期 |
+| db.max_idle_conn | Int | 连接池最大空闲连接数，默认20 |
+| db.max_open_conn | Int | 连接池最大打开连接数，默认500 |
+| db.show_log | Bool | 是否打印SQL日志，默认true |
+
+Redis组件
+
+| 配置项 | 类型 | 说明 |
+| ------- | ------- |------- |
+| redis.addr | String | Redis Server ip加端口号，默认 "127.0.0.1:6379" |
+| redis.auth | String | Redis Server 认证信息 |
+| redis.db | Int | Redis Server 默认db，默认 0 |
+| redis.max_idle | Int | Redis 连接池最大空闲连接数 |
+| redis.idle_timeout | Int | Redis 连接池空闲超时时间 |
+
+Mongodb组件
+
+| 配置项 | 类型 | 说明 |
+| ------- | ------- |------- |
+| mongodb.mongodb_uri | String | Mongodb连接uri<br>参考https://docs.mongodb.com/manual/reference/connection-string/ |
+| mongodb.database | String | 默认数据库 |
+
+Kafka组件
+
+| 配置项 | 类型 | 说明 |
+| ------- | ------- |------- |
+| kafka.cluster | String | Kafka集群地址 |
+| kafka.topic | String | topic名称 |
+
+## 第三方API调用
+
+| 配置项 | 类型 | 说明 |
+| ------- | ------- |------- |
+| *_api.domain | String | http请求ip+端口或者是已经域名解析的域名+端口 |
+| *_api.host | String | http请求指定的host |
+| *_api.rpc_address | String | grpc服务地址 |
+| *_api.timeout | Duration | 请求超时时间 |
+| *_api.max_recv_msgsize_mb | Int | grpc可以接收的最大消息大小，默认 4m |
+| *_api.max_send_msgsize_mb | Int | grpc可以发送的最大消息大小，默认 4m |
+| *_api.ssl_on | Bool | grpc请求是否开启证书校验 |
+| *_api.cert_file | String | grpc证书地址 |
+
