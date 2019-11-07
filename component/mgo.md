@@ -32,6 +32,7 @@ database = "test"
 我们在模版 app.toml 中默认配置开启了 mgo 组件，可根据实际情况进行调整。
 
 ## 使用 Mongo 组件
+### 增加
 * 添加一行记录
 
 ```go
@@ -50,6 +51,42 @@ insertResult, err := mgo.Ins().C("test").InsertMany(bson.A{
 })
 
 ```
+
+### 删除
+* 删除一行记录
+
+```go
+result, err := mgo.Ins().C("test").DeleteOne(bson.M{"name":"henry"})
+```
+
+* 删除多行记录
+
+```go
+result, err:= mgo.Ins().C("test").DeleteMany(bson.M{"name":"henry"})
+```
+
+
+### 修改 
+* 替换一行记录
+
+```go
+result, err := mgo.Ins().C("test").ReplaceOne(bson.M{"name":"sheldon"}, bson.M{"name":"lily","age": 18})
+```
+
+* 更新一行记录
+
+```go
+result, err := mgo.Ins().C("test").UpdateOne(bson.M{"name": "sheldon"}, bson.M{"$set": bson.M{"age": 18}})
+```
+
+* 更新多行记录
+
+```go
+result, err := mgo.Ins().C("test").UpdateMany(bson.M{"name": bson.M{"$ne": ""}}, bson.M{"$set": bson.M{"age": 18}})
+```
+
+
+### 查询 
 
 * 查询一行记录
 
@@ -72,8 +109,87 @@ if err := cursor.All(&resultAll); err != nil {
 }
 ```
 
+* 查询记录条数
 
+```go
+result, err := mgo.Ins().C("test").CountDocuments(bson.M{"name":"tom"})
+```
 
+* 查询 Distinct
 
+```go
+result, err := mgo.Ins().C("test").Distinct("name", bson.M{})
+```
+
+* 聚合 Aggregate
+
+```go
+cursor, err := mgo.Ins().C("test").Aggregate(bson.A{bson.D{bson.E{Key: "$skip", Value: 1}}})
+if err != nil {
+	// deal err
+}
+
+resultAll := bson.A{}
+if err := cursor.All(&resultAll); err != nil {
+	// deal err
+}
+```
+
+### 复合操作
+* 更新或添加
+
+```go
+result, err := mgo.Ins().C("test").Upsert(bson.M{"name": "test"}, bson.M{"name": "test", "age": 18})
+```
+
+* BulkWrite
+
+```go
+result, err := mgoClient.C("test").BulkWrite([]mongo.WriteModel{
+    &mongo.InsertOneModel{Document: bson.M{"name": "x"}},
+    &mongo.DeleteOneModel{Filter: bson.M{"name": "x"}},
+})
+```
+
+* 查找修改
+
+```go
+findResult := mgo.Ins().C("test").FindOneAndUpdate(bson.M{"name": "lily"},bson.M{"$set":bson.M{"age":17}})
+if findResult.Err() != nil {
+	// deal err
+}
+
+result := bson.M{}
+if err := findResult.Decode(&result);err != nil {
+	// deal err
+}
+```
+
+* 查找替换
+ ```go
+findResult := mgo.Ins().C("test").FindOneAndReplace(bson.M{"name": "lily"},bson.M{"$set":bson.M{"name":"lily","age":18}})
+if findResult.Err() != nil {
+	// deal err
+}
+
+result := bson.M{}
+if err := findResult.Decode(&result);err != nil {
+	// deal err
+}
+```
+
+* 查找删除
+
+ ```go
+findResult := mgo.Ins().C("test").FindOneAndDelete(bson.M{"name":"lily"}})
+if findResult.Err() != nil {
+	// deal err
+}
+
+result := bson.M{}
+if err := findResult.Decode(&result);err != nil {
+	// deal err
+}
+```
 
 

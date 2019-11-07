@@ -119,3 +119,8 @@ yago 的组件分两部分，一部分十分常用的组件我们放在 `yago/co
 还有一部分我们认为并不是每个项目都需要，单独开源了一个项目，`https://github.com/hulklab/yago-coms`，里面的每个组件可以单独下载。
 
  
+* [日志组件](/component/logger.md)
+* [ORM 组件](/component/orm.md)
+* [Redis 组件](/component/rds.md)
+* [Kafka 组件](/component/kafka.md)
+* [Mongo 组件](/component/mgo.md)
