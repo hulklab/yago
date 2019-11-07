@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>goroutine 限流 · yago 中文文档</title>
+        <title>Redis 组件 · yago 中文文档</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -73,10 +73,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="date.html" />
+    <link rel="next" href="kafka.html" />
     
     
-    <link rel="prev" href="library.html" />
+    <link rel="prev" href="orm.html" />
     
 
     </head>
@@ -405,9 +405,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6" data-path="../component/component.html">
+        <li class="chapter " data-level="1.6" data-path="component.html">
             
-                <a href="../component/component.html">
+                <a href="component.html">
             
                     
                         <b>1.6.</b>
@@ -421,9 +421,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.1" data-path="../component/logger.html">
+        <li class="chapter " data-level="1.6.1" data-path="logger.html">
             
-                <a href="../component/logger.html">
+                <a href="logger.html">
             
                     
                         <b>1.6.1.</b>
@@ -436,9 +436,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.2" data-path="../component/orm.html">
+        <li class="chapter " data-level="1.6.2" data-path="orm.html">
             
-                <a href="../component/orm.html">
+                <a href="orm.html">
             
                     
                         <b>1.6.2.</b>
@@ -451,9 +451,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.3" data-path="../component/rds.html">
+        <li class="chapter active" data-level="1.6.3" data-path="rds.html">
             
-                <a href="../component/rds.html">
+                <a href="rds.html">
             
                     
                         <b>1.6.3.</b>
@@ -466,9 +466,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4" data-path="../component/kafka.html">
+        <li class="chapter " data-level="1.6.4" data-path="kafka.html">
             
-                <a href="../component/kafka.html">
+                <a href="kafka.html">
             
                     
                         <b>1.6.4.</b>
@@ -481,9 +481,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5" data-path="../component/mgo.html">
+        <li class="chapter " data-level="1.6.5" data-path="mgo.html">
             
-                <a href="../component/mgo.html">
+                <a href="mgo.html">
             
                     
                         <b>1.6.5.</b>
@@ -501,9 +501,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7" data-path="library.html">
+        <li class="chapter " data-level="1.7" data-path="../library/library.html">
             
-                <a href="library.html">
+                <a href="../library/library.html">
             
                     
                         <b>1.7.</b>
@@ -517,9 +517,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter active" data-level="1.7.1" data-path="sema.html">
+        <li class="chapter " data-level="1.7.1" data-path="../library/sema.html">
             
-                <a href="sema.html">
+                <a href="../library/sema.html">
             
                     
                         <b>1.7.1.</b>
@@ -532,9 +532,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.2" data-path="date.html">
+        <li class="chapter " data-level="1.7.2" data-path="../library/date.html">
             
-                <a href="date.html">
+                <a href="../library/date.html">
             
                     
                         <b>1.7.2.</b>
@@ -547,9 +547,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.3" data-path="str.html">
+        <li class="chapter " data-level="1.7.3" data-path="../library/str.html">
             
-                <a href="str.html">
+                <a href="../library/str.html">
             
                     
                         <b>1.7.3.</b>
@@ -562,9 +562,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.4" data-path="arr.html">
+        <li class="chapter " data-level="1.7.4" data-path="../library/arr.html">
             
-                <a href="arr.html">
+                <a href="../library/arr.html">
             
                     
                         <b>1.7.4.</b>
@@ -577,9 +577,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.5" data-path="math.html">
+        <li class="chapter " data-level="1.7.5" data-path="../library/math.html">
             
-                <a href="math.html">
+                <a href="../library/math.html">
             
                     
                         <b>1.7.5.</b>
@@ -708,7 +708,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >goroutine 限流</a>
+        <a href=".." >Redis 组件</a>
     </h1>
 </div>
 
@@ -723,23 +723,71 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h2 id="goroutine_&#x9650;&#x6D41;">1. goroutine &#x9650;&#x6D41;</h2>
-<p>goroutine &#x867D;&#x597D;&#xFF0C;&#x6709;&#x65F6;&#x5019;&#x4F7F;&#x7528;&#x8FC7;&#x5F53;&#x4E5F;&#x4F1A;&#x9020;&#x6210; goroutine &#x6CC4;&#x9732;&#x95EE;&#x9898;&#xFF0C;semalib &#x7684;&#x4F5C;&#x7528;&#x662F;&#x7528;&#x6765;&#x63A7;&#x5236;&#x5E76;&#x53D1; goroutine &#x7684;&#x4E2A;&#x6570;&#xFF0C;
-&#x8FD9;&#x5728; for &#x5FAA;&#x73AF;&#x91CC;&#x4F7F;&#x7528; goroutine &#x65F6;&#x7279;&#x522B;&#x7BA1;&#x7528;&#x3002;</p>
-<p>&#x4F7F;&#x7528;&#x65B9;&#x5F0F;&#x5982;&#x4E0B;&#xFF1A;</p>
-<pre class="language-"><code class="lang-go"><span class="token comment">// &#x6784;&#x9020;&#x4E00;&#x4E2A;&#x5E76;&#x53D1; 3 &#x4E2A; goroutine &#x7684; sema</span>
-sema <span class="token operator">:=</span> semalib<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
-<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">{</span>
-    sema<span class="token punctuation">.</span><span class="token function">Acquire</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// &#x6570;&#x91CF;&#x4E0D;&#x8DB3;&#xFF0C;&#x963B;&#x585E;&#x7B49;&#x5F85;</span>
-    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">defer</span> sema<span class="token punctuation">.</span><span class="token function">Release</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                                <h1 id="Redis_&#x7EC4;&#x4EF6;">Redis &#x7EC4;&#x4EF6;</h1>
+<p>Redis &#x7EC4;&#x4EF6;&#x6211;&#x4EEC;&#x4F9D;&#x8D56;&#x7684;&#x5F00;&#x6E90;&#x5305;&#x662F; <code>github.com/garyburd/redigo/redis</code>&#x3002;</p>
+<p>&#x6309;&#x7167;&#x7EC4;&#x4EF6;&#x7684;&#x8BBE;&#x8BA1;&#xFF0C;&#x6211;&#x4EEC;&#x5B9A;&#x4E49;&#x4E86;&#x81EA;&#x5DF1;&#x7684; Redis &#x7ED3;&#x6784;&#x5BF9;&#x5176;&#x8FDB;&#x884C;&#x4E86;&#x7EC4;&#x5408;&#xFF0C;&#x5728;&#x4FDD;&#x7559;&#x5176;&#x539F;&#x751F;&#x7684;&#x529F;&#x80FD;&#x4E4B;&#x5916;&#xFF0C;&#x4EE5;&#x4FBF;&#x6269;&#x5C55;&#x3002;</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// yago/coms/rds/redis.go</span>
+<span class="token keyword">type</span> Rds <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    redis<span class="token punctuation">.</span>Conn
 <span class="token punctuation">}</span>
-<span class="token comment">// &#x7B49;&#x5F85;&#x6240;&#x6709;&#x7684; goroutine &#x4EFB;&#x52A1;&#x6267;&#x884C;&#x7ED3;&#x675F;</span>
-sema<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 </code></pre>
-<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#"></a></p><li><a href="#goroutine_&#x9650;&#x6D41;">1. goroutine &#x9650;&#x6D41;</a></li></ul></div><a href="#goroutine_&#x9650;&#x6D41;" id="goTop"><i class="fa fa-arrow-up"></i></a>
+<p>&#x6240;&#x4EE5;&#x4F60;&#x53EF;&#x4EE5;&#x67E5;&#x770B; <a href="https://github.com/gomodule/redigo" target="_blank">redigo &#x5B98;&#x65B9;&#x6587;&#x6863;</a> &#x6765;&#x83B7;&#x53D6;&#x6240;&#x6709;&#x652F;&#x6301;&#x7684; api&#x3002;</p>
+<p>&#x672C;&#x6587;&#x4E2D;&#x4EC5;&#x4ECB;&#x7ECD;&#x90E8;&#x5206;&#x5E38;&#x7528;&#x7684; api &#x4EE5;&#x53CA;&#x6269;&#x5C55;&#x7684; api&#x3002;</p>
+<h2 id="&#x914D;&#x7F6E;_Redis_&#x7EC4;&#x4EF6;">1. &#x914D;&#x7F6E; Redis &#x7EC4;&#x4EF6;</h2>
+<pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">redis</span><span class="token punctuation">]</span>
+<span class="token key property">addr</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:6379&quot;</span>
+<span class="token key property">auth</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+<span class="token key property">db</span> <span class="token punctuation">=</span> <span class="token number">0</span>
+<span class="token key property">max_idle</span> <span class="token punctuation">=</span> <span class="token number">5</span>
+<span class="token key property">idle_timeout</span> <span class="token punctuation">=</span> <span class="token number">30</span>
+</code></pre>
+<p>&#x6211;&#x4EEC;&#x5728;&#x6A21;&#x7248; app.toml &#x4E2D;&#x9ED8;&#x8BA4;&#x914D;&#x7F6E;&#x5F00;&#x542F;&#x4E86;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;&#xFF0C;&#x53EF;&#x6839;&#x636E;&#x5B9E;&#x9645;&#x60C5;&#x51B5;&#x8FDB;&#x884C;&#x8C03;&#x6574;&#x3002;</p>
+<h2 id="&#x4F7F;&#x7528;_Redis_&#x7EC4;&#x4EF6;">2. &#x4F7F;&#x7528; Redis &#x7EC4;&#x4EF6;</h2>
+<ul>
+<li>&#x4F7F;&#x7528;&#x539F;&#x751F;&#x63A5;&#x53E3;</li>
+</ul>
+<pre class="language-"><code class="lang-go">rc <span class="token operator">:=</span> rds<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+reply<span class="token punctuation">,</span> err <span class="token operator">:=</span> rc<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span><span class="token string">&quot;SET&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;test_key&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;senyuan&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;NX&quot;</span><span class="token punctuation">)</span>
+
+v<span class="token punctuation">,</span> err <span class="token operator">:=</span> redis<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span>rc<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span><span class="token string">&quot;GET&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;test_key&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+<blockquote>
+<p>redigo &#x5BF9; Do &#x7684;&#x8FD4;&#x56DE;&#x503C;&#x505A;&#x4E86;&#x4E00;&#x4E9B;&#x5C01;&#x88C5;&#xFF0C;&#x9664;&#x4E86; redis.String &#x5916;&#xFF0C;&#x5176;&#x4ED6;&#x7684;&#x53C2;&#x8003; <a href="https://github.com/gomodule/redigo/blob/master/redis/reply.go" target="_blank">&#x53C2;&#x8003;&#x6587;&#x4EF6;</a></p>
+</blockquote>
+<ul>
+<li>&#x4F7F;&#x7528; yago &#x5C01;&#x88C5;&#x7684; cmd</li>
+</ul>
+<pre class="language-"><code class="lang-go">rc <span class="token operator">:=</span> rds<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+s<span class="token punctuation">,</span> err <span class="token operator">:=</span> redis<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span>rc<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">&quot;test_key2&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;shanglin&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;ex&quot;</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+s2<span class="token punctuation">,</span> err <span class="token operator">:=</span> redis<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span>rc<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">&quot;test_key2&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+<blockquote>
+<p> &#x7531;&#x4E8E; redis &#x547D;&#x4EE4;&#x592A;&#x591A;&#xFF0C;&#x6B64;&#x5904;&#x4E0D;&#x4E00;&#x4E00;&#x4E3E;&#x4F8B;&#x4E86;&#xFF0C;&#x5E38;&#x7528;&#x7684;&#x547D;&#x4EE4;&#x90FD;&#x5C01;&#x88C5;&#x5728; <code>yago/coms/rds/redis_cmd.go</code> &#x4E2D;</p>
+</blockquote>
+<ul>
+<li>&#x53D1;&#x5E03;&#x4E0E;&#x8BA2;&#x9605;</li>
+</ul>
+<pre class="language-"><code class="lang-go">subscriber<span class="token punctuation">,</span> err <span class="token operator">:=</span> rds<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">NewSubscriber</span><span class="token punctuation">(</span>topic<span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">defer</span> subscriber<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    r <span class="token operator">:=</span> rds<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">defer</span> r<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+    <span class="token comment">// &#x53D1;&#x5E03;</span>
+    r<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span><span class="token string">&quot;publish&quot;</span><span class="token punctuation">,</span> topic<span class="token punctuation">,</span> <span class="token string">&quot;hello&quot;</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// &#x8BA2;&#x9605;</span>
+err <span class="token operator">=</span> subscriber<span class="token punctuation">.</span><span class="token function">Subscribe</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>bytes <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">&quot;msg:&quot;</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Redis_&#x7EC4;&#x4EF6;">Redis &#x7EC4;&#x4EF6;</a></p><li><a href="#&#x914D;&#x7F6E;_Redis_&#x7EC4;&#x4EF6;">1. &#x914D;&#x7F6E; Redis &#x7EC4;&#x4EF6;</a></li><li><a href="#&#x4F7F;&#x7528;_Redis_&#x7EC4;&#x4EF6;">2. &#x4F7F;&#x7528; Redis &#x7EC4;&#x4EF6;</a></li></ul></div><a href="#&#x914D;&#x7F6E;_Redis_&#x7EC4;&#x4EF6;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -766,12 +814,12 @@ sema<span class="token punctuation">.</span><span class="token function">Wait</s
 
             
                 
-                <a href="library.html" class="navigation navigation-prev " aria-label="Previous page: 类库">
+                <a href="orm.html" class="navigation navigation-prev " aria-label="Previous page: ORM 组件">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="date.html" class="navigation navigation-next " aria-label="Next page: 日期">
+                <a href="kafka.html" class="navigation navigation-next " aria-label="Next page: Kafka 组件">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -782,7 +830,7 @@ sema<span class="token punctuation">.</span><span class="token function">Wait</s
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"goroutine 限流","level":"1.7.1","depth":2,"next":{"title":"日期","level":"1.7.2","depth":2,"path":"library/date.md","ref":"library/date.md","articles":[]},"previous":{"title":"类库","level":"1.7","depth":1,"path":"library/library.md","ref":"library/library.md","articles":[{"title":"goroutine 限流","level":"1.7.1","depth":2,"path":"library/sema.md","ref":"library/sema.md","articles":[]},{"title":"日期","level":"1.7.2","depth":2,"path":"library/date.md","ref":"library/date.md","articles":[]},{"title":"字符串","level":"1.7.3","depth":2,"path":"library/str.md","ref":"library/str.md","articles":[]},{"title":"数组切片","level":"1.7.4","depth":2,"path":"library/arr.md","ref":"library/arr.md","articles":[]},{"title":"数学","level":"1.7.5","depth":2,"path":"library/math.md","ref":"library/math.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"library/sema.md","mtime":"2019-11-07T12:04:06.803Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-07T12:25:19.353Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Redis 组件","level":"1.6.3","depth":2,"next":{"title":"Kafka 组件","level":"1.6.4","depth":2,"path":"component/kafka.md","ref":"component/kafka.md","articles":[]},"previous":{"title":"ORM 组件","level":"1.6.2","depth":2,"path":"component/orm.md","ref":"component/orm.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"component/rds.md","mtime":"2019-11-07T12:04:02.981Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-07T12:25:19.353Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

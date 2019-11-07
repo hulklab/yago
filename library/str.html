@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>goroutine 限流 · yago 中文文档</title>
+        <title>字符串 · yago 中文文档</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -73,10 +73,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="date.html" />
+    <link rel="next" href="arr.html" />
     
     
-    <link rel="prev" href="library.html" />
+    <link rel="prev" href="date.html" />
     
 
     </head>
@@ -517,7 +517,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter active" data-level="1.7.1" data-path="sema.html">
+        <li class="chapter " data-level="1.7.1" data-path="sema.html">
             
                 <a href="sema.html">
             
@@ -547,7 +547,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.3" data-path="str.html">
+        <li class="chapter active" data-level="1.7.3" data-path="str.html">
             
                 <a href="str.html">
             
@@ -708,7 +708,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >goroutine 限流</a>
+        <a href=".." >字符串</a>
     </h1>
 </div>
 
@@ -723,23 +723,52 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h2 id="goroutine_&#x9650;&#x6D41;">1. goroutine &#x9650;&#x6D41;</h2>
-<p>goroutine &#x867D;&#x597D;&#xFF0C;&#x6709;&#x65F6;&#x5019;&#x4F7F;&#x7528;&#x8FC7;&#x5F53;&#x4E5F;&#x4F1A;&#x9020;&#x6210; goroutine &#x6CC4;&#x9732;&#x95EE;&#x9898;&#xFF0C;semalib &#x7684;&#x4F5C;&#x7528;&#x662F;&#x7528;&#x6765;&#x63A7;&#x5236;&#x5E76;&#x53D1; goroutine &#x7684;&#x4E2A;&#x6570;&#xFF0C;
-&#x8FD9;&#x5728; for &#x5FAA;&#x73AF;&#x91CC;&#x4F7F;&#x7528; goroutine &#x65F6;&#x7279;&#x522B;&#x7BA1;&#x7528;&#x3002;</p>
-<p>&#x4F7F;&#x7528;&#x65B9;&#x5F0F;&#x5982;&#x4E0B;&#xFF1A;</p>
-<pre class="language-"><code class="lang-go"><span class="token comment">// &#x6784;&#x9020;&#x4E00;&#x4E2A;&#x5E76;&#x53D1; 3 &#x4E2A; goroutine &#x7684; sema</span>
-sema <span class="token operator">:=</span> semalib<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
-<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">{</span>
-    sema<span class="token punctuation">.</span><span class="token function">Acquire</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// &#x6570;&#x91CF;&#x4E0D;&#x8DB3;&#xFF0C;&#x963B;&#x585E;&#x7B49;&#x5F85;</span>
-    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">defer</span> sema<span class="token punctuation">.</span><span class="token function">Release</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-<span class="token comment">// &#x7B49;&#x5F85;&#x6240;&#x6709;&#x7684; goroutine &#x4EFB;&#x52A1;&#x6267;&#x884C;&#x7ED3;&#x675F;</span>
-sema<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                                <h2 id="&#x5B57;&#x7B26;&#x4E32;&#x51FD;&#x6570;">1. &#x5B57;&#x7B26;&#x4E32;&#x51FD;&#x6570;</h2>
+<ul>
+<li><p>md5 &#x52A0;&#x5BC6;&#x5B57;&#x7B26;&#x4E32;</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// output: 29ddc288099264c17b07baf44d3f0adc</span>
+md5Value <span class="token operator">:=</span> str<span class="token punctuation">.</span><span class="token function">Md5</span><span class="token punctuation">(</span><span class="token string">&quot;kate&quot;</span><span class="token punctuation">)</span>
 </code></pre>
-<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#"></a></p><li><a href="#goroutine_&#x9650;&#x6D41;">1. goroutine &#x9650;&#x6D41;</a></li></ul></div><a href="#goroutine_&#x9650;&#x6D41;" id="goTop"><i class="fa fa-arrow-up"></i></a>
+</li>
+<li><p>sha1 &#x52A0;&#x5BC6;&#x5B57;&#x7B26;&#x4E32;</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// 986641af5eabfb409d9ba99ba07f746ce8fdc2af</span>
+sha1Value <span class="token operator">:=</span> str<span class="token punctuation">.</span><span class="token function">Sha1</span><span class="token punctuation">(</span><span class="token string">&quot;poly&quot;</span><span class="token punctuation">)</span>
+</code></pre>
+</li>
+<li><p>&#x751F;&#x6210;&#x5168;&#x5C40;&#x552F;&#x4E00; id</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// output: 36d9b8ef728ff3c09c15cfbbe0fdcfee</span>
+uniqId <span class="token operator">:=</span> str<span class="token punctuation">.</span><span class="token function">UniqueId</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+</li>
+<li><p>&#x751F;&#x6210;&#x5168;&#x5C40;&#x552F;&#x4E00;&#x77ED; id</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// output: 3LwHM98LvrT</span>
+shortId <span class="token operator">:=</span> str<span class="token punctuation">.</span><span class="token function">UniqueIdShort</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+</li>
+<li><p>&#x4E0B;&#x5212;&#x7EBF;&#x8F6C;&#x9A7C;&#x5CF0;</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// output: AaBbCc</span>
+camel <span class="token operator">:=</span> str<span class="token punctuation">.</span><span class="token function">CamelString</span><span class="token punctuation">(</span><span class="token string">&quot;aa_bb_cc&quot;</span><span class="token punctuation">)</span>
+</code></pre>
+</li>
+<li><p>&#x9996;&#x5B57;&#x6BCD;&#x5927;&#x5199;</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// output: Hello</span>
+uc <span class="token operator">:=</span> str<span class="token punctuation">.</span><span class="token function">Ucfirst</span><span class="token punctuation">(</span><span class="token string">&quot;hello&quot;</span><span class="token punctuation">)</span>
+</code></pre>
+</li>
+<li><p>map[string]string -&gt; string</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// output: k1=v1&amp;k2=v2</span>
+m <span class="token operator">:=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span><span class="token string">&quot;k1&quot;</span><span class="token punctuation">:</span><span class="token string">&quot;v1&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;k2&quot;</span><span class="token punctuation">:</span><span class="token string">&quot;v2&quot;</span><span class="token punctuation">}</span>
+s <span class="token operator">:=</span> str<span class="token punctuation">.</span><span class="token function">Kv2str</span><span class="token punctuation">(</span>m<span class="token punctuation">,</span><span class="token string">&quot;=&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;&amp;&quot;</span><span class="token punctuation">)</span>
+</code></pre>
+</li>
+<li><p>string -&gt; map[string]string</p>
+<pre class="language-"><code class="lang-go"><span class="token comment">// output: map[k1:v1 k2:v2]</span>
+s <span class="token operator">:=</span> <span class="token string">&quot;k1=v1&amp;k2=v2&quot;</span>
+str<span class="token punctuation">.</span><span class="token function">Str2kv</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span><span class="token string">&quot;=&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;&amp;&quot;</span><span class="token punctuation">)</span>
+</code></pre>
+</li>
+</ul>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#"></a></p><li><a href="#&#x5B57;&#x7B26;&#x4E32;&#x51FD;&#x6570;">1. &#x5B57;&#x7B26;&#x4E32;&#x51FD;&#x6570;</a></li></ul></div><a href="#&#x5B57;&#x7B26;&#x4E32;&#x51FD;&#x6570;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -766,12 +795,12 @@ sema<span class="token punctuation">.</span><span class="token function">Wait</s
 
             
                 
-                <a href="library.html" class="navigation navigation-prev " aria-label="Previous page: 类库">
+                <a href="date.html" class="navigation navigation-prev " aria-label="Previous page: 日期">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="date.html" class="navigation navigation-next " aria-label="Next page: 日期">
+                <a href="arr.html" class="navigation navigation-next " aria-label="Next page: 数组切片">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -782,7 +811,7 @@ sema<span class="token punctuation">.</span><span class="token function">Wait</s
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"goroutine 限流","level":"1.7.1","depth":2,"next":{"title":"日期","level":"1.7.2","depth":2,"path":"library/date.md","ref":"library/date.md","articles":[]},"previous":{"title":"类库","level":"1.7","depth":1,"path":"library/library.md","ref":"library/library.md","articles":[{"title":"goroutine 限流","level":"1.7.1","depth":2,"path":"library/sema.md","ref":"library/sema.md","articles":[]},{"title":"日期","level":"1.7.2","depth":2,"path":"library/date.md","ref":"library/date.md","articles":[]},{"title":"字符串","level":"1.7.3","depth":2,"path":"library/str.md","ref":"library/str.md","articles":[]},{"title":"数组切片","level":"1.7.4","depth":2,"path":"library/arr.md","ref":"library/arr.md","articles":[]},{"title":"数学","level":"1.7.5","depth":2,"path":"library/math.md","ref":"library/math.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"library/sema.md","mtime":"2019-11-07T12:04:06.803Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-07T12:25:19.353Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"字符串","level":"1.7.3","depth":2,"next":{"title":"数组切片","level":"1.7.4","depth":2,"path":"library/arr.md","ref":"library/arr.md","articles":[]},"previous":{"title":"日期","level":"1.7.2","depth":2,"path":"library/date.md","ref":"library/date.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"library/str.md","mtime":"2019-11-07T12:04:03.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-07T12:25:19.353Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
