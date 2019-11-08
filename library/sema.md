@@ -1,4 +1,4 @@
-## goroutine 限流
+# goroutine 限流
 goroutine 虽好，有时候使用过当也会造成 goroutine 泄露问题，semalib 的作用是用来控制并发 goroutine 的个数，
 这在 for 循环里使用 goroutine 时特别管用。
 

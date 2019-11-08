@@ -1,4 +1,4 @@
-## 日期
+# 日期
 go 的时间库已经很强大了，yago 基于 go 的时间库封装了类似 php 的 date 和 strtotime 函数
 
 使用方式如下：
