@@ -1,6 +1,6 @@
-# Yago
+# Summary
 
-* [yago 简介](README.md)
+* [Yago 简介](README.md)
     * [创作背景](intro/intro.md)
     * [架构设计](intro/arch.md)
     * [目录结构](intro/dir.md)
@@ -9,11 +9,15 @@
     * [Hello World](quick-start/start.md)
 * [配置](config/config.md)
     * [配置文件详细介绍](config/detail.md)
-* [路由](route/README.md)
-    * [http 路由](route/http.md)
-    * [rpc 路由](route/rpc.md)
-    * [task 路由](route/task.md)
-    * [cmd 路由](route/cmd.md)
+* [路由](route/route.md)
+* [模块](module/module.md)
+    * [控制器](module/controller.md)
+        * [Http](module/controller/http.md)
+        * [Rpc](module/controller/rpc.md)
+        * [Cmd](module/controller/cmd.md)
+        * [Task](module/controller/task.md)
+    * [模型](module/model.md)
+    * [数据映射](module/dao.md)
 * [组件](component/component.md)
     * [日志组件](component/logger.md)
     * [ORM 组件](component/orm.md)
@@ -29,4 +33,6 @@
 * [第三方调用](third/third.md)
     * [调用 http 接口](third/http.md)
     * [调用 rpc 接口](third/rpc.md)
+* [已知问题](problem/problem.md)
 * [感谢](thanks.md)
+
