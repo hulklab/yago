@@ -16,6 +16,7 @@
         * [RPC](module/controller/rpc.md)
         * [Cmd](module/controller/cmd.md)
         * [Task](module/controller/task.md)
+        * [Protobuf 规范](module/controller/protobuf.md)
     * [模型](module/model.md)
     * [数据映射](module/dao.md)
 * [组件](component/component.md)

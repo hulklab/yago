@@ -29,9 +29,10 @@ protoc -I homepb home.proto --go_out=plugins=grpc:homepb
 
 ## SSL
 
-```
-// 服务端生成证书
-// openssl genrsa -out server.key 2048
-// openssl req -new -x509 -sha256 -key server.key -out server.pem -days 3650
+服务端生成证书
+
+```bash
+openssl genrsa -out server.key 2048
+openssl req -new -x509 -sha256 -key server.key -out server.pem -days 3650
 
 ```
