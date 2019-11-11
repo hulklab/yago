@@ -2,7 +2,7 @@
 
 Dao 用来存放数据库表的映射关系。除此之外还可以用来封装一些复杂的数据库操作方法。
 
-xorm mysql `table` 表的定义
+mysql `table` 表的定义，关于 xorm 的使用请参考 [xorm 组件](../component/orm.md)
 
 ```go
 package homedao
