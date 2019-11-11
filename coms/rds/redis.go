@@ -9,7 +9,8 @@ import (
 )
 
 type Rds struct {
-	redis.Conn
+	//	redis.Conn
+	*redis.Pool
 }
 
 // 返回 redis 的一个连接
@@ -31,12 +32,26 @@ func Ins(id ...string) *Rds {
 
 	redisPool := v.(*redis.Pool)
 
-	rds := redisPool.Get()
-	return &Rds{Conn: rds}
+	//rds := redisPool.Get()
+	return &Rds{Pool: redisPool}
+}
+
+func (r *Rds) GetConn() redis.Conn {
+	return r.Pool.Get()
+}
+
+func (r *Rds) Do(commandName string, args ...interface{}) (reply interface{}, err error) {
+	rc := r.GetConn()
+	defer func(rc redis.Conn) {
+		err := rc.Close()
+		if err != nil {
+			log.Println("[ERROR] close redis conn err: ", err.Error())
+		}
+	}(rc)
+	return rc.Do(commandName, args...)
 }
 
 func initRedisConnPool(name string) *redis.Pool {
-
 	config := yago.Config.GetStringMap(name)
 
 	addr := config["addr"].(string)
@@ -122,7 +137,7 @@ func (r *Rds) NewSubscriber(topic string) (*Subscriber, error) {
 	s := new(Subscriber)
 	s.closeChan = make(chan bool, 1)
 	s.topic = topic
-	prc := redis.PubSubConn{Conn: r}
+	prc := redis.PubSubConn{Conn: r.GetConn()}
 	err := prc.Subscribe(s.topic)
 	if err != nil {
 		log.Println("redis: ", err.Error())
