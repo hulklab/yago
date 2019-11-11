@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>调用 rpc 接口 · yago 中文文档</title>
+        <title>类库 · yago 中文文档</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -73,10 +73,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="../problem/problem.html" />
+    <link rel="next" href="sema.html" />
     
     
-    <link rel="prev" href="http.html" />
+    <link rel="prev" href="../component/mgo.html" />
     
 
     </head>
@@ -516,9 +516,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7" data-path="../library/library.html">
+        <li class="chapter active" data-level="1.7" data-path="library.html">
             
-                <a href="../library/library.html">
+                <a href="library.html">
             
                     
                         <b>1.7.</b>
@@ -532,9 +532,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.7.1" data-path="../library/sema.html">
+        <li class="chapter " data-level="1.7.1" data-path="sema.html">
             
-                <a href="../library/sema.html">
+                <a href="sema.html">
             
                     
                         <b>1.7.1.</b>
@@ -547,9 +547,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.2" data-path="../library/date.html">
+        <li class="chapter " data-level="1.7.2" data-path="date.html">
             
-                <a href="../library/date.html">
+                <a href="date.html">
             
                     
                         <b>1.7.2.</b>
@@ -562,9 +562,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.3" data-path="../library/str.html">
+        <li class="chapter " data-level="1.7.3" data-path="str.html">
             
-                <a href="../library/str.html">
+                <a href="str.html">
             
                     
                         <b>1.7.3.</b>
@@ -577,9 +577,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.4" data-path="../library/arr.html">
+        <li class="chapter " data-level="1.7.4" data-path="arr.html">
             
-                <a href="../library/arr.html">
+                <a href="arr.html">
             
                     
                         <b>1.7.4.</b>
@@ -592,9 +592,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.5" data-path="../library/math.html">
+        <li class="chapter " data-level="1.7.5" data-path="math.html">
             
-                <a href="../library/math.html">
+                <a href="math.html">
             
                     
                         <b>1.7.5.</b>
@@ -607,9 +607,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.6" data-path="../library/validator.html">
+        <li class="chapter " data-level="1.7.6" data-path="validator.html">
             
-                <a href="../library/validator.html">
+                <a href="validator.html">
             
                     
                         <b>1.7.6.</b>
@@ -627,9 +627,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.8" data-path="third.html">
+        <li class="chapter " data-level="1.8" data-path="../third/third.html">
             
-                <a href="third.html">
+                <a href="../third/third.html">
             
                     
                         <b>1.8.</b>
@@ -643,9 +643,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.8.1" data-path="http.html">
+        <li class="chapter " data-level="1.8.1" data-path="../third/http.html">
             
-                <a href="http.html">
+                <a href="../third/http.html">
             
                     
                         <b>1.8.1.</b>
@@ -658,9 +658,9 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.8.2" data-path="rpc.html">
+        <li class="chapter " data-level="1.8.2" data-path="../third/rpc.html">
             
-                <a href="rpc.html">
+                <a href="../third/rpc.html">
             
                     
                         <b>1.8.2.</b>
@@ -738,7 +738,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >调用 rpc 接口</a>
+        <a href=".." >类库</a>
     </h1>
 </div>
 
@@ -753,78 +753,40 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="RpcThird">RpcThird</h1>
-<p><code>yago/base/basethird/rpc.go</code> &#x662F;&#x5BF9; <code>grpc.ClientConn</code> &#x7684;&#x518D;&#x6B21;&#x5C01;&#x88C5;&#xFF0C;
-&#x4E3B;&#x8981;&#x7684;&#x4F5C;&#x7528;&#x662F;&#x7EDF;&#x4E00;&#x89C4;&#x8303;&#x7B2C;&#x4E09;&#x65B9; rpc &#x63A5;&#x53E3;&#x7684;&#x8C03;&#x7528;&#x65B9;&#x5F0F;&#xFF0C;&#x7B80;&#x5316;&#x4E1A;&#x52A1;&#x5C42;&#x7684;&#x8C03;&#x7528;&#xFF0C;&#x7EDF;&#x4E00;&#x8BB0;&#x5F55;&#x8C03;&#x7528;&#x7684;&#x65E5;&#x5FD7;&#x3002;</p>
-<h2 id="&#x5982;&#x4F55;&#x4F7F;&#x7528;">1. &#x5982;&#x4F55;&#x4F7F;&#x7528;</h2>
-<h3 id="&#x5B9A;&#x4E49;&#x7B2C;&#x4E09;&#x65B9;&#x8C03;&#x7528;&#x7684;_ThirdApi">1.1. &#x5B9A;&#x4E49;&#x7B2C;&#x4E09;&#x65B9;&#x8C03;&#x7528;&#x7684; ThirdApi</h3>
-<p>&#x6BCF;&#x4E2A;&#x7B2C;&#x4E09;&#x65B9;&#x5355;&#x72EC;&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x76EE;&#x5F55;&#xFF08;package&#xFF09;&#xFF0C;&#x7EDF;&#x4E00;&#x653E;&#x7F6E;&#x4E8E; <code>app/third</code> &#x76EE;&#x5F55;&#x4E0B;&#x3002;
-&#x672C;&#x6587;&#x4EE5; yago &#x4E2D; example &#x91CC;&#x9762;&#x7684; homeapi &#x4E3A;&#x4F8B;&#xFF0C;homeapi &#x5373;&#x4E3A;&#x4E00;&#x4E2A;&#x7B2C;&#x4E09;&#x65B9;&#x8C03;&#x7528;&#xFF0C;
-&#x5B83;&#x5177;&#x4F53;&#x7684; homeApi &#x7ED3;&#x6784;&#x4F53;&#x5B9A;&#x4E49;&#x4E8E; homeapi/home.go &#x4E2D;&#x3002;</p>
-<pre class="language-"><code class="lang-go"><span class="token keyword">type</span> homeApi <span class="token keyword">struct</span> <span class="token punctuation">{</span>
-    basethird<span class="token punctuation">.</span>RpcThird
-<span class="token punctuation">}</span>
-</code></pre>
-<p>&#x7531;&#x4E8E; homeApi &#x7EC4;&#x5408;&#x4E86; basethird.RpcThird&#xFF0C;&#x5373;&#x62E5;&#x6709;&#x4E86;&#x6240;&#x6709; RpcThird &#x7684;&#x8C03;&#x7528;&#x65B9;&#x6CD5;&#xFF0C;&#x4E0B;&#x6587;&#x4E2D;&#x7ED9;&#x51FA;&#x8C03;&#x7528;&#x6837;&#x4F8B;&#x3002;</p>
-<h3 id="&#x914D;&#x7F6E;&#x7B2C;&#x4E09;&#x65B9;_rpc_&#x63A5;&#x53E3;">1.2. &#x914D;&#x7F6E;&#x7B2C;&#x4E09;&#x65B9; rpc &#x63A5;&#x53E3;</h3>
-<pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">home_api</span><span class="token punctuation">]</span>
-<span class="token key property">address</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:50051&quot;</span>
-<span class="token comment"># Host &#x914D;&#x7F6E;&#xFF0C;&#x5982;&#x679C;&#x57DF;&#x540D;&#x5DF2;&#x89E3;&#x6790;&#xFF0C; hostname &#x53EF;&#x4EE5;&#x8BBE;&#x7F6E;&#x4E3A;&#x7A7A;&#x4E32;</span>
-<span class="token key property">hostname</span> <span class="token punctuation">=</span> <span class="token string">&quot;localhost&quot;</span>
-<span class="token comment"># &#x8BFB;&#x5199;&#x8D85;&#x65F6;&#x65F6;&#x95F4;&#xFF0C;&#x5355;&#x4F4D; s</span>
-<span class="token key property">timeout</span> <span class="token punctuation">=</span> <span class="token number">10</span>
-<span class="token comment"># &#x5982;&#x679C; rpc &#x670D;&#x52A1;&#x7AEF;&#x5F00;&#x542F; ssl&#xFF0C;&#x5BA2;&#x6237;&#x7AEF;&#x9700;&#x8981;&#x6253;&#x5F00; ssl_on&#xFF0C;&#x5E76;&#x6307;&#x5B9A;&#x516C;&#x94A5;</span>
-<span class="token comment"># ssl_on = true</span>
-<span class="token comment"># cert_file = &quot;./conf/server.pem&quot;</span>
-</code></pre>
-<p>&#x6211;&#x4EEC;&#x5728;&#x6A21;&#x7248; app.toml &#x4E2D;&#x7ED9;&#x51FA;&#x4E86;&#x914D;&#x7F6E; homeapi &#x7684;&#x6837;&#x4F8B;&#x3002;</p>
-<h3 id="&#x5B9A;&#x4E49;_protobuf_&#x6587;&#x4EF6;">1.3. &#x5B9A;&#x4E49; protobuf &#x6587;&#x4EF6;</h3>
-<p>&#x5BA2;&#x6237;&#x7AEF;&#x7684; protobuf &#x4E00;&#x822C;&#x7531;&#x670D;&#x52A1;&#x7AEF;&#x63D0;&#x4F9B;&#xFF0C;&#x8FD9;&#x91CC;&#x6211;&#x4EEC;&#x628A; home.proto &#x6587;&#x4EF6;&#x653E;&#x5728; homeapi/protobuf/homepb &#x76EE;&#x5F55;&#x4E0B;&#x3002;
-go &#x4E2D;&#x95F4;&#x6587;&#x4EF6; <code>home.pb.go</code> &#x7684;&#x751F;&#x6210;&#x53C2;&#x8003; <a href="../module/controller/protobuf.html">Protobuf &#x89C4;&#x8303;</a></p>
-<h3 id="&#x5B9E;&#x73B0;&#x5B9E;&#x4F8B;&#x5316;_api_&#x7684;_Ins_&#x65B9;&#x6CD5;">1.4. &#x5B9E;&#x73B0;&#x5B9E;&#x4F8B;&#x5316; api &#x7684; Ins &#x65B9;&#x6CD5;</h3>
-<pre class="language-"><code class="lang-go"><span class="token keyword">func</span> <span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>homeApi <span class="token punctuation">{</span>
-    name <span class="token operator">:=</span> <span class="token string">&quot;home_api&quot;</span>
-    v <span class="token operator">:=</span> yago<span class="token punctuation">.</span>Component<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token punctuation">{</span>
-        api <span class="token operator">:=</span> <span class="token function">new</span><span class="token punctuation">(</span>homeApi<span class="token punctuation">)</span>
-        api<span class="token punctuation">.</span>Address <span class="token operator">=</span> yago<span class="token punctuation">.</span>Config<span class="token punctuation">.</span><span class="token function">GetString</span><span class="token punctuation">(</span>name <span class="token operator">+</span> <span class="token string">&quot;.address&quot;</span><span class="token punctuation">)</span>
-        api<span class="token punctuation">.</span>Hostname<span class="token operator">=</span> yago<span class="token punctuation">.</span>Config<span class="token punctuation">.</span><span class="token function">GetString</span><span class="token punctuation">(</span>name <span class="token operator">+</span> <span class="token string">&quot;.hostname&quot;</span><span class="token punctuation">)</span>
-        api<span class="token punctuation">.</span>Timeout <span class="token operator">=</span> yago<span class="token punctuation">.</span>Config<span class="token punctuation">.</span><span class="token function">GetInt</span><span class="token punctuation">(</span>name <span class="token operator">+</span> <span class="token string">&quot;.timeout&quot;</span><span class="token punctuation">)</span>
-        <span class="token comment">// api.SslOn = yago.Config.GetBool(name + &quot;.ssl_on&quot;)</span>
-        <span class="token comment">// api.CertFile = yago.Config.GetString(name + &quot;.cert_file&quot;)</span>
-        <span class="token keyword">return</span> api
-    <span class="token punctuation">}</span><span class="token punctuation">)</span>
-    <span class="token keyword">return</span> v<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token operator">*</span>homeApi<span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-</code></pre>
-<p>&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x7EC4;&#x4EF6;&#x7684;&#x65B9;&#x5F0F;&#x6765;&#x5B9E;&#x4F8B;&#x5316; ThirdApi&#xFF0C;<code>grpc</code> &#x7684;&#x8FDE;&#x63A5;&#x91C7;&#x7528;&#x7684;&#x662F;&#x8FDE;&#x63A5;&#x6C60;&#x3002;</p>
-<h3 id="&#x5B9E;&#x73B0;&#x63A5;&#x53E3;&#x8C03;&#x7528;&#x7684;&#x65B9;&#x6CD5;">1.5. &#x5B9E;&#x73B0;&#x63A5;&#x53E3;&#x8C03;&#x7528;&#x7684;&#x65B9;&#x6CD5;</h3>
-<p>&#x901A;&#x5E38;&#x7B2C;&#x4E09;&#x65B9;&#x7684;&#x6BCF;&#x4E2A;&#x63A5;&#x53E3;&#x53C2;&#x6570;&#x548C;&#x8FD4;&#x56DE;&#x503C;&#x90FD;&#x4E0D;&#x4E00;&#x6837;&#xFF0C;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x5728; ThirdApi &#x4E2D;&#x4E3A;&#x6BCF;&#x4E2A;&#x63A5;&#x53E3;&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x65B9;&#x6CD5;&#xFF0C;&#x4E0B;&#x9762;&#x7ED9;&#x51FA;&#x793A;&#x4F8B;&#x3002;</p>
-<pre class="language-"><code class="lang-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>a <span class="token operator">*</span>homeApi<span class="token punctuation">)</span> <span class="token function">Hello</span><span class="token punctuation">(</span>name <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    rep<span class="token punctuation">,</span> err <span class="token operator">:=</span> a<span class="token punctuation">.</span><span class="token function">Call</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>conn <span class="token operator">*</span>grpc<span class="token punctuation">.</span>ClientConn<span class="token punctuation">,</span> ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">(</span>rep proto<span class="token punctuation">.</span>Message<span class="token punctuation">,</span> e <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                                <h1 id="&#x7C7B;&#x5E93;">&#x7C7B;&#x5E93;</h1>
+<p>&#x63A8;&#x8350;&#x5927;&#x5BB6;&#x76F4;&#x63A5;&#x4F7F;&#x7528;&#x793E;&#x533A;&#x7C7B;&#x5E93;&#xFF0C;&#x4E0B;&#x9762;&#x662F;&#x4E00;&#x4E9B;&#x6211;&#x4EEC;&#x9879;&#x76EE;&#x4E2D;&#x6BD4;&#x8F83;&#x5E38;&#x7528;&#x7684;</p>
+<ol>
+<li>&#x5185;&#x5B58; cache<blockquote>
+<p><a href="https://github.com/patrickmn/go-cache" target="_blank">https://github.com/patrickmn/go-cache</a></p>
+</blockquote>
+</li>
+<li>LRU cache<blockquote>
+<p><a href="https://github.com/golang/groupcache" target="_blank">https://github.com/golang/groupcache</a></p>
+</blockquote>
+</li>
+<li>Converts a mysql table into a golang struct<blockquote>
+<p><a href="https://github.com/Shelnutt2/db2struct" target="_blank">https://github.com/Shelnutt2/db2struct</a></p>
+</blockquote>
+</li>
+<li>Struct copy to struct, map convert into struct<blockquote>
+<p><a href="https://github.com/mitchellh/mapstructure" target="_blank">https://github.com/mitchellh/mapstructure</a></p>
+</blockquote>
+</li>
+<li>MessagePack encoding for Golang<blockquote>
+<p><a href="https://github.com/vmihailenco/msgpack" target="_blank">https://github.com/vmihailenco/msgpack</a></p>
+</blockquote>
+</li>
+</ol>
+<p>&#x4E0D;&#x53EF;&#x907F;&#x514D;&#x7684;&#xFF0C;yago &#x4E5F;&#x4F1A;&#x5C01;&#x88C5;&#x4E00;&#x4E9B;&#x81EA;&#x5DF1;&#x7684;&#x7C7B;&#x5E93;&#xFF0C;&#x4E0B;&#x9762;&#x5C31;&#x4E3A;&#x5927;&#x5BB6;&#x4E00;&#x4E00;&#x4ECB;&#x7ECD;&#x8FD9;&#x4E9B;&#x7C7B;&#x5E93;&#x3002;</p>
+<ul>
+<li><a href="sema.html">goroutine &#x9650;&#x6D41;</a></li>
+<li><a href="date.html">&#x65E5;&#x671F;</a></li>
+<li><a href="str.html">&#x5B57;&#x7B26;&#x4E32;</a></li>
+<li><a href="arr.html">&#x6570;&#x7EC4;&#x5207;&#x7247;</a></li>
+<li><a href="math.html">&#x6570;&#x5B66;</a></li>
+<li><a href="validator.html">&#x9A8C;&#x8BC1;&#x5668;</a></li>
+</ul>
 
-        c <span class="token operator">:=</span> pb<span class="token punctuation">.</span><span class="token function">NewHomeClient</span><span class="token punctuation">(</span>conn<span class="token punctuation">)</span>
-
-        <span class="token keyword">return</span> c<span class="token punctuation">.</span><span class="token function">Hello</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token operator">&amp;</span>pb<span class="token punctuation">.</span>HelloRequest<span class="token punctuation">{</span>Name<span class="token punctuation">:</span> name<span class="token punctuation">}</span><span class="token punctuation">)</span>
-
-    <span class="token punctuation">}</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
-
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-        <span class="token keyword">return</span>
-    <span class="token punctuation">}</span>
-
-    v<span class="token punctuation">,</span> ok <span class="token operator">:=</span> rep<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token operator">*</span>pb<span class="token punctuation">.</span>HelloReply<span class="token punctuation">)</span>
-    <span class="token keyword">if</span> ok <span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">&quot;ok:&quot;</span><span class="token punctuation">,</span> v<span class="token punctuation">.</span>Data<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">&quot;not match&quot;</span><span class="token punctuation">,</span> v<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre>
-<h3 id="&#x8C03;&#x7528;_api">1.6. &#x8C03;&#x7528; api</h3>
-<pre class="language-"><code class="lang-go">homeapi<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-</code></pre>
-<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#RpcThird">RpcThird</a></p><li><a href="#&#x5982;&#x4F55;&#x4F7F;&#x7528;">1. &#x5982;&#x4F55;&#x4F7F;&#x7528;</a></li><ul><li><a href="#&#x5B9A;&#x4E49;&#x7B2C;&#x4E09;&#x65B9;&#x8C03;&#x7528;&#x7684;_ThirdApi">1.1. &#x5B9A;&#x4E49;&#x7B2C;&#x4E09;&#x65B9;&#x8C03;&#x7528;&#x7684; ThirdApi</a></li><li><a href="#&#x914D;&#x7F6E;&#x7B2C;&#x4E09;&#x65B9;_rpc_&#x63A5;&#x53E3;">1.2. &#x914D;&#x7F6E;&#x7B2C;&#x4E09;&#x65B9; rpc &#x63A5;&#x53E3;</a></li><li><a href="#&#x5B9A;&#x4E49;_protobuf_&#x6587;&#x4EF6;">1.3. &#x5B9A;&#x4E49; protobuf &#x6587;&#x4EF6;</a></li><li><a href="#&#x5B9E;&#x73B0;&#x5B9E;&#x4F8B;&#x5316;_api_&#x7684;_Ins_&#x65B9;&#x6CD5;">1.4. &#x5B9E;&#x73B0;&#x5B9E;&#x4F8B;&#x5316; api &#x7684; Ins &#x65B9;&#x6CD5;</a></li><li><a href="#&#x5B9E;&#x73B0;&#x63A5;&#x53E3;&#x8C03;&#x7528;&#x7684;&#x65B9;&#x6CD5;">1.5. &#x5B9E;&#x73B0;&#x63A5;&#x53E3;&#x8C03;&#x7528;&#x7684;&#x65B9;&#x6CD5;</a></li><li><a href="#&#x8C03;&#x7528;_api">1.6. &#x8C03;&#x7528; api</a></li></ul></ul></div><a href="#&#x5982;&#x4F55;&#x4F7F;&#x7528;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -851,12 +813,12 @@ go &#x4E2D;&#x95F4;&#x6587;&#x4EF6; <code>home.pb.go</code> &#x7684;&#x751F;&#x6
 
             
                 
-                <a href="http.html" class="navigation navigation-prev " aria-label="Previous page: 调用 http 接口">
+                <a href="../component/mgo.html" class="navigation navigation-prev " aria-label="Previous page: Mongo 组件">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="../problem/problem.html" class="navigation navigation-next " aria-label="Next page: 已知问题">
+                <a href="sema.html" class="navigation navigation-next " aria-label="Next page: goroutine 限流">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -867,7 +829,7 @@ go &#x4E2D;&#x95F4;&#x6587;&#x4EF6; <code>home.pb.go</code> &#x7684;&#x751F;&#x6
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"调用 rpc 接口","level":"1.8.2","depth":2,"next":{"title":"已知问题","level":"1.9","depth":1,"path":"problem/problem.md","ref":"problem/problem.md","articles":[]},"previous":{"title":"调用 http 接口","level":"1.8.1","depth":2,"path":"third/http.md","ref":"third/http.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"third/rpc.md","mtime":"2019-11-11T08:55:20.166Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-11T08:57:30.773Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"类库","level":"1.7","depth":1,"next":{"title":"goroutine 限流","level":"1.7.1","depth":2,"path":"library/sema.md","ref":"library/sema.md","articles":[]},"previous":{"title":"Mongo 组件","level":"1.6.5","depth":2,"path":"component/mgo.md","ref":"component/mgo.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"library/library.md","mtime":"2019-11-11T07:36:36.871Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-11T08:57:30.773Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
