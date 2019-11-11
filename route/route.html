@@ -407,7 +407,7 @@
                     
                         <b>1.5.3.</b>
                     
-                    数据映射
+                    数据访问对象
             
                 </a>
             
@@ -627,9 +627,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.8" data-path="../third/">
+        <li class="chapter " data-level="1.8" data-path="../third/third.html">
             
-                <a href="../third/">
+                <a href="../third/third.html">
             
                     
                         <b>1.8.</b>
@@ -755,9 +755,9 @@
                                 
                                 <h1 id="&#x8DEF;&#x7531;_Router">&#x8DEF;&#x7531; Router</h1>
 <h2 id="Yago_&#x8DEF;&#x7531;&#x6CE8;&#x518C;&#x5206;&#x4E3A;&#x4E24;&#x4E2A;&#x9636;&#x6BB5;&#xFF1A;">1. Yago &#x8DEF;&#x7531;&#x6CE8;&#x518C;&#x5206;&#x4E3A;&#x4E24;&#x4E2A;&#x9636;&#x6BB5;&#xFF1A;</h2>
-<ol>
-<li>&#x5728;&#x5404;&#x4E2A;&#x63A7;&#x5236;&#x5668;&#x7684; init &#x51FD;&#x6570;&#x4E2D;&#x5B8C;&#x6210;&#x4E00;&#x4E2A; Controller &#x5185;&#x5177;&#x4F53;&#x7684; Action &#x7EA7;&#x522B;&#x7684;&#x8DEF;&#x7531;&#x6CE8;&#x518C;</li>
-</ol>
+<ul>
+<li>step1. &#x5728;&#x5404;&#x4E2A;&#x63A7;&#x5236;&#x5668;&#x7684; init &#x51FD;&#x6570;&#x4E2D;&#x5B8C;&#x6210;&#x4E00;&#x4E2A; Controller &#x5185;&#x5177;&#x4F53;&#x7684; Action &#x7EA7;&#x522B;&#x7684;&#x8DEF;&#x7531;&#x6CE8;&#x518C;&#xFF0C;&#x8BE6;&#x7EC6;&#x4F7F;&#x7528;&#x8BF7;&#x53C2;&#x8003; <a href="../module/controller.html">&#x6A21;&#x5757;&#x63A7;&#x5236;&#x5668;</a></li>
+</ul>
 <pre class="language-"><code class="lang-go"><span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     homeHttp <span class="token operator">:=</span> <span class="token function">new</span><span class="token punctuation">(</span>HomeHttp<span class="token punctuation">)</span>
     yago<span class="token punctuation">.</span><span class="token function">AddHttpRouter</span><span class="token punctuation">(</span><span class="token string">&quot;/home/hello&quot;</span><span class="token punctuation">,</span> http<span class="token punctuation">.</span>MethodGet<span class="token punctuation">,</span> homeHttp<span class="token punctuation">.</span>HelloAction<span class="token punctuation">,</span> homeHttp<span class="token punctuation">)</span>
@@ -769,9 +769,9 @@
     yago<span class="token punctuation">.</span><span class="token function">AddHttpRouter</span><span class="token punctuation">(</span><span class="token string">&quot;/home/upload&quot;</span><span class="token punctuation">,</span> http<span class="token punctuation">.</span>MethodPost<span class="token punctuation">,</span> homeHttp<span class="token punctuation">.</span>UploadAction<span class="token punctuation">,</span> homeHttp<span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<ol>
-<li>&#x5728; app/route/route.go import &#x51FD;&#x6570;&#x4E2D;&#x5B8C;&#x6210;&#x5404;&#x4E2A;&#x6A21;&#x5757;&#x7684; Controller &#x7EA7;&#x522B;&#x7684;&#x8DEF;&#x7531;&#x6CE8;&#x518C;</li>
-</ol>
+<ul>
+<li>step2. &#x5728; app/route/route.go import &#x51FD;&#x6570;&#x4E2D;&#x5B8C;&#x6210;&#x5404;&#x4E2A;&#x6A21;&#x5757;&#x7684; Controller &#x7EA7;&#x522B;&#x7684;&#x8DEF;&#x7531;&#x6CE8;&#x518C;</li>
+</ul>
 <pre class="language-"><code class="lang-go"><span class="token keyword">package</span> route
 
 <span class="token keyword">import</span> <span class="token punctuation">(</span>
@@ -781,6 +781,9 @@
     <span class="token boolean">_</span> <span class="token string">&quot;github.com/hulklab/yago/example/app/modules/home/hometask&quot;</span>
 <span class="token punctuation">)</span>
 </code></pre>
+<blockquote>
+<p>&#x6CE8;&#xFF1A;&#x4F7F;&#x7528; <code>yago new -m ${module}</code> &#x521B;&#x5EFA;&#x65B0;&#x6A21;&#x5757;&#x65F6;&#xFF0C;&#x4F1A;&#x81EA;&#x52A8;&#x52A0;&#x8F7D;&#x5230; app/route/route.go &#x6587;&#x4EF6;&#x4E2D;&#xFF0C;&#x4E0D;&#x9700;&#x8981;&#x624B;&#x52A8;&#x6DFB;&#x52A0;&#x3002;</p>
+</blockquote>
 <div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#&#x8DEF;&#x7531;_Router">&#x8DEF;&#x7531; Router</a></p><li><a href="#Yago_&#x8DEF;&#x7531;&#x6CE8;&#x518C;&#x5206;&#x4E3A;&#x4E24;&#x4E2A;&#x9636;&#x6BB5;&#xFF1A;">1. Yago &#x8DEF;&#x7531;&#x6CE8;&#x518C;&#x5206;&#x4E3A;&#x4E24;&#x4E2A;&#x9636;&#x6BB5;&#xFF1A;</a></li></ul></div><a href="#Yago_&#x8DEF;&#x7531;&#x6CE8;&#x518C;&#x5206;&#x4E3A;&#x4E24;&#x4E2A;&#x9636;&#x6BB5;&#xFF1A;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
@@ -824,7 +827,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"路由","level":"1.4","depth":1,"next":{"title":"模块","level":"1.5","depth":1,"path":"module/module.md","ref":"module/module.md","articles":[{"title":"控制器","level":"1.5.1","depth":2,"path":"module/controller.md","ref":"module/controller.md","articles":[{"title":"Http","level":"1.5.1.1","depth":3,"path":"module/controller/http.md","ref":"module/controller/http.md","articles":[]},{"title":"RPC","level":"1.5.1.2","depth":3,"path":"module/controller/rpc.md","ref":"module/controller/rpc.md","articles":[]},{"title":"Cmd","level":"1.5.1.3","depth":3,"path":"module/controller/cmd.md","ref":"module/controller/cmd.md","articles":[]},{"title":"Task","level":"1.5.1.4","depth":3,"path":"module/controller/task.md","ref":"module/controller/task.md","articles":[]},{"title":"Protobuf 规范","level":"1.5.1.5","depth":3,"path":"module/controller/protobuf.md","ref":"module/controller/protobuf.md","articles":[]}]},{"title":"模型","level":"1.5.2","depth":2,"path":"module/model.md","ref":"module/model.md","articles":[]},{"title":"数据映射","level":"1.5.3","depth":2,"path":"module/dao.md","ref":"module/dao.md","articles":[]}]},"previous":{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"path":"config/detail.md","ref":"config/detail.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"route/route.md","mtime":"2019-11-11T06:39:06.714Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-11T06:43:32.856Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"路由","level":"1.4","depth":1,"next":{"title":"模块","level":"1.5","depth":1,"path":"module/module.md","ref":"module/module.md","articles":[{"title":"控制器","level":"1.5.1","depth":2,"path":"module/controller.md","ref":"module/controller.md","articles":[{"title":"Http","level":"1.5.1.1","depth":3,"path":"module/controller/http.md","ref":"module/controller/http.md","articles":[]},{"title":"RPC","level":"1.5.1.2","depth":3,"path":"module/controller/rpc.md","ref":"module/controller/rpc.md","articles":[]},{"title":"Cmd","level":"1.5.1.3","depth":3,"path":"module/controller/cmd.md","ref":"module/controller/cmd.md","articles":[]},{"title":"Task","level":"1.5.1.4","depth":3,"path":"module/controller/task.md","ref":"module/controller/task.md","articles":[]},{"title":"Protobuf 规范","level":"1.5.1.5","depth":3,"path":"module/controller/protobuf.md","ref":"module/controller/protobuf.md","articles":[]}]},{"title":"模型","level":"1.5.2","depth":2,"path":"module/model.md","ref":"module/model.md","articles":[]},{"title":"数据访问对象","level":"1.5.3","depth":2,"path":"module/dao.md","ref":"module/dao.md","articles":[]}]},"previous":{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"path":"config/detail.md","ref":"config/detail.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"route/route.md","mtime":"2019-11-11T09:14:49.715Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-11T09:15:00.612Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
