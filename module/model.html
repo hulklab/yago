@@ -1,0 +1,882 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>模型 · yago 中文文档</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="hulklab">
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-expandable-chapters-interactive/expandable-chapters.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-navigator/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-prism/prism-okaidia.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-theme-comscore/test.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="dao.html" />
+    
+    
+    <link rel="prev" href="controller/protobuf.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                        <b>1.1.</b>
+                    
+                    Yago 简介
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.1.1" data-path="../intro/intro.html">
+            
+                <a href="../intro/intro.html">
+            
+                    
+                        <b>1.1.1.</b>
+                    
+                    创作背景
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.1.2" data-path="../intro/arch.html">
+            
+                <a href="../intro/arch.html">
+            
+                    
+                        <b>1.1.2.</b>
+                    
+                    架构设计
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.1.3" data-path="../intro/dir.html">
+            
+                <a href="../intro/dir.html">
+            
+                    
+                        <b>1.1.3.</b>
+                    
+                    目录结构
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../quick-start/quick-start.html">
+            
+                <a href="../quick-start/quick-start.html">
+            
+                    
+                        <b>1.2.</b>
+                    
+                    快速开始
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../quick-start/install.html">
+            
+                <a href="../quick-start/install.html">
+            
+                    
+                        <b>1.2.1.</b>
+                    
+                    安装
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../quick-start/start.html">
+            
+                <a href="../quick-start/start.html">
+            
+                    
+                        <b>1.2.2.</b>
+                    
+                    Hello World
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../config/config.html">
+            
+                <a href="../config/config.html">
+            
+                    
+                        <b>1.3.</b>
+                    
+                    配置
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../config/detail.html">
+            
+                <a href="../config/detail.html">
+            
+                    
+                        <b>1.3.1.</b>
+                    
+                    配置文件详细介绍
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../route/route.html">
+            
+                <a href="../route/route.html">
+            
+                    
+                        <b>1.4.</b>
+                    
+                    路由
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="module.html">
+            
+                <a href="module.html">
+            
+                    
+                        <b>1.5.</b>
+                    
+                    模块
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="controller.html">
+            
+                <a href="controller.html">
+            
+                    
+                        <b>1.5.1.</b>
+                    
+                    控制器
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1.1" data-path="controller/http.html">
+            
+                <a href="controller/http.html">
+            
+                    
+                        <b>1.5.1.1.</b>
+                    
+                    Http
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.1.2" data-path="controller/rpc.html">
+            
+                <a href="controller/rpc.html">
+            
+                    
+                        <b>1.5.1.2.</b>
+                    
+                    RPC
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.1.3" data-path="controller/cmd.html">
+            
+                <a href="controller/cmd.html">
+            
+                    
+                        <b>1.5.1.3.</b>
+                    
+                    Cmd
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.1.4" data-path="controller/task.html">
+            
+                <a href="controller/task.html">
+            
+                    
+                        <b>1.5.1.4.</b>
+                    
+                    Task
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.1.5" data-path="controller/protobuf.html">
+            
+                <a href="controller/protobuf.html">
+            
+                    
+                        <b>1.5.1.5.</b>
+                    
+                    Protobuf 规范
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.5.2" data-path="model.html">
+            
+                <a href="model.html">
+            
+                    
+                        <b>1.5.2.</b>
+                    
+                    模型
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3" data-path="dao.html">
+            
+                <a href="dao.html">
+            
+                    
+                        <b>1.5.3.</b>
+                    
+                    数据访问对象
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../component/component.html">
+            
+                <a href="../component/component.html">
+            
+                    
+                        <b>1.6.</b>
+                    
+                    组件
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1" data-path="../component/logger.html">
+            
+                <a href="../component/logger.html">
+            
+                    
+                        <b>1.6.1.</b>
+                    
+                    日志组件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2" data-path="../component/orm.html">
+            
+                <a href="../component/orm.html">
+            
+                    
+                        <b>1.6.2.</b>
+                    
+                    ORM 组件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3" data-path="../component/rds.html">
+            
+                <a href="../component/rds.html">
+            
+                    
+                        <b>1.6.3.</b>
+                    
+                    Redis 组件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4" data-path="../component/kafka.html">
+            
+                <a href="../component/kafka.html">
+            
+                    
+                        <b>1.6.4.</b>
+                    
+                    Kafka 组件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.5" data-path="../component/mgo.html">
+            
+                <a href="../component/mgo.html">
+            
+                    
+                        <b>1.6.5.</b>
+                    
+                    Mongo 组件
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../library/library.html">
+            
+                <a href="../library/library.html">
+            
+                    
+                        <b>1.7.</b>
+                    
+                    类库
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1" data-path="../library/sema.html">
+            
+                <a href="../library/sema.html">
+            
+                    
+                        <b>1.7.1.</b>
+                    
+                    goroutine 限流
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2" data-path="../library/date.html">
+            
+                <a href="../library/date.html">
+            
+                    
+                        <b>1.7.2.</b>
+                    
+                    日期
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.3" data-path="../library/str.html">
+            
+                <a href="../library/str.html">
+            
+                    
+                        <b>1.7.3.</b>
+                    
+                    字符串
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.4" data-path="../library/arr.html">
+            
+                <a href="../library/arr.html">
+            
+                    
+                        <b>1.7.4.</b>
+                    
+                    数组切片
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.5" data-path="../library/math.html">
+            
+                <a href="../library/math.html">
+            
+                    
+                        <b>1.7.5.</b>
+                    
+                    数学
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.6" data-path="../library/validator.html">
+            
+                <a href="../library/validator.html">
+            
+                    
+                        <b>1.7.6.</b>
+                    
+                    验证器
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8" data-path="../third/third.html">
+            
+                <a href="../third/third.html">
+            
+                    
+                        <b>1.8.</b>
+                    
+                    第三方调用
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.1" data-path="../third/http.html">
+            
+                <a href="../third/http.html">
+            
+                    
+                        <b>1.8.1.</b>
+                    
+                    调用 http 接口
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2" data-path="../third/rpc.html">
+            
+                <a href="../third/rpc.html">
+            
+                    
+                        <b>1.8.2.</b>
+                    
+                    调用 rpc 接口
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9" data-path="../problem/problem.html">
+            
+                <a href="../problem/problem.html">
+            
+                    
+                        <b>1.9.</b>
+                    
+                    已知问题
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10" data-path="../thanks.html">
+            
+                <a href="../thanks.html">
+            
+                    
+                        <b>1.10.</b>
+                    
+                    感谢
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >模型</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="&#x6A21;&#x578B;_Model">&#x6A21;&#x578B; Model</h1>
+<p>&#x8FD9;&#x4E00;&#x5C42;&#x6BD4;&#x8F83;&#x7B80;&#x5355;&#xFF0C;&#x6CA1;&#x6709;&#x7279;&#x522B;&#x7684;&#x8981;&#x6C42;&#xFF0C;&#x5C31;&#x662F;&#x4E1A;&#x52A1;&#x903B;&#x8F91;&#x3002;&#x5728;&#x76F8;&#x5E94;&#x7684;&#x51FD;&#x6570;&#x5185;&#x8C03;&#x7528;&#x7EC4;&#x4EF6;&#x7684;&#x6765;&#x5B8C;&#x6210;&#x6570;&#x636E;&#x64CD;&#x4F5C;&#x3002;&#x53EA;&#x4E0D;&#x8FC7;&#x7ED9;http&#x63A7;&#x5236;&#x5668;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#x8FD4;&#x56DE;&#x503C;&#x7684; error &#x5C3D;&#x91CF;&#x91C7;&#x7528; yago.Err&#x3002;</p>
+<pre class="language-"><code class="lang-go"><span class="token keyword">package</span> homemodel
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">&quot;github.com/hulklab/yago&quot;</span>
+    <span class="token string">&quot;github.com/hulklab/yago/example/app/g&quot;</span>
+    <span class="token string">&quot;github.com/hulklab/yago/libs/date&quot;</span>
+    <span class="token string">&quot;github.com/hulklab/yago/coms/orm&quot;</span>
+
+    <span class="token string">&quot;github.com/hulklab/yago/example/app/modules/home/homedao&quot;</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">type</span> HomeModel <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token function">NewHomeModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>HomeModel <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token operator">&amp;</span>HomeModel<span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>m <span class="token operator">*</span>HomeModel<span class="token punctuation">)</span> <span class="token function">Add</span><span class="token punctuation">(</span>name <span class="token builtin">string</span><span class="token punctuation">,</span> options <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">int64</span><span class="token punctuation">,</span> yago<span class="token punctuation">.</span>Err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token comment">// &#x5224;&#x65AD; name &#x662F;&#x5426;&#x5DF2;&#x5B58;&#x5728;</span>
+    exist <span class="token operator">:=</span> <span class="token operator">&amp;</span>homedao<span class="token punctuation">.</span>HomeDao<span class="token punctuation">{</span>Name<span class="token punctuation">:</span> name<span class="token punctuation">}</span>
+
+    orm<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>exist<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> exist<span class="token punctuation">.</span>Id <span class="token operator">!=</span> <span class="token number">0</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">,</span> yago<span class="token punctuation">.</span><span class="token function">NewErr</span><span class="token punctuation">(</span><span class="token string">&quot;&#x7528;&#x6237;&#x540D; &quot;</span> <span class="token operator">+</span> name <span class="token operator">+</span> <span class="token string">&quot; &#x5DF2;&#x5B58;&#x5728;&quot;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// &#x6DFB;&#x52A0;&#x7528;&#x6237;</span>
+    user <span class="token operator">:=</span> <span class="token operator">&amp;</span>homedao<span class="token punctuation">.</span>HomeDao<span class="token punctuation">{</span>
+        Name<span class="token punctuation">:</span>  name<span class="token punctuation">,</span>
+        Ctime<span class="token punctuation">:</span> date<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">:=</span> orm<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Insert</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> user<span class="token punctuation">.</span>Id<span class="token punctuation">,</span> yago<span class="token punctuation">.</span><span class="token function">NewErr</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="controller/protobuf.html" class="navigation navigation-prev " aria-label="Previous page: Protobuf 规范">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="dao.html" class="navigation navigation-next " aria-label="Next page: 数据访问对象">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"模型","level":"1.5.2","depth":2,"next":{"title":"数据访问对象","level":"1.5.3","depth":2,"path":"module/dao.md","ref":"module/dao.md","articles":[]},"previous":{"title":"Protobuf 规范","level":"1.5.1.5","depth":3,"path":"module/controller/protobuf.md","ref":"module/controller/protobuf.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"module/model.md","mtime":"2019-11-11T08:58:52.749Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-11T09:20:10.125Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-expandable-chapters-interactive/expandable-chapters.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-theme-comscore/test.js"></script>
+        
+    
+
+    </body>
+</html>
+
