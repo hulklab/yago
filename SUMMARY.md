@@ -13,7 +13,7 @@
 * [模块](module/module.md)
     * [控制器](module/controller.md)
         * [Http](module/controller/http.md)
-        * [Rpc](module/controller/rpc.md)
+        * [RPC](module/controller/rpc.md)
         * [Cmd](module/controller/cmd.md)
         * [Task](module/controller/task.md)
     * [模型](module/model.md)
