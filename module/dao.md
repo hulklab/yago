@@ -1,8 +1,8 @@
 ## 数据映射 Dao
 
-dao用来存放数据库表的映射关系。除此之外还可以用来封装一些复杂的数据库操作方法。
+dao 用来存放数据库表的映射关系。除此之外还可以用来封装一些复杂的数据库操作方法。
 
-xorm mysql table表的定义
+xorm mysql `table` 表的定义
 
 ```go
 package homedao
