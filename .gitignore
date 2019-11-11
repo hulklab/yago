@@ -9,3 +9,5 @@ nohup.out
 go.sum
 node_modules
 _book
+example/app.toml
+example/example
