@@ -1,6 +1,6 @@
 # 配置
 
-yago 模版生成的项目默认采用toml格式的配置文件，配置文件在程序启动后便开始解析，解析完成后存储在全局yago.Config中，yago.Config是 [viper](https://github.com/spf13/viper) 的扩展，原生采用 [viper](https://github.com/spf13/viper) 的方法来获取配置文件的值即可。
+yago 模版生成的项目默认采用 toml 格式的配置文件，配置文件在程序启动后便开始解析，解析完成后存储在全局 yago.Config 中，yago.Config 是 [viper](https://github.com/spf13/viper) 的扩展，原生采用 [viper](https://github.com/spf13/viper) 的方法来获取配置文件的值即可。
 
 example:
 

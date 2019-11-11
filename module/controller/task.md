@@ -1,6 +1,6 @@
 # Task 控制器
 
-task 控制器内部调度使用了 [cron](https://github.com/robfig/cron)，这使得 task 控制器可以实现类似 crontab 的定时任务功能。同时在此基础上我们增加了 @loop 关键字，用来支持常驻进程模式，应用场景就是一些异步队列消费永不退出的这种情况。
+task 控制器内部调度使用了 [cron](https://github.com/robfig/cron) 定时任务类库，这使得 task 控制器可以实现类似 crontab 的定时任务功能。同时在此基础上我们增加了 @loop 关键字，用来支持常驻进程模式，应用场景就是一些异步队列消费永不退出的这种情况。
 
 ## 路由注册
 
@@ -75,4 +75,4 @@ func (t *HomeTask) HelloSchduleAction() {
 控制是否需要在此机器上开启 task 任务，有两种方式
 
 * 修改配置文件中的 app.task_enable，默认为开启
-* 修改环境变量 export {{配置文件中的app_name}}_APP_TASK_ENABLE=1, 1 表示开启，0 表示关闭，配置文件与环境变量同时存在时环境变量生效
+* 修改环境变量 export {配置文件中的 app_name}_APP_TASK_ENABLE=1, 1 表示开启，0 表示关闭，配置文件与环境变量同时存在时环境变量生效

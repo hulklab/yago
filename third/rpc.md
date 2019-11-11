@@ -1,7 +1,7 @@
 # RpcThird
 
 `yago/base/basethird/rpc.go` 是对 `grpc.ClientConn` 的再次封装，
-主要的作用是统一化第三方 rpc 接口的调用方式，简化业务层的调用，统一记录调用的日志。
+主要的作用是统一规范第三方 rpc 接口的调用方式，简化业务层的调用，统一记录调用的日志。
 
 ## 如何使用
 ### 定义第三方调用的 ThirdApi
@@ -34,7 +34,7 @@ timeout = 10
 
 ### 定义 protobuf 文件
 客户端的 protobuf 一般由服务端提供，这里我们把 home.proto 文件放在 homeapi/protobuf/homepb 目录下。
-`home.pb.go` 的生成参考 [Protobuf 规范](/module/controller/protobuf.md)
+go 中间文件 `home.pb.go` 的生成参考 [Protobuf 规范](/module/controller/protobuf.md)
 
 ### 实现实例化 api 的 Ins 方法
 ```go

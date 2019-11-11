@@ -1,7 +1,7 @@
 # HttpThird
 
 `yago/base/basethird/http.go` 是对开源包 `github.com/levigross/grequest` 的再次封装，
-主要的作用是统一化第三方接口的调用方式，简化业务层的调用，统一记录调用的日志。
+主要的作用是统一规范第三方接口的调用方式，简化业务层的调用，统一记录调用的日志。
 
 ## 如何使用
 ### 定义第三方调用的 ThirdApi
@@ -28,7 +28,7 @@ timeout = 10
 ```
 我们在模版 app.toml 中给出了配置 homeapi 的样例。
 
-### 实现实例化 api 的 Ins 方法
+### 实现 api 的实例化 Ins 方法
 ```go
 func Ins() *homeApi {
 	name := "home_api"

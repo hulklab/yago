@@ -1,6 +1,6 @@
 # Cmd 控制器
 
-home 模块提供了一个 cmd 的 hello world 程序，cmd 中我们用了 [cobra](https://github.com/spf13/cobra) 一个命令行类库。所以 [cobra](https://github.com/spf13/cobra) 对象的使用可以直接参考官方文档，我们在这里主要帮你完成了路由注册和参数注册。
+home 模块提供了一个 cmd 的 hello world 程序，cmd 中我们使用了 [cobra](https://github.com/spf13/cobra) 命令行类库。所以 [cobra](https://github.com/spf13/cobra) 对象的使用可以直接参考官方文档，我们在这里主要帮你完成了路由注册和参数注册。
 
 ## 路由注册
 
