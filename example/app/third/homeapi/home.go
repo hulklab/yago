@@ -2,7 +2,9 @@ package homeapi
 
 import (
 	"context"
+	"errors"
 	"fmt"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basethird"
@@ -72,20 +74,25 @@ func (a *HomeApi) RpcHello() {
 
 	var name = "zhangsan"
 
-	rep, err := a.Call(func(conn *grpc.ClientConn, ctx context.Context) (rep proto.Message, e error) {
+	req := &pb.HelloRequest{Name: name}
+	resp, err := a.Call(func(conn *grpc.ClientConn, ctx context.Context, req proto.Message) (resp proto.Message, e error) {
 
 		c := pb.NewHomeClient(conn)
 
-		return c.Hello(ctx, &pb.HelloRequest{Name: name})
+		v, ok := req.(*pb.HelloRequest)
 
-	}, name)
+		if ok {
+			return c.Hello(ctx, v)
+		}
+		return nil, errors.New("req is not the type of HelloRequest")
+	}, req)
 
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	v, ok := rep.(*pb.HelloReply)
+	v, ok := resp.(*pb.HelloReply)
 	if ok {
 		fmt.Println("ok:", v.Data)
 	} else {
