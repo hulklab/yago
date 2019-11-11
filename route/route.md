@@ -1,6 +1,6 @@
-## 路由 Router
+# 路由 Router
 
-### Yago 路由注册分为两个阶段：
+## Yago 路由注册分为两个阶段：
 
 1. 在各个控制器的 init 函数中完成一个 Controller 内具体的 Action 级别的路由注册
 
