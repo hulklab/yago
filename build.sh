@@ -30,10 +30,10 @@ function deploy() {
         return
     fi
 
-    git pull
     rm -rf /tmp/_book
     mv _book /tmp/_book
     git checkout gh-pages
+    git pull
     cp -r -f /tmp/_book/* ./ && rm -rf /tmp/_book
     git add .
     git commit -a -m "update"
