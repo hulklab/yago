@@ -2,14 +2,15 @@ package basethird
 
 import (
 	"context"
+	"log"
+	"sync"
+	"time"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"log"
-	"sync"
-	"time"
 )
 
 // 封装 rpc 的基础类
@@ -77,11 +78,11 @@ func (a *RpcThird) GetCtx() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), time.Duration(a.Timeout)*time.Second)
 }
 
-func (a *RpcThird) Call(f func(conn *grpc.ClientConn, ctx context.Context) (proto.Message, error), params interface{}) (proto.Message, error) {
+func (a *RpcThird) Call(f func(conn *grpc.ClientConn, ctx context.Context, req proto.Message) (proto.Message, error), req proto.Message) (proto.Message, error) {
 	logInfo := logrus.Fields{
 		"address":     a.Address,
 		"timeout":     a.Timeout,
-		"params":      params,
+		"params":      req,
 		"consume(ms)": 0,
 		"error":       "",
 		"result":      "",
@@ -101,15 +102,15 @@ func (a *RpcThird) Call(f func(conn *grpc.ClientConn, ctx context.Context) (prot
 
 	begin := time.Now()
 
-	rep, err := f(conn, ctx)
+	resp, err := f(conn, ctx, req)
 
 	end := time.Now()
 	consume := end.Sub(begin).Nanoseconds() / 1e6
 
 	logInfo["consume"] = consume
 
-	if rep != nil {
-		logInfo["result"] = rep.String()
+	if resp != nil {
+		logInfo["result"] = resp.String()
 	}
 
 	if err != nil {
@@ -122,7 +123,7 @@ func (a *RpcThird) Call(f func(conn *grpc.ClientConn, ctx context.Context) (prot
 		}
 	}
 
-	return rep, err
+	return resp, err
 }
 
 // 设置是否要关闭 info 日志
