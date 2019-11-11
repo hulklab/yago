@@ -4,6 +4,7 @@ RPC 控制器使用的是 google 的 [grpc](https://grpc.io/docs/) 框架，[grp
 
 
 ## Protobuf
+
 proto 文件 home.proto
 
 ```protobuf
@@ -23,7 +24,8 @@ message HelloReply {
     string data = 1;
 }
 ```
-关于在 yago 中 proto 文件的使用，请参考 [protobuf规范](protobuf.md)，根据要求生成 go 中间文件代码，以便在控制器中调用。
+
+关于在 yago 中 proto 文件的使用，请参考 [Protobuf 规范](protobuf.md)，根据要求生成 go 中间文件代码，以便在控制器中调用。
 
 
 ## 路由注册

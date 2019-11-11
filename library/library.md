@@ -19,3 +19,4 @@
 * [字符串](/library/str.md)
 * [数组切片](/library/arr.md)
 * [数学](/library/math.md)
+* [验证器](/library/validator.md)
