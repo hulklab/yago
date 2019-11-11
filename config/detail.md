@@ -1,4 +1,6 @@
-### Yago程序的配置文件
+# Yago 程序的配置文件
+
+## 应用配置
 
 ```toml
 [app]
@@ -60,82 +62,8 @@ rpc_stop_time_wait = 10
 task_enable = true
 # http服务关闭最大等待时长, 秒
 task_stop_time_wait = 10
-
-##########################################
-#  以下自定义配置区
-##########################################
-
-##########################################
-# 以下是组件区
-##########################################
-
-[logger]
-# json | text, default text
-formatter = "json"
-# 日志最低等级 Panic = 0, Fatal = 1, Error = 2, Warn = 3, Info = 4, Debug = 5, Trace = 6
-level = 5
-# 文件路径
-file_path = "./logs/app.log"
-# 最大保留的备份数
-max_backups = 20
-# 日志最大保留天数
-max_age = 30
-# 文件最大大小(mb)
-max_size = 500
-# 是否开启压缩
-compress = true
-# write log to stdout
-# stdout_enable = true
-
-[db]
-host = "127.0.0.1"
-user = "user"
-password = "password"
-port = "3306"
-database = "db"
-prefix =""
-timezone = "Asia/Shanghai"
-charset = "utf8"
-max_life_time = 8
-max_idle_conn = 20
-max_open_conn = 500
-show_log = true
-
-[redis]
-addr = "127.0.0.1:6379"
-auth = ""
-db = 0
-max_idle = 5
-idle_timeout = 30
-
-[mongodb]
-# https://docs.mongodb.com/manual/reference/connection-string/
-mongodb_uri = "mongodb://user:password@127.0.0.1:27017/?connectTimeoutMS=5000&socketTimeoutMS=5000&maxPoolSize=100"
-database = "test"
-
-[kafka]
-cluster = "127.0.0.1:9092"
-topic = "demo"
-topic_cloud = "cloud"
-
-##########################################
-# 以下是 api 区
-##########################################
-
-[home_api]
-domain = "http://127.0.0.1:8080"
-hostname = "localhost"
-rpc_address = "127.0.0.1:50051"
-timeout = 10
-max_recv_msgsize_mb =  10
-max_send_msgsize_mb =  10
-# ssl_on = true
-# cert_file = "./conf/server.pem"
-
 ```
 
-
-## 应用配置
 | 配置项 | 类型 | 说明 |
 | ------- | ------- |------- |
 | app.app_name | String | 程序名称， 默认 “APP”， 作为配置文件环境变量的前缀 <br/> 比如 export APP_APP_TASK_ENABLE=false，<br/>就相当于 app.task_enable=false，<br/>而且环境变量配置项会比配置文件的中的值有更高的优先级 |
@@ -170,9 +98,28 @@ max_send_msgsize_mb =  10
 | app.task_enable | Bool | 是否开启task服务 ｜
 | app.task_stop_time_wait | Duration | task服务收到关闭信号时的最大等待时长，默认10s |
 
-## 组件配置
 
-日志组件
+## 日志组件
+
+```toml
+[logger]
+# json | text, default text
+formatter = "json"
+# 日志最低等级 Panic = 0, Fatal = 1, Error = 2, Warn = 3, Info = 4, Debug = 5, Trace = 6
+level = 5
+# 文件路径
+file_path = "./logs/app.log"
+# 最大保留的备份数
+max_backups = 20
+# 日志最大保留天数
+max_age = 30
+# 文件最大大小(mb)
+max_size = 500
+# 是否开启压缩
+compress = true
+# write log to stdout
+# stdout_enable = true
+```
 
 | 配置项 | 类型 | 说明 |
 | ------- | ------- |------- |
@@ -182,10 +129,26 @@ max_send_msgsize_mb =  10
 | logger.max_backups | Int | 最大保留的备份数 |
 | logger.max_age | Duration | 日志最大保留天数 |
 | logger.max_size | Int | 文件最大大小(mb) |
-| logger.compress | Bool | 是否开启日志文件GZIP压缩 |
+| logger.compress | Bool | 是否开启日志文件Gzip压缩 |
 | logger.stdout_enable | Bool | 是否打印到标准输出 |
 
-数据库组件
+## 数据库组件(SQL)
+
+```toml
+[db]
+host = "127.0.0.1"
+user = "user"
+password = "password"
+port = "3306"
+database = "db"
+prefix =""
+timezone = "Asia/Shanghai"
+charset = "utf8"
+max_life_time = 8
+max_idle_conn = 20
+max_open_conn = 500
+show_log = true
+```
 
 | 配置项 | 类型 | 说明 |
 | ------- | ------- |------- |
@@ -202,7 +165,16 @@ max_send_msgsize_mb =  10
 | db.max_open_conn | Int | 连接池最大打开连接数，默认500 |
 | db.show_log | Bool | 是否打印SQL日志，默认true |
 
-Redis组件
+## Redis组件
+
+```toml
+[redis]
+addr = "127.0.0.1:6379"
+auth = ""
+db = 0
+max_idle = 5
+idle_timeout = 30
+```
 
 | 配置项 | 类型 | 说明 |
 | ------- | ------- |------- |
@@ -212,14 +184,28 @@ Redis组件
 | redis.max_idle | Int | Redis 连接池最大空闲连接数 |
 | redis.idle_timeout | Int | Redis 连接池空闲超时时间 |
 
-Mongodb组件
+## Mongodb组件
+
+```toml
+[mongodb]
+# https://docs.mongodb.com/manual/reference/connection-string/
+mongodb_uri = "mongodb://user:password@127.0.0.1:27017/?connectTimeoutMS=5000&socketTimeoutMS=5000&maxPoolSize=100"
+database = "test"
+```
 
 | 配置项 | 类型 | 说明 |
 | ------- | ------- |------- |
 | mongodb.mongodb_uri | String | Mongodb连接uri<br>参考https://docs.mongodb.com/manual/reference/connection-string/ |
 | mongodb.database | String | 默认数据库 |
 
-Kafka组件
+## Kafka组件
+
+```toml
+[kafka]
+cluster = "127.0.0.1:9092"
+topic = "demo"
+topic_cloud = "cloud"
+```
 
 | 配置项 | 类型 | 说明 |
 | ------- | ------- |------- |
@@ -227,6 +213,18 @@ Kafka组件
 | kafka.topic | String | topic名称 |
 
 ## 第三方API调用
+
+```toml
+[home_api]
+domain = "http://127.0.0.1:8080"
+hostname = "localhost"
+rpc_address = "127.0.0.1:50051"
+timeout = 10
+max_recv_msgsize_mb =  10
+max_send_msgsize_mb =  10
+# ssl_on = true
+# cert_file = "./conf/server.pem"
+```
 
 | 配置项 | 类型 | 说明 |
 | ------- | ------- |------- |

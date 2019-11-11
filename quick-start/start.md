@@ -1,11 +1,12 @@
-## 创建你的hello world
+## 创建你的 Hello World
 
-### 用 Yago 在当前目录创建你的项目 my_app
+### 用 yago 在当前目录创建你的项目 my_app
+
 ```bash
 yago init -a my_app
 ```
 
-### 进入目录初始化mod
+### 进入目录初始化 mod
 
 ```bash
 cd my_app/
@@ -13,18 +14,23 @@ go mod init
 ```
 
 ### 构建
+
 ```bash
 go build
 ```
 > [如 go build 遇报错，请看解决方案](../problem/problem.md)
 
 ### 创建属于自己的配置文件，并启动
+
 ```bash
 sh env.init.sh yourname
 ./my_app
 ```
 
+#### 除此之外，我们推荐使用 yago 热编译工具 `yago run` 来开发调试。
+
 控制台输出
+
 ```bash
 # http 服务注册信息
 2019/10/30 19:04:17 [HTTP] /home/detail my_app/app/modules/home/homehttp.(*HomeHttp).DetailAction-fm
@@ -57,7 +63,8 @@ sh env.init.sh yourname
 
 出现以上信息则表示启动成功
 
-### 测试程序http服务是否启动成功
+### 测试程序 http 服务是否启动成功
+
 ```bash
 curl "http://localhost:8080/home/hello?name=world"
 {"errno":0,"errmsg":"","data":"hello world"}
