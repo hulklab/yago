@@ -9,12 +9,19 @@
         "spec": "1.1.1",
         "type": "version"
       },
+<<<<<<< HEAD
       "/Users/zhangjiulong/projects/go/src/github.com/hulklab/yago"
     ]
   ],
   "_cnpm_publish_time": 1469966399542,
   "_from": "gitbook-plugin-navigator@1.1.1",
   "_hasShrinkwrap": false,
+=======
+      "/Users/luoxiaodong/Workspace/qihoo/docs/yago"
+    ]
+  ],
+  "_from": "gitbook-plugin-navigator@1.1.1",
+>>>>>>> a7fd69ebd63217cc6e14e809e87b1591f15b218b
   "_id": "gitbook-plugin-navigator@1.1.1",
   "_inCache": true,
   "_installable": true,
@@ -41,11 +48,19 @@
   "_requiredBy": [
     "#USER"
   ],
+<<<<<<< HEAD
   "_resolved": "http://registry.npm.taobao.org/gitbook-plugin-navigator/download/gitbook-plugin-navigator-1.1.1.tgz",
   "_shasum": "b5e17ce78d89cbecce430599f91c9ee0450a0b95",
   "_shrinkwrap": null,
   "_spec": "gitbook-plugin-navigator@1.1.1",
   "_where": "/Users/zhangjiulong/projects/go/src/github.com/hulklab/yago",
+=======
+  "_resolved": "https://registry.npmjs.org/gitbook-plugin-navigator/-/gitbook-plugin-navigator-1.1.1.tgz",
+  "_shasum": "b5e17ce78d89cbecce430599f91c9ee0450a0b95",
+  "_shrinkwrap": null,
+  "_spec": "gitbook-plugin-navigator@1.1.1",
+  "_where": "/Users/luoxiaodong/Workspace/qihoo/docs/yago",
+>>>>>>> a7fd69ebd63217cc6e14e809e87b1591f15b218b
   "author": {
     "name": "zhangzq"
   },
@@ -59,10 +74,15 @@
   "devDependencies": {},
   "directories": {},
   "dist": {
+<<<<<<< HEAD
     "noattachment": false,
     "shasum": "b5e17ce78d89cbecce430599f91c9ee0450a0b95",
     "size": 16074,
     "tarball": "https://registry.npm.taobao.org/gitbook-plugin-navigator/download/gitbook-plugin-navigator-1.1.1.tgz"
+=======
+    "shasum": "b5e17ce78d89cbecce430599f91c9ee0450a0b95",
+    "tarball": "https://registry.npmjs.org/gitbook-plugin-navigator/-/gitbook-plugin-navigator-1.1.1.tgz"
+>>>>>>> a7fd69ebd63217cc6e14e809e87b1591f15b218b
   },
   "engines": {
     "gitbook": "*"
@@ -84,7 +104,10 @@
   ],
   "name": "gitbook-plugin-navigator",
   "optionalDependencies": {},
+<<<<<<< HEAD
   "publish_time": 1469966399542,
+=======
+>>>>>>> a7fd69ebd63217cc6e14e809e87b1591f15b218b
   "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
