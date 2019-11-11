@@ -1,6 +1,6 @@
 # 已知问题及解决方案
 
-## 1. unknown import path "github.com/ugorji/go/codec": ambiguous import: found github.com/ugorji/go/codec in multiple modules 模块冲突问题
+## unknown import path "github.com/ugorji/go/codec": ambiguous import: found github.com/ugorji/go/codec in multiple modules 模块冲突问题
 
 	原因参考：
 	
