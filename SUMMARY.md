@@ -30,6 +30,7 @@
     * [字符串](library/str.md)
     * [数组切片](library/arr.md)
     * [数学](library/math.md)
+    * [验证器](library/validator.md)
 * [第三方调用](third/README.md)
     * [调用 http 接口](third/http.md)
     * [调用 rpc 接口](third/rpc.md)
