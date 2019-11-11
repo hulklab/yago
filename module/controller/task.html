@@ -327,7 +327,7 @@
                     
                         <b>1.5.1.2.</b>
                     
-                    Rpc
+                    RPC
             
                 </a>
             
@@ -592,6 +592,21 @@
             
         </li>
     
+        <li class="chapter " data-level="1.7.6" data-path="../../library/validator.html">
+            
+                <a href="../../library/validator.html">
+            
+                    
+                        <b>1.7.6.</b>
+                    
+                    验证器
+            
+                </a>
+            
+
+            
+        </li>
+    
 
             </ul>
             
@@ -723,17 +738,17 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h3 id="Task&#x63A7;&#x5236;&#x5668;">0.1. Task&#x63A7;&#x5236;&#x5668;</h3>
-<p>task&#x63A7;&#x5236;&#x5668;&#x5185;&#x90E8;&#x8C03;&#x5EA6;&#x4F7F;&#x7528;&#x4E86;<a href="https://github.com/robfig/cron" target="_blank">cron</a>&#xFF0C;&#x8FD9;&#x4F7F;&#x5F97;task&#x63A7;&#x5236;&#x5668;&#x53EF;&#x4EE5;&#x5B9E;&#x73B0;&#x7C7B;&#x4F3C;crontab&#x7684;&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#x529F;&#x80FD;&#x3002;&#x540C;&#x65F6;&#x5728;&#x6B64;&#x57FA;&#x7840;&#x4E0A;&#x6211;&#x4EEC;&#x589E;&#x52A0;&#x4E86; @loop &#x5173;&#x952E;&#x5B57;&#xFF0C;&#x7528;&#x6765;&#x652F;&#x6301;&#x5E38;&#x9A7B;&#x8FDB;&#x7A0B;&#x6A21;&#x5F0F;&#xFF0C;&#x5E94;&#x7528;&#x573A;&#x666F;&#x5C31;&#x662F;&#x4E00;&#x4E9B;&#x5F02;&#x6B65;&#x961F;&#x5217;&#x6D88;&#x8D39;&#x6C38;&#x4E0D;&#x9000;&#x51FA;&#x7684;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#x3002;</p>
-<h4 id="&#x8DEF;&#x7531;&#x6CE8;&#x518C;">0.1.1. &#x8DEF;&#x7531;&#x6CE8;&#x518C;</h4>
-<p>task init&#x51FD;&#x6570;&#x4E2D;&#x901A;&#x8FC7;AddTaskRouter&#x5B8C;&#x6210;&#x8DEF;&#x7531;&#x6CE8;&#x518C;&#x3002;</p>
+                                <h1 id="Task_&#x63A7;&#x5236;&#x5668;">Task &#x63A7;&#x5236;&#x5668;</h1>
+<p>task &#x63A7;&#x5236;&#x5668;&#x5185;&#x90E8;&#x8C03;&#x5EA6;&#x4F7F;&#x7528;&#x4E86; <a href="https://github.com/robfig/cron" target="_blank">cron</a>&#xFF0C;&#x8FD9;&#x4F7F;&#x5F97; task &#x63A7;&#x5236;&#x5668;&#x53EF;&#x4EE5;&#x5B9E;&#x73B0;&#x7C7B;&#x4F3C; crontab &#x7684;&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#x529F;&#x80FD;&#x3002;&#x540C;&#x65F6;&#x5728;&#x6B64;&#x57FA;&#x7840;&#x4E0A;&#x6211;&#x4EEC;&#x589E;&#x52A0;&#x4E86; @loop &#x5173;&#x952E;&#x5B57;&#xFF0C;&#x7528;&#x6765;&#x652F;&#x6301;&#x5E38;&#x9A7B;&#x8FDB;&#x7A0B;&#x6A21;&#x5F0F;&#xFF0C;&#x5E94;&#x7528;&#x573A;&#x666F;&#x5C31;&#x662F;&#x4E00;&#x4E9B;&#x5F02;&#x6B65;&#x961F;&#x5217;&#x6D88;&#x8D39;&#x6C38;&#x4E0D;&#x9000;&#x51FA;&#x7684;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#x3002;</p>
+<h2 id="&#x8DEF;&#x7531;&#x6CE8;&#x518C;">1. &#x8DEF;&#x7531;&#x6CE8;&#x518C;</h2>
+<p>task init &#x51FD;&#x6570;&#x4E2D;&#x901A;&#x8FC7; AddTaskRouter &#x5B8C;&#x6210;&#x8DEF;&#x7531;&#x6CE8;&#x518C;&#x3002;</p>
 <pre class="language-"><code class="lang-go"><span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     homeTask <span class="token operator">:=</span> <span class="token function">new</span><span class="token punctuation">(</span>HomeTask<span class="token punctuation">)</span>
     yago<span class="token punctuation">.</span><span class="token function">AddTaskRouter</span><span class="token punctuation">(</span><span class="token string">&quot;@loop&quot;</span><span class="token punctuation">,</span> homeTask<span class="token punctuation">.</span>HelloLoopAction<span class="token punctuation">)</span>
     yago<span class="token punctuation">.</span><span class="token function">AddTaskRouter</span><span class="token punctuation">(</span><span class="token string">&quot;0 */1 * * * *&quot;</span><span class="token punctuation">,</span> homeTask<span class="token punctuation">.</span>HelloSchduleAction<span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p>AddTaskRouter&#x53C2;&#x6570;&#x8BF4;&#x660E;</p>
+<p>AddTaskRouter &#x53C2;&#x6570;&#x8BF4;&#x660E;</p>
 <table>
 <thead>
 <tr>
@@ -746,12 +761,12 @@
 <tr>
 <td>1</td>
 <td>String</td>
-<td>task&#x6267;&#x884C;&#x4EFB;&#x52A1;&#x8BA1;&#x5212;&#xFF0C;&#x53C2;&#x8003;Spec&#x8868;</td>
+<td>&#x6267;&#x884C;&#x4EFB;&#x52A1;&#x8BA1;&#x5212;&#xFF0C;&#x53C2;&#x8003;Spec&#x8868;</td>
 </tr>
 <tr>
 <td>2</td>
 <td>Func</td>
-<td>task&#x63A5;&#x53E3;&#x5BF9;&#x5E94;&#x7684;Action Func</td>
+<td>&#x63A5;&#x53E3;&#x5BF9;&#x5E94;&#x7684; Action Func</td>
 </tr>
 </tbody>
 </table>
@@ -803,10 +818,10 @@
 </tr>
 </tbody>
 </table>
-<p>&#x8FD8;&#x6709;&#x4E00;&#x4E2A;&#x7279;&#x6B8A;&#x7684;@loop&#xFF0C;&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x662F; @loop&#x5FC5;&#x987B;&#x5728;Action&#x5185;&#x642D;&#x914D;RunLoop&#x51FD;&#x6570;&#x8FD0;&#x884C;&#xFF0C;&#x5426;&#x5219;@loop&#x53EA;&#x4F1A;&#x6267;&#x884C;&#x4E00;&#x6B21;&#x4FBF;&#x9000;&#x51FA;&#x3002;</p>
-<p>&#x6211;&#x4EEC;&#x5728;RunLoop&#x5185;&#x76D1;&#x542C;&#x4E86;&#x5168;&#x5C40;&#x5173;&#x95ED;&#x4FE1;&#x53F7;&#xFF0C;&#x7528;&#x6765;&#x5E73;&#x6ED1;&#x5730;&#x5B8C;&#x6210;&#x5355;&#x6B21;&#x5FAA;&#x73AF;&#xFF0C;&#x540C;&#x65F6;&#x8FD8;&#x6709;Wait&#x51FD;&#x6570;&#x7528;&#x6765;&#x5E2E;&#x52A9;task&#x6536;&#x5230;&#x5173;&#x95ED;&#x4FE1;&#x53F7;&#x65F6;&#xFF0C;&#x505A;&#x4E00;&#x4E9B;&#x6E05;&#x7406;&#x5DE5;&#x4F5C;&#x3002;</p>
-<p>&#x5728;RunLoop&#x51FD;&#x6570;&#x5185;&#x6211;&#x4EEC;&#x4F20;&#x9012;&#x4E00;&#x4E2A;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x548C;&#x4E00;&#x4E2A;&#x53EF;&#x9009;&#x7684;&#x6267;&#x884C;&#x95F4;&#x9694;&#x53C2;&#x6570;&#xFF0C;&#x5982;&#x679C;&#x6267;&#x884C;&#x95F4;&#x9694;&#x4E0D;&#x4F20;&#xFF0C;&#x9ED8;&#x8BA4;&#x6CA1;&#x6709;&#x7B49;&#x5F85;&#xFF0C;&#x76F4;&#x63A5;&#x8FDB;&#x5165;&#x4E0B;&#x4E2A;loop&#x3002;</p>
-<h4 id="TaskAction">0.1.2. TaskAction</h4>
+<p>&#x8FD8;&#x6709;&#x4E00;&#x4E2A;&#x7279;&#x6B8A;&#x7684; @loop&#xFF0C;&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x662F; @loop &#x5FC5;&#x987B;&#x5728; Action &#x5185;&#x642D;&#x914D; RunLoop &#x51FD;&#x6570;&#x8FD0;&#x884C;&#xFF0C;&#x5426;&#x5219; @loop &#x53EA;&#x4F1A;&#x6267;&#x884C;&#x4E00;&#x6B21;&#x4FBF;&#x9000;&#x51FA;&#x3002;</p>
+<p>&#x6211;&#x4EEC;&#x5728; RunLoop &#x5185;&#x76D1;&#x542C;&#x4E86;&#x5168;&#x5C40;&#x5173;&#x95ED;&#x4FE1;&#x53F7;&#xFF0C;&#x7528;&#x6765;&#x5E73;&#x6ED1;&#x5730;&#x5B8C;&#x6210;&#x5355;&#x6B21;&#x5FAA;&#x73AF;&#xFF0C;&#x540C;&#x65F6;&#x8FD8;&#x6709; Wait &#x51FD;&#x6570;&#x7528;&#x6765;&#x5E2E;&#x52A9; task &#x6536;&#x5230;&#x5173;&#x95ED;&#x4FE1;&#x53F7;&#x65F6;&#xFF0C;&#x505A;&#x4E00;&#x4E9B;&#x6E05;&#x7406;&#x5DE5;&#x4F5C;&#x3002;</p>
+<p>&#x5728; RunLoop &#x51FD;&#x6570;&#x5185;&#x6211;&#x4EEC;&#x4F20;&#x9012;&#x4E00;&#x4E2A;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x548C;&#x4E00;&#x4E2A;&#x53EF;&#x9009;&#x7684;&#x6267;&#x884C;&#x95F4;&#x9694;&#x53C2;&#x6570;&#xFF0C;&#x5982;&#x679C;&#x6267;&#x884C;&#x95F4;&#x9694;&#x4E0D;&#x4F20;&#xFF0C;&#x9ED8;&#x8BA4;&#x6CA1;&#x6709;&#x7B49;&#x5F85;&#xFF0C;&#x76F4;&#x63A5;&#x8FDB;&#x5165;&#x4E0B;&#x4E2A;loop&#x3002;</p>
+<h2 id="TaskAction">2. TaskAction</h2>
 <pre class="language-"><code class="lang-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>t <span class="token operator">*</span>HomeTask<span class="token punctuation">)</span> <span class="token function">HelloLoopAction</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     t<span class="token punctuation">.</span><span class="token function">RunLoop</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
         log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">&quot;Start Task homeTask.HelloLoopAction&quot;</span><span class="token punctuation">)</span>
@@ -823,12 +838,13 @@
     log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">&quot;End Task homeTask.HelloSchduleAction&quot;</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<h4 id="&#x63A7;&#x5236;&#x662F;&#x5426;&#x9700;&#x8981;&#x5728;&#x6B64;&#x673A;&#x5668;&#x4E0A;&#x5F00;&#x542F;_task_&#x4EFB;&#x52A1;&#xFF0C;&#x6709;&#x4E24;&#x79CD;&#x65B9;&#x5F0F;">0.1.3. &#x63A7;&#x5236;&#x662F;&#x5426;&#x9700;&#x8981;&#x5728;&#x6B64;&#x673A;&#x5668;&#x4E0A;&#x5F00;&#x542F; task &#x4EFB;&#x52A1;&#xFF0C;&#x6709;&#x4E24;&#x79CD;&#x65B9;&#x5F0F;</h4>
+<h2 id="&#x5F00;&#x542F;_Task">3. &#x5F00;&#x542F; Task</h2>
+<p>&#x63A7;&#x5236;&#x662F;&#x5426;&#x9700;&#x8981;&#x5728;&#x6B64;&#x673A;&#x5668;&#x4E0A;&#x5F00;&#x542F; task &#x4EFB;&#x52A1;&#xFF0C;&#x6709;&#x4E24;&#x79CD;&#x65B9;&#x5F0F;</p>
 <ul>
 <li>&#x4FEE;&#x6539;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x4E2D;&#x7684; app.task_enable&#xFF0C;&#x9ED8;&#x8BA4;&#x4E3A;&#x5F00;&#x542F;</li>
 <li>&#x4FEE;&#x6539;&#x73AF;&#x5883;&#x53D8;&#x91CF; export _APP_TASK_ENABLE=1, 1 &#x8868;&#x793A;&#x5F00;&#x542F;&#xFF0C;0 &#x8868;&#x793A;&#x5173;&#x95ED;&#xFF0C;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x4E0E;&#x73AF;&#x5883;&#x53D8;&#x91CF;&#x540C;&#x65F6;&#x5B58;&#x5728;&#x65F6;&#x73AF;&#x5883;&#x53D8;&#x91CF;&#x751F;&#x6548;</li>
 </ul>
-<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#"></a></p><li><a href="#">none</a></li><ul><li><a href="#Task&#x63A7;&#x5236;&#x5668;">0.1. Task&#x63A7;&#x5236;&#x5668;</a></li><ul><li><a href="#&#x8DEF;&#x7531;&#x6CE8;&#x518C;">0.1.1. &#x8DEF;&#x7531;&#x6CE8;&#x518C;</a></li><li><a href="#TaskAction">0.1.2. TaskAction</a></li><li><a href="#&#x63A7;&#x5236;&#x662F;&#x5426;&#x9700;&#x8981;&#x5728;&#x6B64;&#x673A;&#x5668;&#x4E0A;&#x5F00;&#x542F;_task_&#x4EFB;&#x52A1;&#xFF0C;&#x6709;&#x4E24;&#x79CD;&#x65B9;&#x5F0F;">0.1.3. &#x63A7;&#x5236;&#x662F;&#x5426;&#x9700;&#x8981;&#x5728;&#x6B64;&#x673A;&#x5668;&#x4E0A;&#x5F00;&#x542F; task &#x4EFB;&#x52A1;&#xFF0C;&#x6709;&#x4E24;&#x79CD;&#x65B9;&#x5F0F;</a></li></ul></ul></ul></div><a href="#" id="goTop"><i class="fa fa-arrow-up"></i></a>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Task_&#x63A7;&#x5236;&#x5668;">Task &#x63A7;&#x5236;&#x5668;</a></p><li><a href="#&#x8DEF;&#x7531;&#x6CE8;&#x518C;">1. &#x8DEF;&#x7531;&#x6CE8;&#x518C;</a></li><li><a href="#TaskAction">2. TaskAction</a></li><li><a href="#&#x5F00;&#x542F;_Task">3. &#x5F00;&#x542F; Task</a></li></ul></div><a href="#&#x8DEF;&#x7531;&#x6CE8;&#x518C;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -871,7 +887,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Task","level":"1.5.1.4","depth":3,"next":{"title":"模型","level":"1.5.2","depth":2,"path":"module/model.md","ref":"module/model.md","articles":[]},"previous":{"title":"Cmd","level":"1.5.1.3","depth":3,"path":"module/controller/cmd.md","ref":"module/controller/cmd.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"module/controller/task.md","mtime":"2019-11-08T01:50:19.317Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-08T01:50:39.597Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Task","level":"1.5.1.4","depth":3,"next":{"title":"模型","level":"1.5.2","depth":2,"path":"module/model.md","ref":"module/model.md","articles":[]},"previous":{"title":"Cmd","level":"1.5.1.3","depth":3,"path":"module/controller/cmd.md","ref":"module/controller/cmd.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"module/controller/task.md","mtime":"2019-11-10T15:48:56.557Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-11T04:47:19.230Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>

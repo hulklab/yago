@@ -327,7 +327,7 @@
                     
                         <b>1.5.1.2.</b>
                     
-                    Rpc
+                    RPC
             
                 </a>
             
@@ -592,6 +592,21 @@
             
         </li>
     
+        <li class="chapter " data-level="1.7.6" data-path="../library/validator.html">
+            
+                <a href="../library/validator.html">
+            
+                    
+                        <b>1.7.6.</b>
+                    
+                    验证器
+            
+                </a>
+            
+
+            
+        </li>
+    
 
             </ul>
             
@@ -723,11 +738,11 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h2 id="&#x521B;&#x5EFA;&#x4F60;&#x7684;hello_world">1. &#x521B;&#x5EFA;&#x4F60;&#x7684;hello world</h2>
-<h3 id="&#x7528;_Yago_&#x5728;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x521B;&#x5EFA;&#x4F60;&#x7684;&#x9879;&#x76EE;_my_app">1.1. &#x7528; Yago &#x5728;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x521B;&#x5EFA;&#x4F60;&#x7684;&#x9879;&#x76EE; my_app</h3>
+                                <h2 id="&#x521B;&#x5EFA;&#x4F60;&#x7684;_Hello_World">1. &#x521B;&#x5EFA;&#x4F60;&#x7684; Hello World</h2>
+<h3 id="&#x7528;_yago_&#x5728;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x521B;&#x5EFA;&#x4F60;&#x7684;&#x9879;&#x76EE;_my_app">1.1. &#x7528; yago &#x5728;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x521B;&#x5EFA;&#x4F60;&#x7684;&#x9879;&#x76EE; my_app</h3>
 <pre class="language-"><code class="lang-bash">yago init -a my_app
 </code></pre>
-<h3 id="&#x8FDB;&#x5165;&#x76EE;&#x5F55;&#x521D;&#x59CB;&#x5316;mod">1.2. &#x8FDB;&#x5165;&#x76EE;&#x5F55;&#x521D;&#x59CB;&#x5316;mod</h3>
+<h3 id="&#x8FDB;&#x5165;&#x76EE;&#x5F55;&#x521D;&#x59CB;&#x5316;_mod">1.2. &#x8FDB;&#x5165;&#x76EE;&#x5F55;&#x521D;&#x59CB;&#x5316; mod</h3>
 <pre class="language-"><code class="lang-bash"><span class="token builtin class-name">cd</span> my_app/
 go mod init
 </code></pre>
@@ -741,6 +756,7 @@ go mod init
 <pre class="language-"><code class="lang-bash"><span class="token function">sh</span> env.init.sh yourname
 ./my_app
 </code></pre>
+<h4 id="&#x9664;&#x6B64;&#x4E4B;&#x5916;&#xFF0C;&#x6211;&#x4EEC;&#x63A8;&#x8350;&#x4F7F;&#x7528;_yago_&#x70ED;&#x7F16;&#x8BD1;&#x5DE5;&#x5177;_yago_run_&#x6765;&#x5F00;&#x53D1;&#x8C03;&#x8BD5;&#x3002;">1.4.1. &#x9664;&#x6B64;&#x4E4B;&#x5916;&#xFF0C;&#x6211;&#x4EEC;&#x63A8;&#x8350;&#x4F7F;&#x7528; yago &#x70ED;&#x7F16;&#x8BD1;&#x5DE5;&#x5177; yago run &#x6765;&#x5F00;&#x53D1;&#x8C03;&#x8BD5;&#x3002;</h4>
 <p>&#x63A7;&#x5236;&#x53F0;&#x8F93;&#x51FA;</p>
 <pre class="language-"><code class="lang-bash"><span class="token comment"># http &#x670D;&#x52A1;&#x6CE8;&#x518C;&#x4FE1;&#x606F;</span>
 <span class="token number">2019</span>/10/30 <span class="token number">19</span>:04:17 <span class="token punctuation">[</span>HTTP<span class="token punctuation">]</span> /home/detail my_app/app/modules/home/homehttp.<span class="token punctuation">(</span>*HomeHttp<span class="token punctuation">)</span>.DetailAction-fm
@@ -771,11 +787,11 @@ go mod init
 <span class="token number">2019</span>/10/30 <span class="token number">19</span>:04:22 End Task homeTask.HelloLoopAction
 </code></pre>
 <p>&#x51FA;&#x73B0;&#x4EE5;&#x4E0A;&#x4FE1;&#x606F;&#x5219;&#x8868;&#x793A;&#x542F;&#x52A8;&#x6210;&#x529F;</p>
-<h3 id="&#x6D4B;&#x8BD5;&#x7A0B;&#x5E8F;http&#x670D;&#x52A1;&#x662F;&#x5426;&#x542F;&#x52A8;&#x6210;&#x529F;">1.5. &#x6D4B;&#x8BD5;&#x7A0B;&#x5E8F;http&#x670D;&#x52A1;&#x662F;&#x5426;&#x542F;&#x52A8;&#x6210;&#x529F;</h3>
+<h3 id="&#x6D4B;&#x8BD5;&#x7A0B;&#x5E8F;_http_&#x670D;&#x52A1;&#x662F;&#x5426;&#x542F;&#x52A8;&#x6210;&#x529F;">1.5. &#x6D4B;&#x8BD5;&#x7A0B;&#x5E8F; http &#x670D;&#x52A1;&#x662F;&#x5426;&#x542F;&#x52A8;&#x6210;&#x529F;</h3>
 <pre class="language-"><code class="lang-bash"><span class="token function">curl</span> <span class="token string">&quot;http://localhost:8080/home/hello?name=world&quot;</span>
 <span class="token punctuation">{</span><span class="token string">&quot;errno&quot;</span>:0,<span class="token string">&quot;errmsg&quot;</span><span class="token builtin class-name">:</span><span class="token string">&quot;&quot;</span>,<span class="token string">&quot;data&quot;</span><span class="token builtin class-name">:</span><span class="token string">&quot;hello world&quot;</span><span class="token punctuation">}</span>
 </code></pre>
-<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#"></a></p><li><a href="#&#x521B;&#x5EFA;&#x4F60;&#x7684;hello_world">1. &#x521B;&#x5EFA;&#x4F60;&#x7684;hello world</a></li><ul><li><a href="#&#x7528;_Yago_&#x5728;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x521B;&#x5EFA;&#x4F60;&#x7684;&#x9879;&#x76EE;_my_app">1.1. &#x7528; Yago &#x5728;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x521B;&#x5EFA;&#x4F60;&#x7684;&#x9879;&#x76EE; my_app</a></li><li><a href="#&#x8FDB;&#x5165;&#x76EE;&#x5F55;&#x521D;&#x59CB;&#x5316;mod">1.2. &#x8FDB;&#x5165;&#x76EE;&#x5F55;&#x521D;&#x59CB;&#x5316;mod</a></li><li><a href="#&#x6784;&#x5EFA;">1.3. &#x6784;&#x5EFA;</a></li><li><a href="#&#x521B;&#x5EFA;&#x5C5E;&#x4E8E;&#x81EA;&#x5DF1;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#xFF0C;&#x5E76;&#x542F;&#x52A8;">1.4. &#x521B;&#x5EFA;&#x5C5E;&#x4E8E;&#x81EA;&#x5DF1;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#xFF0C;&#x5E76;&#x542F;&#x52A8;</a></li><li><a href="#&#x6D4B;&#x8BD5;&#x7A0B;&#x5E8F;http&#x670D;&#x52A1;&#x662F;&#x5426;&#x542F;&#x52A8;&#x6210;&#x529F;">1.5. &#x6D4B;&#x8BD5;&#x7A0B;&#x5E8F;http&#x670D;&#x52A1;&#x662F;&#x5426;&#x542F;&#x52A8;&#x6210;&#x529F;</a></li></ul></ul></div><a href="#&#x521B;&#x5EFA;&#x4F60;&#x7684;hello_world" id="goTop"><i class="fa fa-arrow-up"></i></a>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#"></a></p><li><a href="#&#x521B;&#x5EFA;&#x4F60;&#x7684;_Hello_World">1. &#x521B;&#x5EFA;&#x4F60;&#x7684; Hello World</a></li><ul><li><a href="#&#x7528;_yago_&#x5728;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x521B;&#x5EFA;&#x4F60;&#x7684;&#x9879;&#x76EE;_my_app">1.1. &#x7528; yago &#x5728;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x521B;&#x5EFA;&#x4F60;&#x7684;&#x9879;&#x76EE; my_app</a></li><li><a href="#&#x8FDB;&#x5165;&#x76EE;&#x5F55;&#x521D;&#x59CB;&#x5316;_mod">1.2. &#x8FDB;&#x5165;&#x76EE;&#x5F55;&#x521D;&#x59CB;&#x5316; mod</a></li><li><a href="#&#x6784;&#x5EFA;">1.3. &#x6784;&#x5EFA;</a></li><li><a href="#&#x521B;&#x5EFA;&#x5C5E;&#x4E8E;&#x81EA;&#x5DF1;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#xFF0C;&#x5E76;&#x542F;&#x52A8;">1.4. &#x521B;&#x5EFA;&#x5C5E;&#x4E8E;&#x81EA;&#x5DF1;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#xFF0C;&#x5E76;&#x542F;&#x52A8;</a></li><ul><li><a href="#&#x9664;&#x6B64;&#x4E4B;&#x5916;&#xFF0C;&#x6211;&#x4EEC;&#x63A8;&#x8350;&#x4F7F;&#x7528;_yago_&#x70ED;&#x7F16;&#x8BD1;&#x5DE5;&#x5177;_yago_run_&#x6765;&#x5F00;&#x53D1;&#x8C03;&#x8BD5;&#x3002;">1.4.1. &#x9664;&#x6B64;&#x4E4B;&#x5916;&#xFF0C;&#x6211;&#x4EEC;&#x63A8;&#x8350;&#x4F7F;&#x7528; yago &#x70ED;&#x7F16;&#x8BD1;&#x5DE5;&#x5177; yago run &#x6765;&#x5F00;&#x53D1;&#x8C03;&#x8BD5;&#x3002;</a></li></ul><li><a href="#&#x6D4B;&#x8BD5;&#x7A0B;&#x5E8F;_http_&#x670D;&#x52A1;&#x662F;&#x5426;&#x542F;&#x52A8;&#x6210;&#x529F;">1.5. &#x6D4B;&#x8BD5;&#x7A0B;&#x5E8F; http &#x670D;&#x52A1;&#x662F;&#x5426;&#x542F;&#x52A8;&#x6210;&#x529F;</a></li></ul></ul></div><a href="#&#x521B;&#x5EFA;&#x4F60;&#x7684;_Hello_World" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -818,7 +834,7 @@ go mod init
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Hello World","level":"1.2.2","depth":2,"next":{"title":"配置","level":"1.3","depth":1,"path":"config/config.md","ref":"config/config.md","articles":[{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"path":"config/detail.md","ref":"config/detail.md","articles":[]}]},"previous":{"title":"安装","level":"1.2.1","depth":2,"path":"quick-start/install.md","ref":"quick-start/install.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"quick-start/start.md","mtime":"2019-11-08T01:50:19.320Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-08T01:50:39.597Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Hello World","level":"1.2.2","depth":2,"next":{"title":"配置","level":"1.3","depth":1,"path":"config/config.md","ref":"config/config.md","articles":[{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"path":"config/detail.md","ref":"config/detail.md","articles":[]}]},"previous":{"title":"安装","level":"1.2.1","depth":2,"path":"quick-start/install.md","ref":"quick-start/install.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"quick-start/start.md","mtime":"2019-11-11T02:21:46.153Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-11T04:47:19.230Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

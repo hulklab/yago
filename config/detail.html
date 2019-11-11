@@ -327,7 +327,7 @@
                     
                         <b>1.5.1.2.</b>
                     
-                    Rpc
+                    RPC
             
                 </a>
             
@@ -592,6 +592,21 @@
             
         </li>
     
+        <li class="chapter " data-level="1.7.6" data-path="../library/validator.html">
+            
+                <a href="../library/validator.html">
+            
+                    
+                        <b>1.7.6.</b>
+                    
+                    验证器
+            
+                </a>
+            
+
+            
+        </li>
+    
 
             </ul>
             
@@ -723,7 +738,8 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h3 id="Yago&#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;">0.1. Yago&#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;</h3>
+                                <h1 id="Yago_&#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;">Yago &#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;</h1>
+<h2 id="&#x5E94;&#x7528;&#x914D;&#x7F6E;">1. &#x5E94;&#x7528;&#x914D;&#x7F6E;</h2>
 <pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">app</span><span class="token punctuation">]</span>
 
 <span class="token key property">app_name</span> <span class="token punctuation">=</span> <span class="token string">&quot;app&quot;</span>
@@ -783,79 +799,7 @@
 <span class="token key property">task_enable</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
 <span class="token comment"># http&#x670D;&#x52A1;&#x5173;&#x95ED;&#x6700;&#x5927;&#x7B49;&#x5F85;&#x65F6;&#x957F;, &#x79D2;</span>
 <span class="token key property">task_stop_time_wait</span> <span class="token punctuation">=</span> <span class="token number">10</span>
-
-<span class="token comment">##########################################</span>
-<span class="token comment">#  &#x4EE5;&#x4E0B;&#x81EA;&#x5B9A;&#x4E49;&#x914D;&#x7F6E;&#x533A;</span>
-<span class="token comment">##########################################</span>
-
-<span class="token comment">##########################################</span>
-<span class="token comment"># &#x4EE5;&#x4E0B;&#x662F;&#x7EC4;&#x4EF6;&#x533A;</span>
-<span class="token comment">##########################################</span>
-
-<span class="token punctuation">[</span><span class="token table class-name">logger</span><span class="token punctuation">]</span>
-<span class="token comment"># json | text, default text</span>
-<span class="token key property">formatter</span> <span class="token punctuation">=</span> <span class="token string">&quot;json&quot;</span>
-<span class="token comment"># &#x65E5;&#x5FD7;&#x6700;&#x4F4E;&#x7B49;&#x7EA7; Panic = 0, Fatal = 1, Error = 2, Warn = 3, Info = 4, Debug = 5, Trace = 6</span>
-<span class="token key property">level</span> <span class="token punctuation">=</span> <span class="token number">5</span>
-<span class="token comment"># &#x6587;&#x4EF6;&#x8DEF;&#x5F84;</span>
-<span class="token key property">file_path</span> <span class="token punctuation">=</span> <span class="token string">&quot;./logs/app.log&quot;</span>
-<span class="token comment"># &#x6700;&#x5927;&#x4FDD;&#x7559;&#x7684;&#x5907;&#x4EFD;&#x6570;</span>
-<span class="token key property">max_backups</span> <span class="token punctuation">=</span> <span class="token number">20</span>
-<span class="token comment"># &#x65E5;&#x5FD7;&#x6700;&#x5927;&#x4FDD;&#x7559;&#x5929;&#x6570;</span>
-<span class="token key property">max_age</span> <span class="token punctuation">=</span> <span class="token number">30</span>
-<span class="token comment"># &#x6587;&#x4EF6;&#x6700;&#x5927;&#x5927;&#x5C0F;(mb)</span>
-<span class="token key property">max_size</span> <span class="token punctuation">=</span> <span class="token number">500</span>
-<span class="token comment"># &#x662F;&#x5426;&#x5F00;&#x542F;&#x538B;&#x7F29;</span>
-<span class="token key property">compress</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
-<span class="token comment"># write log to stdout</span>
-<span class="token comment"># stdout_enable = true</span>
-
-<span class="token punctuation">[</span><span class="token table class-name">db</span><span class="token punctuation">]</span>
-<span class="token key property">host</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1&quot;</span>
-<span class="token key property">user</span> <span class="token punctuation">=</span> <span class="token string">&quot;user&quot;</span>
-<span class="token key property">password</span> <span class="token punctuation">=</span> <span class="token string">&quot;password&quot;</span>
-<span class="token key property">port</span> <span class="token punctuation">=</span> <span class="token string">&quot;3306&quot;</span>
-<span class="token key property">database</span> <span class="token punctuation">=</span> <span class="token string">&quot;db&quot;</span>
-<span class="token key property">prefix</span> <span class="token punctuation">=</span><span class="token string">&quot;&quot;</span>
-<span class="token key property">timezone</span> <span class="token punctuation">=</span> <span class="token string">&quot;Asia/Shanghai&quot;</span>
-<span class="token key property">charset</span> <span class="token punctuation">=</span> <span class="token string">&quot;utf8&quot;</span>
-<span class="token key property">max_life_time</span> <span class="token punctuation">=</span> <span class="token number">8</span>
-<span class="token key property">max_idle_conn</span> <span class="token punctuation">=</span> <span class="token number">20</span>
-<span class="token key property">max_open_conn</span> <span class="token punctuation">=</span> <span class="token number">500</span>
-<span class="token key property">show_log</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
-
-<span class="token punctuation">[</span><span class="token table class-name">redis</span><span class="token punctuation">]</span>
-<span class="token key property">addr</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:6379&quot;</span>
-<span class="token key property">auth</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
-<span class="token key property">db</span> <span class="token punctuation">=</span> <span class="token number">0</span>
-<span class="token key property">max_idle</span> <span class="token punctuation">=</span> <span class="token number">5</span>
-<span class="token key property">idle_timeout</span> <span class="token punctuation">=</span> <span class="token number">30</span>
-
-<span class="token punctuation">[</span><span class="token table class-name">mongodb</span><span class="token punctuation">]</span>
-<span class="token comment"># https://docs.mongodb.com/manual/reference/connection-string/</span>
-<span class="token key property">mongodb_uri</span> <span class="token punctuation">=</span> <span class="token string">&quot;mongodb://user:password@127.0.0.1:27017/?connectTimeoutMS=5000&amp;socketTimeoutMS=5000&amp;maxPoolSize=100&quot;</span>
-<span class="token key property">database</span> <span class="token punctuation">=</span> <span class="token string">&quot;test&quot;</span>
-
-<span class="token punctuation">[</span><span class="token table class-name">kafka</span><span class="token punctuation">]</span>
-<span class="token key property">cluster</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:9092&quot;</span>
-<span class="token key property">topic</span> <span class="token punctuation">=</span> <span class="token string">&quot;demo&quot;</span>
-<span class="token key property">topic_cloud</span> <span class="token punctuation">=</span> <span class="token string">&quot;cloud&quot;</span>
-
-<span class="token comment">##########################################</span>
-<span class="token comment"># &#x4EE5;&#x4E0B;&#x662F; api &#x533A;</span>
-<span class="token comment">##########################################</span>
-
-<span class="token punctuation">[</span><span class="token table class-name">home_api</span><span class="token punctuation">]</span>
-<span class="token key property">domain</span> <span class="token punctuation">=</span> <span class="token string">&quot;http://127.0.0.1:8080&quot;</span>
-<span class="token key property">hostname</span> <span class="token punctuation">=</span> <span class="token string">&quot;localhost&quot;</span>
-<span class="token key property">rpc_address</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:50051&quot;</span>
-<span class="token key property">timeout</span> <span class="token punctuation">=</span> <span class="token number">10</span>
-<span class="token key property">max_recv_msgsize_mb</span> <span class="token punctuation">=</span>  <span class="token number">10</span>
-<span class="token key property">max_send_msgsize_mb</span> <span class="token punctuation">=</span>  <span class="token number">10</span>
-<span class="token comment"># ssl_on = true</span>
-<span class="token comment"># cert_file = &quot;./conf/server.pem&quot;</span>
 </code></pre>
-<h2 id="&#x5E94;&#x7528;&#x914D;&#x7F6E;">1. &#x5E94;&#x7528;&#x914D;&#x7F6E;</h2>
 <table>
 <thead>
 <tr>
@@ -1022,8 +966,25 @@
 </tr>
 </tbody>
 </table>
-<h2 id="&#x7EC4;&#x4EF6;&#x914D;&#x7F6E;">2. &#x7EC4;&#x4EF6;&#x914D;&#x7F6E;</h2>
-<p>&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</p>
+<h2 id="&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;">2. &#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</h2>
+<pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">logger</span><span class="token punctuation">]</span>
+<span class="token comment"># json | text, default text</span>
+<span class="token key property">formatter</span> <span class="token punctuation">=</span> <span class="token string">&quot;json&quot;</span>
+<span class="token comment"># &#x65E5;&#x5FD7;&#x6700;&#x4F4E;&#x7B49;&#x7EA7; Panic = 0, Fatal = 1, Error = 2, Warn = 3, Info = 4, Debug = 5, Trace = 6</span>
+<span class="token key property">level</span> <span class="token punctuation">=</span> <span class="token number">5</span>
+<span class="token comment"># &#x6587;&#x4EF6;&#x8DEF;&#x5F84;</span>
+<span class="token key property">file_path</span> <span class="token punctuation">=</span> <span class="token string">&quot;./logs/app.log&quot;</span>
+<span class="token comment"># &#x6700;&#x5927;&#x4FDD;&#x7559;&#x7684;&#x5907;&#x4EFD;&#x6570;</span>
+<span class="token key property">max_backups</span> <span class="token punctuation">=</span> <span class="token number">20</span>
+<span class="token comment"># &#x65E5;&#x5FD7;&#x6700;&#x5927;&#x4FDD;&#x7559;&#x5929;&#x6570;</span>
+<span class="token key property">max_age</span> <span class="token punctuation">=</span> <span class="token number">30</span>
+<span class="token comment"># &#x6587;&#x4EF6;&#x6700;&#x5927;&#x5927;&#x5C0F;(mb)</span>
+<span class="token key property">max_size</span> <span class="token punctuation">=</span> <span class="token number">500</span>
+<span class="token comment"># &#x662F;&#x5426;&#x5F00;&#x542F;&#x538B;&#x7F29;</span>
+<span class="token key property">compress</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+<span class="token comment"># write log to stdout</span>
+<span class="token comment"># stdout_enable = true</span>
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -1066,7 +1027,7 @@
 <tr>
 <td>logger.compress</td>
 <td>Bool</td>
-<td>&#x662F;&#x5426;&#x5F00;&#x542F;&#x65E5;&#x5FD7;&#x6587;&#x4EF6;GZIP&#x538B;&#x7F29;</td>
+<td>&#x662F;&#x5426;&#x5F00;&#x542F;&#x65E5;&#x5FD7;&#x6587;&#x4EF6;Gzip&#x538B;&#x7F29;</td>
 </tr>
 <tr>
 <td>logger.stdout_enable</td>
@@ -1075,7 +1036,21 @@
 </tr>
 </tbody>
 </table>
-<p>&#x6570;&#x636E;&#x5E93;&#x7EC4;&#x4EF6;</p>
+<h2 id="&#x6570;&#x636E;&#x5E93;&#x7EC4;&#x4EF6;(SQL)">3. &#x6570;&#x636E;&#x5E93;&#x7EC4;&#x4EF6;(SQL)</h2>
+<pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">db</span><span class="token punctuation">]</span>
+<span class="token key property">host</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1&quot;</span>
+<span class="token key property">user</span> <span class="token punctuation">=</span> <span class="token string">&quot;user&quot;</span>
+<span class="token key property">password</span> <span class="token punctuation">=</span> <span class="token string">&quot;password&quot;</span>
+<span class="token key property">port</span> <span class="token punctuation">=</span> <span class="token string">&quot;3306&quot;</span>
+<span class="token key property">database</span> <span class="token punctuation">=</span> <span class="token string">&quot;db&quot;</span>
+<span class="token key property">prefix</span> <span class="token punctuation">=</span><span class="token string">&quot;&quot;</span>
+<span class="token key property">timezone</span> <span class="token punctuation">=</span> <span class="token string">&quot;Asia/Shanghai&quot;</span>
+<span class="token key property">charset</span> <span class="token punctuation">=</span> <span class="token string">&quot;utf8&quot;</span>
+<span class="token key property">max_life_time</span> <span class="token punctuation">=</span> <span class="token number">8</span>
+<span class="token key property">max_idle_conn</span> <span class="token punctuation">=</span> <span class="token number">20</span>
+<span class="token key property">max_open_conn</span> <span class="token punctuation">=</span> <span class="token number">500</span>
+<span class="token key property">show_log</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -1147,7 +1122,14 @@
 </tr>
 </tbody>
 </table>
-<p>Redis&#x7EC4;&#x4EF6;</p>
+<h2 id="Redis&#x7EC4;&#x4EF6;">4. Redis&#x7EC4;&#x4EF6;</h2>
+<pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">redis</span><span class="token punctuation">]</span>
+<span class="token key property">addr</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:6379&quot;</span>
+<span class="token key property">auth</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+<span class="token key property">db</span> <span class="token punctuation">=</span> <span class="token number">0</span>
+<span class="token key property">max_idle</span> <span class="token punctuation">=</span> <span class="token number">5</span>
+<span class="token key property">idle_timeout</span> <span class="token punctuation">=</span> <span class="token number">30</span>
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -1184,7 +1166,12 @@
 </tr>
 </tbody>
 </table>
-<p>Mongodb&#x7EC4;&#x4EF6;</p>
+<h2 id="Mongodb&#x7EC4;&#x4EF6;">5. Mongodb&#x7EC4;&#x4EF6;</h2>
+<pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">mongodb</span><span class="token punctuation">]</span>
+<span class="token comment"># https://docs.mongodb.com/manual/reference/connection-string/</span>
+<span class="token key property">mongodb_uri</span> <span class="token punctuation">=</span> <span class="token string">&quot;mongodb://user:password@127.0.0.1:27017/?connectTimeoutMS=5000&amp;socketTimeoutMS=5000&amp;maxPoolSize=100&quot;</span>
+<span class="token key property">database</span> <span class="token punctuation">=</span> <span class="token string">&quot;test&quot;</span>
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -1206,7 +1193,12 @@
 </tr>
 </tbody>
 </table>
-<p>Kafka&#x7EC4;&#x4EF6;</p>
+<h2 id="Kafka&#x7EC4;&#x4EF6;">6. Kafka&#x7EC4;&#x4EF6;</h2>
+<pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">kafka</span><span class="token punctuation">]</span>
+<span class="token key property">cluster</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:9092&quot;</span>
+<span class="token key property">topic</span> <span class="token punctuation">=</span> <span class="token string">&quot;demo&quot;</span>
+<span class="token key property">topic_cloud</span> <span class="token punctuation">=</span> <span class="token string">&quot;cloud&quot;</span>
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -1228,7 +1220,17 @@
 </tr>
 </tbody>
 </table>
-<h2 id="&#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;">3. &#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;</h2>
+<h2 id="&#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;">7. &#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;</h2>
+<pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">home_api</span><span class="token punctuation">]</span>
+<span class="token key property">domain</span> <span class="token punctuation">=</span> <span class="token string">&quot;http://127.0.0.1:8080&quot;</span>
+<span class="token key property">hostname</span> <span class="token punctuation">=</span> <span class="token string">&quot;localhost&quot;</span>
+<span class="token key property">rpc_address</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:50051&quot;</span>
+<span class="token key property">timeout</span> <span class="token punctuation">=</span> <span class="token number">10</span>
+<span class="token key property">max_recv_msgsize_mb</span> <span class="token punctuation">=</span>  <span class="token number">10</span>
+<span class="token key property">max_send_msgsize_mb</span> <span class="token punctuation">=</span>  <span class="token number">10</span>
+<span class="token comment"># ssl_on = true</span>
+<span class="token comment"># cert_file = &quot;./conf/server.pem&quot;</span>
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -1280,7 +1282,7 @@
 </tr>
 </tbody>
 </table>
-<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#"></a></p><li><a href="#">none</a></li><ul><li><a href="#Yago&#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;">0.1. Yago&#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;</a></li></ul><li><a href="#&#x5E94;&#x7528;&#x914D;&#x7F6E;">1. &#x5E94;&#x7528;&#x914D;&#x7F6E;</a></li><li><a href="#&#x7EC4;&#x4EF6;&#x914D;&#x7F6E;">2. &#x7EC4;&#x4EF6;&#x914D;&#x7F6E;</a></li><li><a href="#&#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;">3. &#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;</a></li></ul></div><a href="#" id="goTop"><i class="fa fa-arrow-up"></i></a>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Yago_&#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;">Yago &#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;</a></p><li><a href="#&#x5E94;&#x7528;&#x914D;&#x7F6E;">1. &#x5E94;&#x7528;&#x914D;&#x7F6E;</a></li><li><a href="#&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;">2. &#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</a></li><li><a href="#&#x6570;&#x636E;&#x5E93;&#x7EC4;&#x4EF6;(SQL)">3. &#x6570;&#x636E;&#x5E93;&#x7EC4;&#x4EF6;(SQL)</a></li><li><a href="#Redis&#x7EC4;&#x4EF6;">4. Redis&#x7EC4;&#x4EF6;</a></li><li><a href="#Mongodb&#x7EC4;&#x4EF6;">5. Mongodb&#x7EC4;&#x4EF6;</a></li><li><a href="#Kafka&#x7EC4;&#x4EF6;">6. Kafka&#x7EC4;&#x4EF6;</a></li><li><a href="#&#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;">7. &#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;</a></li></ul></div><a href="#&#x5E94;&#x7528;&#x914D;&#x7F6E;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -1323,7 +1325,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"next":{"title":"路由","level":"1.4","depth":1,"path":"route/route.md","ref":"route/route.md","articles":[]},"previous":{"title":"配置","level":"1.3","depth":1,"path":"config/config.md","ref":"config/config.md","articles":[{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"path":"config/detail.md","ref":"config/detail.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"config/detail.md","mtime":"2019-11-08T01:50:19.311Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-08T01:50:39.597Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"next":{"title":"路由","level":"1.4","depth":1,"path":"route/route.md","ref":"route/route.md","articles":[]},"previous":{"title":"配置","level":"1.3","depth":1,"path":"config/config.md","ref":"config/config.md","articles":[{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"path":"config/detail.md","ref":"config/detail.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"config/detail.md","mtime":"2019-11-11T02:23:34.104Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-11T04:47:19.230Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
