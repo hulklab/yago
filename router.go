@@ -1,10 +1,12 @@
 package yago
 
 import (
-	"github.com/hulklab/yago/libs/validator"
-	"github.com/spf13/cobra"
 	"log"
 	"strings"
+	"time"
+
+	"github.com/hulklab/yago/libs/validator"
+	"github.com/spf13/cobra"
 )
 
 // http
@@ -50,24 +52,83 @@ func AddTaskRouter(spec string, action TaskHandlerFunc) {
 // cmd
 type CmdHandlerFunc func(cmd *cobra.Command, args []string)
 
-type CmdArg struct {
+type ICmdArg interface {
+	SetFlag(cmd *cobra.Command)
+	MarkRequired(cmd *cobra.Command, use string)
+}
+
+type baseCmdArg struct {
 	Name      string
 	Shorthand string
-	Value     string
 	Usage     string
 	Required  bool
+}
+
+func (c baseCmdArg) MarkRequired(cmd *cobra.Command, use string) {
+	if c.Required {
+		if err := cmd.MarkFlagRequired(c.Name); err != nil {
+			log.Printf("cmd %s mark flag failed: %s", use, err.Error())
+		}
+	}
+}
+
+type CmdArg = CmdStringArg
+
+type CmdStringArg struct {
+	baseCmdArg
+	Value string
+}
+
+func (c CmdStringArg) SetFlag(cmd *cobra.Command) {
+	cmd.Flags().StringP(c.Name, c.Shorthand, c.Value, c.Usage)
+}
+
+type CmdIntArg struct {
+	baseCmdArg
+	Value int
+}
+
+func (c *CmdIntArg) SetFlag(cmd *cobra.Command) {
+	cmd.Flags().IntP(c.Name, c.Shorthand, c.Value, c.Usage)
+}
+
+type CmdInt64Arg struct {
+	baseCmdArg
+	Value int64
+}
+
+func (c *CmdInt64Arg) SetFlag(cmd *cobra.Command) {
+	cmd.Flags().Int64P(c.Name, c.Shorthand, c.Value, c.Usage)
+}
+
+type CmdDurationArg struct {
+	baseCmdArg
+	Value time.Duration
+}
+
+func (c *CmdDurationArg) SetFlag(cmd *cobra.Command) {
+	cmd.Flags().DurationP(c.Name, c.Shorthand, c.Value, c.Usage)
+}
+
+type CmdFloat64Arg struct {
+	baseCmdArg
+	Value float64
+}
+
+func (c *CmdFloat64Arg) SetFlag(cmd *cobra.Command) {
+	cmd.Flags().Float64P(c.Name, c.Shorthand, c.Value, c.Usage)
 }
 
 type CmdRouter struct {
 	Use    string
 	Short  string
 	Action CmdHandlerFunc
-	Args   []CmdArg
+	Args   []ICmdArg
 }
 
 var CmdRouterMap = make(map[string]*CmdRouter)
 
-func AddCmdRouter(use, short string, action CmdHandlerFunc, args ...CmdArg) {
+func AddCmdRouter(use, short string, action CmdHandlerFunc, args ...ICmdArg) {
 	cmdSlice := strings.Split(use, "/")
 	if len(cmdSlice) == 0 {
 		return
