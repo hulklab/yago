@@ -40,3 +40,17 @@ func (c *HomeCmd) DemoAction(cmd *cobra.Command, args []string) {
 }
 
 ```
+
+## CmdArg
+cmd 支持多个类型的参数，目前支持的类型如下
+
+| 参数类型 | CmdArg | 说明 |
+| ------ | ------- | ------- |
+| string | CmdArg | 字串, eg. -s=hello |
+| int | CmdIntArg | 整型,eg. -i=10 |
+| int64 | CmdInt64Arg | 64整型, eg. -x=64|
+| bool | CmdBoolArg | 布尔类型，eg. -b=false|
+| float | CmdFloat64Arg | 浮点类型，eg. -f=3.14 |
+| duration | CmdDurationArg | 时间类型,eg. -d=10s |
+| string slice| CmdStringSliceArg | 字串数组，eg. -y=a,b,c|
+| int slice| CmdIntSliceArg | 整型数组,eg. -z=1,2,3|

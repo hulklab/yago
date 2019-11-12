@@ -6,7 +6,7 @@ Redis 组件我们依赖的开源包是 `github.com/garyburd/redigo/redis`。
 ```go
 // yago/coms/rds/redis.go
 type Rds struct {
-	redis.Conn
+	*redis.Pool
 }
 ```
 
@@ -27,7 +27,9 @@ idle_timeout = 30
 我们在模版 app.toml 中默认配置开启了日志组件，可根据实际情况进行调整。
 
 ## 使用 Redis 组件
-* 使用原生接口
+* 使用 Do 命令
+
+yago 对 Do 命令进行了封装，执行完 Do 命令之后会回收连接，若想使用原生的 Do，请调用 `rds.Ins().GetConn().Do()` 
 
 ```go
 rc := rds.Ins()
@@ -36,6 +38,7 @@ reply, err := rc.Do("SET","test_key","senyuan","NX")
 v, err := redis.String(rc.Do("GET","test_key"))
 ```
 > redigo 对 Do 的返回值做了一些封装，除了 redis.String 外，其他的参考 [参考文件](https://github.com/gomodule/redigo/blob/master/redis/reply.go)
+
 
 * 使用 yago 封装的 cmd
 
