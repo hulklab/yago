@@ -85,8 +85,7 @@ func (c *Cmd) LoadCmdRouter() {
 		}
 		if len(router.Args) > 0 {
 			for _, arg := range router.Args {
-				arg.SetFlag(rootCmd)
-				arg.MarkRequired(rootCmd, use)
+				arg.SetFlag(rootCmd, use)
 			}
 		}
 	}
