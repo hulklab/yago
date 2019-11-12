@@ -19,14 +19,23 @@ func init() {
 	yago.AddCmdRouter("demo", "Demo action", homeCmd.DemoAction, yago.CmdStringArg{
 		Name: "arg", Shorthand: "a", Value: "value", Usage: "参数", Required: true,
 	}, yago.CmdIntArg{
-		Name: "age", Shorthand: "e", Value: 1, Usage: "年龄", Required: false,
+		Name: "int", Shorthand: "i", Value: 1, Usage: "整数", Required: false,
+	}, yago.CmdInt64Arg{
+		Name: "int64", Shorthand: "x", Value: 64, Usage: "整数64位", Required: false,
 	}, yago.CmdDurationArg{
-		Name: "time", Shorthand: "t", Value: time.Second, Usage: "时间", Required: false,
+		Name: "duration", Shorthand: "d", Value: time.Second, Usage: "时间", Required: false,
 	}, yago.CmdBoolArg{
-		Name: "force", Shorthand: "f", Value: true, Usage: "强制", Required: false,
+		Name: "bool", Shorthand: "b", Value: true, Usage: "布尔", Required: false,
+	}, yago.CmdFloat64Arg{
+		Name: "float", Shorthand: "f", Value: 0.1, Usage: "浮点", Required: false,
+	}, yago.CmdStringSliceArg{
+		Name: "string_slice", Shorthand: "y", Value: nil, Usage: "字串数组", Required: false,
+	}, yago.CmdIntSliceArg{
+		Name: "int_slice", Shorthand: "z", Value: nil, Usage: "整型数组", Required: false,
 	})
 }
 
+// ./example demo -a=hello -i 11 -x 66 -d 10ms -b=false -y=java,php -z=1,2,3 -f 3.14
 func (c *HomeCmd) DemoAction(cmd *cobra.Command, args []string) {
 
 	if arg, err := cmd.Flags().GetString("arg"); err != nil {
@@ -35,12 +44,25 @@ func (c *HomeCmd) DemoAction(cmd *cobra.Command, args []string) {
 		fmt.Println("arg: " + arg)
 	}
 
-	age, err := cmd.Flags().GetInt("age")
-	fmt.Println(age, err)
+	i, err := cmd.Flags().GetInt("int")
+	fmt.Println(i, err)
 
-	t, err := cmd.Flags().GetDuration("time")
-	fmt.Println(t, err)
+	x, err := cmd.Flags().GetInt64("int64")
+	fmt.Println(x, err)
 
-	f, err := cmd.Flags().GetBool("force")
+	d, err := cmd.Flags().GetDuration("duration")
+	fmt.Println(d, err)
+
+	b, err := cmd.Flags().GetBool("bool")
+	fmt.Println(b, err)
+
+	f, err := cmd.Flags().GetFloat64("float")
 	fmt.Println(f, err)
+
+	y, err := cmd.Flags().GetStringSlice("string_slice")
+	fmt.Println(y, err)
+
+	z, err := cmd.Flags().GetIntSlice("int_slice")
+	fmt.Println(z, err)
+
 }

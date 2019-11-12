@@ -53,7 +53,7 @@ func AddTaskRouter(spec string, action TaskHandlerFunc) {
 type CmdHandlerFunc func(cmd *cobra.Command, args []string)
 
 type ICmdArg interface {
-	SetFlag(cmd *cobra.Command, use string)
+	SetFlag(cmd *cobra.Command)
 }
 
 type CmdArg = CmdStringArg
@@ -66,13 +66,30 @@ type CmdStringArg struct {
 	Value     string
 }
 
-func (c CmdStringArg) SetFlag(cmd *cobra.Command, use string) {
-	cmd.Flags().StringP(c.Name, c.Shorthand, c.Value, c.Usage)
-	if c.Required {
-		if err := cmd.MarkFlagRequired(c.Name); err != nil {
-			log.Printf("cmd %s mark flag failed: %s", use, err.Error())
+func markFlagRequired(required bool, cmd *cobra.Command, name string) {
+	if required {
+		if err := cmd.MarkFlagRequired(name); err != nil {
+			log.Printf("cmd arg %s mark flag failed: %s", name, err.Error())
 		}
 	}
+}
+
+func (c CmdStringArg) SetFlag(cmd *cobra.Command) {
+	cmd.Flags().StringP(c.Name, c.Shorthand, c.Value, c.Usage)
+	markFlagRequired(c.Required, cmd, c.Name)
+}
+
+type CmdStringSliceArg struct {
+	Name      string
+	Shorthand string
+	Usage     string
+	Required  bool
+	Value     []string
+}
+
+func (c CmdStringSliceArg) SetFlag(cmd *cobra.Command) {
+	cmd.Flags().StringSliceP(c.Name, c.Shorthand, c.Value, c.Usage)
+	markFlagRequired(c.Required, cmd, c.Name)
 }
 
 type CmdBoolArg struct {
@@ -83,13 +100,9 @@ type CmdBoolArg struct {
 	Value     bool
 }
 
-func (c CmdBoolArg) SetFlag(cmd *cobra.Command, use string) {
+func (c CmdBoolArg) SetFlag(cmd *cobra.Command) {
 	cmd.Flags().BoolP(c.Name, c.Shorthand, c.Value, c.Usage)
-	if c.Required {
-		if err := cmd.MarkFlagRequired(c.Name); err != nil {
-			log.Printf("cmd %s mark flag failed: %s", use, err.Error())
-		}
-	}
+	markFlagRequired(c.Required, cmd, c.Name)
 }
 
 type CmdIntArg struct {
@@ -100,13 +113,22 @@ type CmdIntArg struct {
 	Value     int
 }
 
-func (c CmdIntArg) SetFlag(cmd *cobra.Command, use string) {
+func (c CmdIntArg) SetFlag(cmd *cobra.Command) {
 	cmd.Flags().IntP(c.Name, c.Shorthand, c.Value, c.Usage)
-	if c.Required {
-		if err := cmd.MarkFlagRequired(c.Name); err != nil {
-			log.Printf("cmd %s mark flag failed: %s", use, err.Error())
-		}
-	}
+	markFlagRequired(c.Required, cmd, c.Name)
+}
+
+type CmdIntSliceArg struct {
+	Name      string
+	Shorthand string
+	Usage     string
+	Required  bool
+	Value     []int
+}
+
+func (c CmdIntSliceArg) SetFlag(cmd *cobra.Command) {
+	cmd.Flags().IntSliceP(c.Name, c.Shorthand, c.Value, c.Usage)
+	markFlagRequired(c.Required, cmd, c.Name)
 }
 
 type CmdInt64Arg struct {
@@ -117,13 +139,9 @@ type CmdInt64Arg struct {
 	Value     int64
 }
 
-func (c CmdInt64Arg) SetFlag(cmd *cobra.Command, use string) {
+func (c CmdInt64Arg) SetFlag(cmd *cobra.Command) {
 	cmd.Flags().Int64P(c.Name, c.Shorthand, c.Value, c.Usage)
-	if c.Required {
-		if err := cmd.MarkFlagRequired(c.Name); err != nil {
-			log.Printf("cmd %s mark flag failed: %s", use, err.Error())
-		}
-	}
+	markFlagRequired(c.Required, cmd, c.Name)
 }
 
 type CmdDurationArg struct {
@@ -134,13 +152,9 @@ type CmdDurationArg struct {
 	Value     time.Duration
 }
 
-func (c CmdDurationArg) SetFlag(cmd *cobra.Command, use string) {
+func (c CmdDurationArg) SetFlag(cmd *cobra.Command) {
 	cmd.Flags().DurationP(c.Name, c.Shorthand, c.Value, c.Usage)
-	if c.Required {
-		if err := cmd.MarkFlagRequired(c.Name); err != nil {
-			log.Printf("cmd %s mark flag failed: %s", use, err.Error())
-		}
-	}
+	markFlagRequired(c.Required, cmd, c.Name)
 }
 
 type CmdFloat64Arg struct {
@@ -151,13 +165,9 @@ type CmdFloat64Arg struct {
 	Value     float64
 }
 
-func (c *CmdFloat64Arg) SetFlag(cmd *cobra.Command, use string) {
+func (c CmdFloat64Arg) SetFlag(cmd *cobra.Command) {
 	cmd.Flags().Float64P(c.Name, c.Shorthand, c.Value, c.Usage)
-	if c.Required {
-		if err := cmd.MarkFlagRequired(c.Name); err != nil {
-			log.Printf("cmd %s mark flag failed: %s", use, err.Error())
-		}
-	}
+	markFlagRequired(c.Required, cmd, c.Name)
 }
 
 type CmdRouter struct {
