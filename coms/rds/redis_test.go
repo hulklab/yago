@@ -2,10 +2,11 @@ package rds
 
 import (
 	"fmt"
-	"github.com/garyburd/redigo/redis"
 	"log"
 	"testing"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 // go test -v ./coms/rds -test.run TestString -args "-c=${PWD}/app.toml"
@@ -291,6 +292,44 @@ func TestSet(t *testing.T) {
 //
 //	wg.Wait()
 //}
+
+func TestTrans(t *testing.T) {
+	c := Ins().GetConn()
+	c.Do("WATCH", "name")
+	c.Do("MULTI")
+	c.Do("SET", "name", "zhangsan")
+	r, err := c.Do("EXEC")
+	if err != nil {
+		t.Error(err.Error())
+		return
+	}
+	fmt.Println("r:", r)
+	name, _ := redis.String(Ins().Get("name"))
+	if name == "zhangsan" {
+		t.Log("test transaction ok")
+	} else {
+		t.Error("test transaction fail")
+	}
+
+	c2 := Ins().GetConn()
+	c2.Do("WATCH", "name")
+	c2.Do("MULTI")
+	c2.Do("SET", "name", "zhangsan")
+	Ins().Set("name", "lisi")
+	r2, err := c2.Do("EXEC")
+	if err != nil {
+		t.Error(err.Error())
+		return
+	}
+
+	fmt.Println("r2:", r2)
+	name, _ = redis.String(Ins().Get("name"))
+	if name == "lisi" {
+		t.Log("test rollback ok")
+	} else {
+		t.Error("test rollback fail")
+	}
+}
 
 func TestPubSub(t *testing.T) {
 	topic := "test_subscribe"
