@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/hulklab/yago/example/app/third/homeapi"
+
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basecmd"
 	"github.com/spf13/cobra"
@@ -33,6 +35,14 @@ func init() {
 	}, yago.CmdIntSliceArg{
 		Name: "int_slice", Shorthand: "z", Value: nil, Usage: "整型数组", Required: false,
 	})
+
+	yago.AddCmdRouter("test", "test action", homeCmd.TestAction)
+}
+
+func (c *HomeCmd) TestAction(cmd *cobra.Command, args []string) {
+	homeapi.New().RpcHello()
+	time.Sleep(1 * time.Second)
+	homeapi.New().RpcHelloStream()
 }
 
 // ./example demo -a=hello -i 11 -x 66 -d 10ms -b=false -y=java,php -z=1,2,3 -f 3.14

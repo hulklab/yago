@@ -2,14 +2,13 @@ package homeapi
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"io"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/base/basethird"
 	"google.golang.org/grpc"
 
+	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/base/basethird"
 	pb "github.com/hulklab/yago/example/app/third/homeapi/homepb"
 )
 
@@ -71,31 +70,64 @@ func (a *HomeApi) UploadFile(filepath string) string {
 
 // eg. homeapi.New().RpcHello()
 func (a *HomeApi) RpcHello() {
+	a.SetBeforeUnaryClientInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+		fmt.Println("method:", method, "before")
+		return nil
+	})
+	a.SetAfterUnaryClientInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+		fmt.Println("method:", method, "after")
+		return nil
+	})
 
 	var name = "zhangsan"
 
 	req := &pb.HelloRequest{Name: name}
-	resp, err := a.Call(func(conn *grpc.ClientConn, ctx context.Context, req proto.Message) (resp proto.Message, e error) {
 
-		c := pb.NewHomeClient(conn)
+	conn, _ := a.GetConn()
+	ctx, cancel := a.GetCtx()
+	defer cancel()
 
-		v, ok := req.(*pb.HelloRequest)
-
-		if ok {
-			return c.Hello(ctx, v)
-		}
-		return nil, errors.New("req is not the type of HelloRequest")
-	}, req)
+	c := pb.NewHomeClient(conn)
+	resp, err := c.Hello(ctx, req)
 
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println("ok:", resp.Data)
+}
 
-	v, ok := resp.(*pb.HelloReply)
-	if ok {
-		fmt.Println("ok:", v.Data)
-	} else {
-		fmt.Println("not match", v)
+func (a *HomeApi) RpcHelloStream() {
+
+	var name = "zhangsan"
+	req := &pb.HelloRequest{Name: name}
+
+	a.SetBeforeStreamClientInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) error {
+		fmt.Println("method:", method, "stop")
+		return nil
+	})
+
+	conn, _ := a.GetConn()
+	ctx, cancel := a.GetCtx()
+	defer cancel()
+
+	c := pb.NewHomeClient(conn)
+	stream, err := c.HelloStream(ctx, req)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	for {
+		reply, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		fmt.Println(reply)
 	}
 }

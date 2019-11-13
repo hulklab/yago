@@ -13,18 +13,24 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
+type UnaryClientInterceptor func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error
+type StreamClientInterceptor func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) error
+
 // 封装 rpc 的基础类
 type RpcThird struct {
 	c *grpc.ClientConn
 	sync.Mutex
-	Address          string
-	Timeout          int
-	MaxRecvMsgsizeMb int
-	MaxSendMsgsizeMb int
-	SslOn            bool
-	CertFile         string
-	Hostname         string
-	logInfoOff       bool
+	Address                       string
+	Timeout                       int
+	MaxRecvMsgsizeMb              int
+	MaxSendMsgsizeMb              int
+	SslOn                         bool
+	CertFile                      string
+	Hostname                      string
+	logInfoOff                    bool
+	beforeUnaryClientInterceptor  UnaryClientInterceptor
+	afterUnaryClientInterceptor   UnaryClientInterceptor
+	beforeStreamClientInterceptor StreamClientInterceptor
 }
 
 func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
@@ -40,13 +46,15 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 			a.MaxSendMsgsizeMb = 4
 		}
 
+		dialOptions := []grpc.DialOption{
+			grpc.WithUnaryInterceptor(a.unaryClientInterceptor),
+			grpc.WithStreamInterceptor(a.streamClientInterceptor),
+			grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb * 1024 * 1024)),
+			grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb * 1024 * 1024)),
+		}
+
 		if !a.SslOn {
-			a.c, err = grpc.Dial(
-				a.Address,
-				grpc.WithInsecure(),
-				grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb*1024*1024)),
-				grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb*1024*1024)),
-			)
+			dialOptions = append(dialOptions, grpc.WithInsecure())
 
 		} else {
 			if a.CertFile == "" {
@@ -57,13 +65,13 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 				log.Fatalf("failed to create TLS credentials %v", err)
 			}
 
-			a.c, err = grpc.Dial(
-				a.Address,
-				grpc.WithTransportCredentials(creds),
-				grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb*1024*1024)),
-				grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb*1024*1024)),
-			)
+			dialOptions = append(dialOptions, grpc.WithTransportCredentials(creds))
 		}
+
+		a.c, err = grpc.Dial(
+			a.Address,
+			dialOptions...,
+		)
 	}
 
 	return a.c, err
@@ -133,4 +141,95 @@ func (a *RpcThird) SetLogInfoFlag(on bool) {
 	} else {
 		a.logInfoOff = true
 	}
+}
+
+func (a *RpcThird) SetBeforeUnaryClientInterceptor(unary UnaryClientInterceptor) {
+	a.beforeUnaryClientInterceptor = unary
+}
+
+func (a *RpcThird) SetAfterUnaryClientInterceptor(unary UnaryClientInterceptor) {
+	a.afterUnaryClientInterceptor = unary
+}
+
+func (a *RpcThird) SetBeforeStreamClientInterceptor(stream StreamClientInterceptor) {
+	a.beforeStreamClientInterceptor = stream
+}
+
+func (a *RpcThird) unaryClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+	if a.beforeUnaryClientInterceptor != nil {
+		err := a.beforeUnaryClientInterceptor(ctx, method, req, reply, cc, opts...)
+		if err != nil {
+			return err
+		}
+	}
+
+	logInfo := logrus.Fields{
+		"address":  a.Address,
+		"timeout":  a.Timeout,
+		"method":   method,
+		"params":   req,
+		"consume":  0,
+		"category": "third.rpc",
+	}
+	//log.Printf("before invoker. method: %+v, request:%+v", method, req)
+	begin := time.Now()
+
+	err := invoker(ctx, method, req, reply, cc, opts...)
+
+	end := time.Now()
+	consume := end.Sub(begin).Nanoseconds() / 1e6
+	logInfo["consume"] = consume
+
+	if err != nil {
+		logInfo["hint"] = err.Error()
+		logger.Ins().WithFields(logInfo).Error()
+	} else {
+		// 默认是日志没关
+		if !a.logInfoOff {
+			logInfo["result"] = reply
+		}
+
+		logger.Ins().WithFields(logInfo).Info()
+	}
+	if err != nil {
+		return err
+	}
+
+	if a.afterUnaryClientInterceptor != nil {
+		return a.afterUnaryClientInterceptor(ctx, method, req, reply, cc, opts...)
+	}
+	return nil
+}
+func (a *RpcThird) streamClientInterceptor(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+	if a.beforeStreamClientInterceptor != nil {
+		err := a.beforeStreamClientInterceptor(ctx, desc, cc, method, opts...)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	logInfo := logrus.Fields{
+		"address":  a.Address,
+		"timeout":  a.Timeout,
+		"method":   method,
+		"consume":  0,
+		"category": "third.rpc",
+	}
+	begin := time.Now()
+
+	clientStream, err := streamer(ctx, desc, cc, method, opts...)
+
+	end := time.Now()
+	consume := end.Sub(begin).Nanoseconds() / 1e6
+	logInfo["consume"] = consume
+
+	if err != nil {
+		logInfo["hint"] = err.Error()
+		logger.Ins().WithFields(logInfo).Error()
+	} else {
+		logger.Ins().WithFields(logInfo).Info()
+	}
+
+	// 此时只是打开了 stream 通道，还未开始传输数据，只有 stream 得到一个 EOF 的错误时才算传输完成
+	return clientStream, err
 }
