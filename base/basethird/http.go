@@ -6,9 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/hulklab/yago/coms/logger"
-	"github.com/levigross/grequests"
-	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net"
@@ -18,6 +15,10 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/hulklab/yago/coms/logger"
+	"github.com/levigross/grequests"
+	"github.com/sirupsen/logrus"
 )
 
 type PostFile string
@@ -122,8 +123,8 @@ func (a *HttpThird) getClient() *http.Client {
 func (a *HttpThird) newRo() *grequests.RequestOptions {
 
 	ro := &grequests.RequestOptions{
-		HTTPClient:     a.getClient(),
-		UserAgent:      "github.com-hulklab-yago",
+		HTTPClient: a.getClient(),
+		UserAgent:  "github.com-hulklab-yago",
 	}
 
 	if a.Hostname != "" {
@@ -242,14 +243,12 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 		"url":            uri,
 		"hostname":       a.Hostname,
 		"params":         logParams,
-		"consume(ms)":    consume,
+		"consume":        consume,
 		"request_header": ro.Headers,
-		"result":         retStr,
-		"error":          "",
 	}
 
 	if err != nil {
-		logInfo["error"] = err.Error()
+		logInfo["hint"] = err.Error()
 
 		log.WithFields(logInfo).Error()
 
@@ -257,7 +256,7 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 
 	} else if !res.Ok {
 
-		logInfo["error"] = fmt.Sprintf("http status err,code:%d", res.StatusCode)
+		logInfo["hint"] = fmt.Sprintf("http status err,code:%d", res.StatusCode)
 
 		log.WithFields(logInfo).Error()
 
@@ -266,8 +265,9 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 
 	// 默认是日志没关
 	if !a.logInfoOff {
-		log.WithFields(logInfo).Info()
+		logInfo["result"] = retStr
 	}
+	log.WithFields(logInfo).Info()
 
 	return &Response{res}, nil
 }
