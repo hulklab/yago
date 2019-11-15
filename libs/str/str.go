@@ -88,7 +88,7 @@ func Ucfirst(s string) string {
 	return string(strSlice)
 }
 
-func Str2kv(s, sep, pair string) map[string]string {
+func StrToKv(s, sep, pair string) map[string]string {
 	m := make(map[string]string)
 
 	// 先按 pair 分隔
@@ -104,7 +104,7 @@ func Str2kv(s, sep, pair string) map[string]string {
 	return m
 }
 
-func Kv2str(m map[string]string, sep, pair string, order ...string) string {
+func KvToStr(m map[string]string, sep, pair string, order ...string) string {
 	if len(m) == 0 {
 		return ""
 	}

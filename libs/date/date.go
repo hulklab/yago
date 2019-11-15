@@ -46,13 +46,18 @@ func Date(format string, timestamp ...int64) string {
 	return tm.Format(newFormat)
 }
 
-func Strtotime(datetime string, format string) int64 {
+func StrToTime(datetime string, format string) time.Time {
 	newFormat := format
 	for k, v := range TimeFormatMap {
 		newFormat = strings.Replace(newFormat, k, v, 1)
 	}
 	local, _ := time.LoadLocation("Local")
 	theTime, _ := time.ParseInLocation(newFormat, datetime, local)
+	return theTime
+}
+
+func StrToTimestamp(datetime string, format string) int64 {
+	theTime := StrToTime(datetime, format)
 	return theTime.Unix()
 }
 
