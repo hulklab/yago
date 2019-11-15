@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -84,54 +83,6 @@ func (a *RpcThird) GetCtx() (context.Context, context.CancelFunc) {
 	}
 
 	return context.WithTimeout(context.Background(), time.Duration(a.Timeout)*time.Second)
-}
-
-func (a *RpcThird) Call(f func(conn *grpc.ClientConn, ctx context.Context, req proto.Message) (proto.Message, error), req proto.Message) (proto.Message, error) {
-	logInfo := logrus.Fields{
-		"address":     a.Address,
-		"timeout":     a.Timeout,
-		"params":      req,
-		"consume(ms)": 0,
-		"error":       "",
-		"result":      "",
-		"category":    "third.rpc",
-	}
-
-	conn, err := a.GetConn()
-	if err != nil {
-		logInfo["error"] = err.Error()
-		logger.Ins().WithFields(logInfo).Error()
-		return nil, err
-	}
-
-	ctx, cancel := a.GetCtx()
-
-	defer cancel()
-
-	begin := time.Now()
-
-	resp, err := f(conn, ctx, req)
-
-	end := time.Now()
-	consume := end.Sub(begin).Nanoseconds() / 1e6
-
-	logInfo["consume"] = consume
-
-	if resp != nil {
-		logInfo["result"] = resp.String()
-	}
-
-	if err != nil {
-		logInfo["error"] = err.Error()
-		logger.Ins().WithFields(logInfo).Error()
-	} else {
-		// 默认是日志没关
-		if !a.logInfoOff {
-			logger.Ins().WithFields(logInfo).Info()
-		}
-	}
-
-	return resp, err
 }
 
 // 设置是否要关闭 info 日志
