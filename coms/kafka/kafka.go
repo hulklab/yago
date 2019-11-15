@@ -1,14 +1,16 @@
 package kafka
 
 import (
-	"github.com/Shopify/sarama"
-	"github.com/bsm/sarama-cluster"
-	"github.com/hulklab/yago"
 	"log"
+	"strings"
+
+	"github.com/Shopify/sarama"
+	cluster "github.com/bsm/sarama-cluster"
+	"github.com/hulklab/yago"
 )
 
 type Kafka struct {
-	connect string
+	connect []string
 	config  *cluster.Config
 }
 
@@ -30,11 +32,12 @@ func Ins(id ...string) *Kafka {
 		config.Group.Return.Notifications = true
 
 		conf := yago.Config.GetStringMap(name)
-		connect, ok := conf["cluster"]
+		brokers, ok := conf["cluster"]
 		if !ok {
-			// @todo
+			log.Fatalf("Fatal error: Kafka cluster is empty")
 		}
-		val := NewKafka(connect.(string), config)
+		conn := strings.Split(brokers.(string), ",")
+		val := NewKafka(conn, config)
 
 		return val
 	})
@@ -43,7 +46,7 @@ func Ins(id ...string) *Kafka {
 }
 
 // 实例化一个全新的 Kafka
-func NewKafka(connect string, config *cluster.Config) *Kafka {
+func NewKafka(connect []string, config *cluster.Config) *Kafka {
 	return &Kafka{
 		connect: connect,
 		config:  config,
@@ -56,7 +59,7 @@ type Consumer struct {
 }
 
 func (q *Kafka) NewConsumer(topic string, group string) (*Consumer, error) {
-	consumer, err := cluster.NewConsumer([]string{q.connect}, group, []string{topic}, q.config)
+	consumer, err := cluster.NewConsumer(q.connect, group, []string{topic}, q.config)
 	if err != nil {
 		log.Println("Kafka", "init consumer failed", err.Error())
 		return nil, err
