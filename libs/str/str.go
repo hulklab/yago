@@ -5,11 +5,12 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
-	"github.com/bwmarrin/snowflake"
 	"math/rand"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/bwmarrin/snowflake"
 )
 
 // md5 加密字符串
@@ -137,4 +138,17 @@ func Kv2str(m map[string]string, sep, pair string, order ...string) string {
 	s = strings.TrimRight(s, pair)
 
 	return s
+}
+
+func Split(s string) []string {
+	return strings.FieldsFunc(s, func(r rune) bool {
+		cutSet := ", \n\r\t"
+		for _, v := range cutSet {
+			if r == rune(v) {
+				return true
+			}
+		}
+		return false
+	})
+
 }
