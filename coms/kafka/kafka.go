@@ -105,7 +105,7 @@ func (c *Consumer) Close() {
 
 func (q *Kafka) Produce(topic string, value string) (partition int32, offset int64, err error) {
 
-	producer, err := sarama.NewSyncProducer([]string{q.connect}, nil)
+	producer, err := sarama.NewSyncProducer(q.connect, nil)
 	if err != nil {
 		log.Println("Kafka", "init producer failed", err.Error())
 		return
