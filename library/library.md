@@ -10,6 +10,8 @@
     >https://github.com/mitchellh/mapstructure
 5. MessagePack encoding for Golang
     >https://github.com/vmihailenco/msgpack
+6. Type convert
+    >https://github.com/spf13/cast
 
 
 不可避免的，yago 也会封装一些自己的类库，下面就为大家一一介绍这些类库。

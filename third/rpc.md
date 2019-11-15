@@ -59,30 +59,51 @@ func Ins() *homeApi {
 
 ```go
 func (a *homeApi) Hello(name string) () {
-	req := &pb.HelloRequest{Name: name}
-    resp, err := a.Call(func(conn *grpc.ClientConn, ctx context.Context, req proto.Message) (resp proto.Message, e error) {
+    
+    req := &pb.HelloRequest{Name: name}
 
-        c := pb.NewHomeClient(conn)
+    conn, _ := a.GetConn()
+    ctx, cancel := a.GetCtx()
+    defer cancel()
 
-        v, ok := req.(*pb.HelloRequest)
-
-        if ok {
-            return c.Hello(ctx, v)
-        }
-        return nil, errors.New("req is not the type of HelloRequest")
-    }, req)
+    c := pb.NewHomeClient(conn)
+    resp, err := c.Hello(ctx, req)
 
     if err != nil {
         fmt.Println(err)
         return
     }
+    fmt.Println("ok:", resp.Data)
+}
 
-    v, ok := resp.(*pb.HelloReply)
-    if ok {
-        fmt.Println("ok:", v.Data)
-    } else {
-        fmt.Println("not match", v)
-    }
+// 采用 stream 流的方式
+func (a *homeApi) HelloStream() {
+
+	req := &pb.HelloRequest{Name: name}
+
+	conn, _ := a.GetConn()
+	ctx, cancel := a.GetCtx()
+	defer cancel()
+
+	c := pb.NewHomeClient(conn)
+	stream, err := c.HelloStream(ctx, req)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	for {
+		reply, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		fmt.Println(reply)
+	}
 }
 ```
 
@@ -90,7 +111,40 @@ func (a *homeApi) Hello(name string) () {
 ### 调用 api
 ```go
 homeapi.Ins().Hello()
+homeapi.Ins().HelloStream()
 
 ```
 
+### grpc-Interceptor
+RpcThird 使用了 grpc-Interceptor 用来记录请求的日志，并对外提供了钩子函数。
 
+* UnaryClientInterceptor 有前后两个钩子，用来处理请求前后的业务
+
+```go
+func (a *homeApi) RpcHello() {
+    a.SetBeforeUnaryClientInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+        fmt.Println("method:", method, "before")
+        return nil
+    })
+    a.SetAfterUnaryClientInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+        fmt.Println("method:", method, "after")
+        return nil
+    })
+	
+    // ...
+}
+```
+
+* StreamClientInterceptor 提供了一个请求前钩子
+
+```go
+func (a *homeApi) RpcHelloStream() {
+	
+	a.SetBeforeStreamClientInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) error {
+		fmt.Println("method:", method, "stop")
+		return nil
+	})
+
+    // ...
+}
+```
