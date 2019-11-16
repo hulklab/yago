@@ -2,11 +2,11 @@ package kafka
 
 import (
 	"log"
-	"strings"
 
 	"github.com/Shopify/sarama"
 	cluster "github.com/bsm/sarama-cluster"
 	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/libs/str"
 )
 
 type Kafka struct {
@@ -36,7 +36,7 @@ func Ins(id ...string) *Kafka {
 		if !ok {
 			log.Fatalf("Fatal error: Kafka cluster is empty")
 		}
-		conn := strings.Split(brokers.(string), ",")
+		conn := str.Split(brokers.(string))
 		val := NewKafka(conn, config)
 
 		return val
