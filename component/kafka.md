@@ -18,6 +18,7 @@ type Kafka struct {
 ## 配置 kafka 组件
 ```toml
 [kafka]
+# 多个 broker 用逗号分隔
 cluster = "127.0.0.1:9092"
 topic = "demo"
 ```

@@ -10,7 +10,7 @@ type Orm struct {
 }
 ```
 
-所以你可以查看 [xorm 官方文档](http://gobook.io/read/github.com/go-xorm/manual-zh-CN/) 来获取所有支持的 api。
+所以你可以查看 [xorm 官方文档](http://gobook.io/read/gitea.com/xorm/manual-zh-CN/) 来获取所有支持的 api。
 
 本文中仅介绍部分常用的 api 以及扩展的 api。
 

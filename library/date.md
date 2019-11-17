@@ -41,6 +41,9 @@ nana := date.Date("K")
 someDay := date.Date("Y-m-d H:i:s", 1573113481)
 
 // 返回某个日期对应的时间戳
-timestamp1 := date.Strtotime("2019-11-07 16:08:00","Y-m-d H:i:s")
-timestamp2 := date.Strtotime("2019-11-07","Y-m-d")
+timestamp1 := date.StrToTimestamp("2019-11-07 16:08:00","Y-m-d H:i:s")
+timestamp2 := date.StrToTimestamp("2019-11-07","Y-m-d")
+
+// 返回某个日期对应的时间 time.Time
+tt := date.StrToTime("2019-11-07 16:08:00","Y-m-d H:i:s")
 ```

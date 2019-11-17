@@ -50,4 +50,12 @@ s := "k1=v1&k2=v2"
 str.Str2kv(s,"=","&")
 ```
 
+* 按逗号，空格，换行，tab 等分隔字符串
+```go
+// output: [a,b,c,d]
+s := "a, b,c\n, d\t"
+ss := Split(s)
+fmt.Println(ss)
+```
+
 
