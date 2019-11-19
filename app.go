@@ -4,14 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/gzip"
-	"github.com/gin-contrib/pprof"
-	"github.com/gin-gonic/gin"
-	"github.com/robfig/cron"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"net/http"
@@ -21,6 +13,15 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/pprof"
+	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/reflection"
 )
 
 type App struct {
@@ -310,6 +311,14 @@ func (a *App) loadHttpRouter() error {
 			}
 		}
 	})
+
+	// no route handler
+	if httpNoRouterHandler != nil {
+		a.httpEngine.NoRoute(func(c *gin.Context) {
+			ctx := NewCtx(c)
+			httpNoRouterHandler(ctx)
+		})
+	}
 
 	for _, r := range HttpRouterMap {
 		method := strings.ToUpper(r.Method)

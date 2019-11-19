@@ -20,6 +20,7 @@ type HttpRouter struct {
 }
 
 var HttpRouterMap = make(map[string]*HttpRouter)
+var httpNoRouterHandler HttpHandlerFunc
 
 type HttpInterface interface {
 	Labels() validator.Label
@@ -33,6 +34,10 @@ func AddHttpRouter(url, method string, action HttpHandlerFunc, h HttpInterface) 
 		log.Panicf("http router duplicate : %s", url)
 	}
 	HttpRouterMap[url] = &HttpRouter{url, method, action, h}
+}
+
+func SetHttpNoRouter(action HttpHandlerFunc) {
+	httpNoRouterHandler = action
 }
 
 // task

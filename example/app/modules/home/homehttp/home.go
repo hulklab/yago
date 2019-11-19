@@ -2,10 +2,12 @@ package homehttp
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basehttp"
+	"github.com/hulklab/yago/example/app/g"
 	"github.com/hulklab/yago/libs/validator"
-	"net/http"
 
 	"github.com/hulklab/yago/example/app/modules/home/homemodel"
 )
@@ -23,6 +25,7 @@ func init() {
 	yago.AddHttpRouter("/home/update", http.MethodPost, homeHttp.UpdateAction, homeHttp)
 	yago.AddHttpRouter("/home/list", http.MethodPost, homeHttp.ListAction, homeHttp)
 	yago.AddHttpRouter("/home/upload", http.MethodPost, homeHttp.UploadAction, homeHttp)
+	yago.SetHttpNoRouter(homeHttp.NoRouterAction)
 }
 
 func (h *HomeHttp) Labels() validator.Label {
@@ -80,6 +83,12 @@ func (h *HomeHttp) Rules() []validator.Rule {
 		//	On:     []string{"list"},
 		//},
 	}
+}
+
+func (h *HomeHttp) NoRouterAction(c *yago.Ctx) {
+	c.JSON(http.StatusNotFound, g.Hash{
+		"error": "404, page not exists",
+	})
 }
 
 func (h *HomeHttp) HelloAction(c *yago.Ctx) {
