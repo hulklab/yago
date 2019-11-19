@@ -6,6 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"google.golang.org/grpc/metadata"
+
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -122,6 +124,11 @@ func (a *RpcThird) unaryClientInterceptor(ctx context.Context, method string, re
 		"consume":  0,
 		"category": "third.rpc",
 	}
+
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if ok {
+		logInfo["metadata"] = md
+	}
 	//log.Printf("before invoker. method: %+v, request:%+v", method, req)
 	begin := time.Now()
 
@@ -166,6 +173,12 @@ func (a *RpcThird) streamClientInterceptor(ctx context.Context, desc *grpc.Strea
 		"consume":  0,
 		"category": "third.rpc",
 	}
+
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if ok {
+		logInfo["metadata"] = md
+	}
+
 	begin := time.Now()
 
 	clientStream, err := streamer(ctx, desc, cc, method, opts...)
