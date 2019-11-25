@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -31,13 +30,6 @@ func (p PostFile) Value(name string) (f grequests.FileUpload, e error) {
 	}
 
 	return grequests.FileUpload{FileContents: fd, FileName: string(p), FieldName: name}, nil
-}
-
-type Body string
-
-func (b Body) Value() io.Reader {
-	bf := bytes.NewBufferString(string(b))
-	return ioutil.NopCloser(bf)
 }
 
 type Response struct {
@@ -175,20 +167,60 @@ func (a *HttpThird) SetLogInfoFlag(on bool) {
 	}
 }
 
-func (a *HttpThird) call(method string, api string, params map[string]interface{}) (*Response, error) {
+func mergeOptions(ro *grequests.RequestOptions, opts ...*grequests.RequestOptions) {
+	if len(opts) == 0 {
+		return
+	}
+	opt := opts[0]
+
+	if opt.Context != nil {
+		ro.Context = opt.Context
+	}
+
+	if opt.Cookies != nil {
+		ro.Cookies = opt.Cookies
+	}
+
+	if opt.Data != nil {
+		ro.Data = opt.Data
+	}
+
+	if opt.Auth != nil {
+		ro.Auth = opt.Auth
+	}
+
+	if opt.Headers != nil {
+		ro.Headers = opt.Headers
+	}
+
+	if opt.JSON != nil {
+		ro.JSON = opt.JSON
+	}
+
+	if opt.CookieJar != nil {
+		ro.CookieJar = opt.CookieJar
+	}
+
+	if opt.UserAgent != "" {
+		ro.UserAgent = opt.UserAgent
+	}
+
+	if opt.BeforeRequest != nil {
+		ro.BeforeRequest = opt.BeforeRequest
+	}
+}
+
+func (a *HttpThird) call(method string, api string, params map[string]interface{}, opts ...*grequests.RequestOptions) (*Response, error) {
 	log := logger.Ins().Category("third.http")
 
-	//a.newRequest(method, api)
 	ro := a.newRo()
+
 	logParams := make(map[string]interface{})
 	dataParams := make(map[string]string)
 
 	for k, v := range params {
 		logParams[k] = v
 		switch val := v.(type) {
-		case Body: // 原始 body, k 随意
-			ro.RequestBody = val.Value()
-			//a.req.Body(v)
 		case PostFile: // 文件上传
 			uf, err := val.Value(k)
 			if err != nil {
@@ -219,12 +251,14 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 	}
 
 	if len(dataParams) > 0 {
-		if strings.ToUpper(method) == "GET" {
+		if method == http.MethodGet {
 			ro.Params = dataParams
 		} else {
 			ro.Data = dataParams
 		}
 	}
+
+	mergeOptions(ro, opts...)
 
 	//fmt.Printf("%+v", ro)
 
@@ -236,8 +270,6 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 
 	end := time.Now()
 	consume := end.Sub(begin).Nanoseconds() / 1e6
-
-	retStr := res.String()
 
 	logInfo := logrus.Fields{
 		"url":            uri,
@@ -263,6 +295,8 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 		return nil, errors.New("http status error")
 	}
 
+	retStr := res.String()
+
 	// 默认是日志没关
 	if !a.logInfoOff {
 		logInfo["result"] = retStr
@@ -272,30 +306,31 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 	return &Response{res}, nil
 }
 
-func (a *HttpThird) Post(api string, params map[string]interface{}) (*Response, error) {
-
+func (a *HttpThird) Post(api string, params map[string]interface{}, opts ...*grequests.RequestOptions) (*Response, error) {
 	//a.Req.Header("Expect", "")
-
-	return a.call("POST", api, params)
+	return a.call(http.MethodPost, api, params, opts...)
 }
 
-func (a *HttpThird) Get(api string, params map[string]interface{}) (*Response, error) {
-
-	return a.call("GET", api, params)
-
+func (a *HttpThird) Get(api string, params map[string]interface{}, opts ...*grequests.RequestOptions) (*Response, error) {
+	return a.call(http.MethodGet, api, params, opts...)
 }
 
-func (a *HttpThird) Put(api string, params map[string]interface{}) (*Response, error) {
-
-	return a.call("PUT", api, params)
+func (a *HttpThird) Put(api string, params map[string]interface{}, opts ...*grequests.RequestOptions) (*Response, error) {
+	return a.call(http.MethodPut, api, params, opts...)
 }
 
-func (a *HttpThird) Delete(api string, params map[string]interface{}) (*Response, error) {
-
-	return a.call("DELETE", api, params)
+func (a *HttpThird) Patch(api string, params map[string]interface{}, opts ...*grequests.RequestOptions) (*Response, error) {
+	return a.call(http.MethodPatch, api, params, opts...)
 }
 
-func (a *HttpThird) Head(api string, params map[string]interface{}) (*Response, error) {
+func (a *HttpThird) Delete(api string, params map[string]interface{}, opts ...*grequests.RequestOptions) (*Response, error) {
+	return a.call(http.MethodDelete, api, params, opts...)
+}
 
-	return a.call("HEAD", api, params)
+func (a *HttpThird) Head(api string, opts ...*grequests.RequestOptions) (*Response, error) {
+	return a.call(http.MethodHead, api, nil, opts...)
+}
+
+func (a *HttpThird) Options(api string, opts ...*grequests.RequestOptions) (*Response, error) {
+	return a.call(http.MethodOptions, api, nil, opts...)
 }

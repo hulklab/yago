@@ -234,18 +234,16 @@ func (a *App) genPid() {
 		log.Fatalf("pidfile check err:%v\n", err)
 		return
 
-	} else {
-		newPid := os.Getpid()
-		_, err := pf.Write([]byte(fmt.Sprintf("%d", newPid)))
-		if err != nil {
-			log.Fatalf("write pid err:%v\n", err)
-			return
-		}
+	}
 
-		log.Println("app is running with pid:", newPid)
+	newPid := os.Getpid()
+	_, err = pf.Write([]byte(fmt.Sprintf("%d", newPid)))
+	if err != nil {
+		log.Fatalf("write pid err:%v\n", err)
 		return
 	}
-	return
+
+	log.Println("app is running with pid:", newPid)
 }
 
 func (a *App) loadHttpRouter() error {

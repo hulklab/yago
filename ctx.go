@@ -2,14 +2,15 @@ package yago
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/hulklab/yago/libs/validator"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/hulklab/yago/libs/validator"
 )
 
 type Ctx struct {
@@ -87,38 +88,44 @@ func (c *Ctx) RequestFloat64(key string, def ...float64) (float64, error) {
 	return strconv.ParseFloat(val, 64)
 }
 
-func (c *Ctx) RequestSliceInt(key string, def ...int) []int {
+func (c *Ctx) RequestSliceInt(key string, def ...int) ([]int, error) {
 	val := c.GetString(key)
 	if val == "" {
 		if len(def) > 0 {
-			return def
+			return def, nil
 		}
-		return nil
+		return nil, nil
 	}
 	slice := strings.Split(val, ",")
 	sliceInt := make([]int, len(slice))
 	for k, v := range slice {
-		vInt, _ := strconv.Atoi(v)
+		vInt, err := strconv.Atoi(v)
+		if err != nil {
+			return nil, err
+		}
 		sliceInt[k] = vInt
 	}
-	return sliceInt
+	return sliceInt, nil
 }
 
-func (c *Ctx) RequestSliceInt64(key string, def ...int64) []int64 {
+func (c *Ctx) RequestSliceInt64(key string, def ...int64) ([]int64, error) {
 	val := c.GetString(key)
 	if val == "" {
 		if len(def) > 0 {
-			return def
+			return def, nil
 		}
-		return nil
+		return nil, nil
 	}
 	slice := strings.Split(val, ",")
 	sliceInt64 := make([]int64, len(slice))
 	for k, v := range slice {
-		vInt64, _ := strconv.ParseInt(v, 10, 64)
+		vInt64, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return nil, err
+		}
 		sliceInt64[k] = vInt64
 	}
-	return sliceInt64
+	return sliceInt64, nil
 }
 
 func (c *Ctx) RequestBool(key string, def ...bool) bool {
