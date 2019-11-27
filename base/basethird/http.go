@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -63,17 +64,41 @@ func (r *Response) String() (string, error) {
 
 // 封装 http 接口的基础类
 type HttpThird struct {
-	client           *http.Client
-	Domain           string
-	Hostname         string
-	ConnectTimeout   int
-	ReadWriteTimeout int
-	headers          map[string]string
-	username         string
-	password         string
-	tlsCfg           *tls.Config
-	logInfoOff       bool
-	once             sync.Once
+	client              *http.Client
+	Domain              string
+	Hostname            string
+	ConnectTimeout      int
+	ReadWriteTimeout    int
+	headers             map[string]string
+	username            string
+	password            string
+	tlsCfg              *tls.Config
+	logInfoOff          bool
+	once                sync.Once
+	maxIdleConnsPerHost int
+	maxConnsPerHost     int
+}
+
+func (a *HttpThird) SetMaxIdleConnsPerHost(num int) {
+	a.maxIdleConnsPerHost = num
+}
+
+func (a *HttpThird) getMaxIdleConnsPerHost() int {
+	if a.maxIdleConnsPerHost == 0 {
+		return 20
+	}
+	return a.maxIdleConnsPerHost
+}
+
+func (a *HttpThird) SetMaxConnsPerHost(num int) {
+	a.maxConnsPerHost = num
+}
+
+func (a *HttpThird) getMaxConnsPerHost() int {
+	if a.maxConnsPerHost == 0 {
+		return 500
+	}
+	return a.maxConnsPerHost
 }
 
 func (a *HttpThird) getConnTimeout() time.Duration {
@@ -93,17 +118,19 @@ func (a *HttpThird) getRequestTimeout() time.Duration {
 }
 
 func (a *HttpThird) getClient() *http.Client {
-	// @todo proxy
 	a.once.Do(func() {
 		a.client = &http.Client{
 			Transport: &http.Transport{
-				MaxIdleConnsPerHost: 100,
+				Proxy:               http.ProxyFromEnvironment,
+				MaxIdleConnsPerHost: a.getMaxIdleConnsPerHost(),
+				MaxConnsPerHost:     a.getMaxConnsPerHost(),
+				IdleConnTimeout:     90 * time.Second,
 				TLSClientConfig:     a.tlsCfg,
 				DialContext: (&net.Dialer{
-					Timeout: a.getConnTimeout(),
-					//KeepAlive: 30* time.Second,
+					Timeout:   a.getConnTimeout(),
+					KeepAlive: 30 * time.Second,
 				}).DialContext,
-				//Proxy:               Proxy,
+				ExpectContinueTimeout: 1 * time.Second,
 			},
 			Timeout: a.getRequestTimeout(),
 		}
@@ -137,7 +164,13 @@ func (a *HttpThird) newRo() *grequests.RequestOptions {
 func (a *HttpThird) genUri(api string) string {
 	var uri string
 	if a.Domain != "" {
-		uri = strings.TrimRight(a.Domain, "/") + "/" + strings.TrimLeft(api, "/")
+		// 如果请求的 api 里面带有 http 协议，则保留不拼接
+		u, err := url.Parse(api)
+		if err == nil && (u.Scheme == "http" || u.Scheme == "https") {
+			uri = api
+		} else {
+			uri = strings.TrimRight(a.Domain, "/") + "/" + strings.TrimLeft(api, "/")
+		}
 	} else {
 		uri = api
 	}
