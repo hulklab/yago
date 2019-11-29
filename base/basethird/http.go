@@ -312,20 +312,28 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 		"request_header": ro.Headers,
 	}
 
+	if ro.JSON != nil {
+		var requestBody string
+		switch ro.JSON.(type) {
+		case string:
+			requestBody = ro.JSON.(string)
+		case []byte:
+			requestBody = string(ro.JSON.([]byte))
+		default:
+			byteSlice, err := json.Marshal(ro.JSON)
+			if err == nil {
+				requestBody = string(byteSlice)
+			}
+		}
+		logInfo["request_body"] = requestBody
+	}
+
 	if err != nil {
 		logInfo["hint"] = err.Error()
 
 		log.WithFields(logInfo).Error()
 
 		return nil, err
-
-	} else if !res.Ok {
-
-		logInfo["hint"] = fmt.Sprintf("http status err,code:%d", res.StatusCode)
-
-		log.WithFields(logInfo).Error()
-
-		return nil, errors.New("http status error")
 	}
 
 	retStr := res.String()
@@ -334,6 +342,15 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 	if !a.logInfoOff {
 		logInfo["result"] = retStr
 	}
+
+	if !res.Ok {
+		logInfo["hint"] = fmt.Sprintf("http status err,code:%d", res.StatusCode)
+
+		log.WithFields(logInfo).Error()
+
+		return nil, fmt.Errorf("http status error: %d", res.StatusCode)
+	}
+
 	log.WithFields(logInfo).Info()
 
 	return &Response{res}, nil
