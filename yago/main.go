@@ -3,8 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/fsnotify/fsnotify"
-	"github.com/spf13/cobra"
+	"go/build"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,6 +12,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/cobra"
 )
 
 func GenDir(srcPath string, destPath, app string) error {
@@ -110,6 +112,14 @@ func getCurDir() string {
 	return strings.Replace(dir, "\\", "/", -1)
 }
 
+func getGoPath() string {
+	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		gopath = build.Default.GOPATH
+	}
+	return gopath
+}
+
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Init app",
@@ -124,9 +134,9 @@ var initCmd = &cobra.Command{
 		}
 		var src string
 		if useMod {
-			src = fmt.Sprintf("%s/pkg/mod/github.com/hulklab/yago@%s/example", os.Getenv("GOPATH"), Version)
+			src = fmt.Sprintf("%s/pkg/mod/github.com/hulklab/yago@%s/example", getGoPath(), Version)
 		} else {
-			src = fmt.Sprintf("%s/src/github.com/hulklab/yago/example", os.Getenv("GOPATH"))
+			src = fmt.Sprintf("%s/src/github.com/hulklab/yago/example", getGoPath())
 		}
 		dest := app
 
