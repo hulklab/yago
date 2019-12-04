@@ -11,10 +11,10 @@ require (
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-contrib/gzip v0.0.1
 	github.com/gin-contrib/pprof v1.2.1
-	github.com/gin-gonic/gin v1.4.0
+	github.com/gin-gonic/gin v1.5.1-0.20191203235601-7c21e04f628f
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/go-xorm/xorm v0.7.6
-	github.com/golang/protobuf v1.3.1
+	github.com/golang/protobuf v1.3.2
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/levigross/grequests v0.0.0-20190130132859-37c80f76a0da
 	github.com/natefinch/lumberjack v2.0.0+incompatible
@@ -30,5 +30,3 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	xorm.io/core v0.7.0
 )
-
-replace github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
