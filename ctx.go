@@ -198,7 +198,8 @@ func (c *Ctx) SetError(err interface{}, msgEx ...string) {
 		c.setError(v, msgEx...)
 	case validatorv10.ValidationErrors:
 		for _, fieldErr := range v {
-			c.SetError(NewErr(fieldErr.Translate(GetTranslator())))
+			e := ErrParam.String() + fieldErr.Translate(GetTranslator())
+			c.setError(Err(e))
 			return
 		}
 	//case json.UnmarshalTypeError:
