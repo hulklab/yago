@@ -2,10 +2,11 @@ package rds
 
 import (
 	"errors"
-	"github.com/garyburd/redigo/redis"
-	"github.com/hulklab/yago"
 	"log"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
+	"github.com/hulklab/yago"
 )
 
 type Rds struct {
@@ -66,6 +67,12 @@ func initRedisConnPool(name string) *redis.Pool {
 		maxIdle = int(mIdle.(int64))
 	}
 
+	var maxActive = 500
+	mActive, ok := config["max_active"]
+	if ok {
+		maxActive = int(mActive.(int64))
+	}
+
 	var idleTimeout = time.Duration(240) * time.Second
 	iTimeout, ok := config["idle_timeout"]
 	if ok {
@@ -105,7 +112,7 @@ func initRedisConnPool(name string) *redis.Pool {
 	return &redis.Pool{
 		MaxIdle:     maxIdle,
 		IdleTimeout: idleTimeout,
-		//MaxActive:   maxActive,
+		MaxActive:   maxActive,
 		//Wait:        true,
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", addr, dialOptions...)
