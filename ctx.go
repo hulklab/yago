@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	validatorv10 "github.com/go-playground/validator/v10"
 	"github.com/hulklab/yago/libs/validator"
 )
 
@@ -170,7 +171,7 @@ func (c *Ctx) SetData(data interface{}) {
 	c.JSON(http.StatusOK, c.resp)
 }
 
-func (c *Ctx) SetError(err Err, msgEx ...string) {
+func (c *Ctx) setError(err Err, msgEx ...string) {
 	errMsg := err.Error()
 	if len(msgEx) > 0 {
 		if errMsg == "" {
@@ -187,6 +188,25 @@ func (c *Ctx) SetError(err Err, msgEx ...string) {
 	}
 
 	c.JSON(http.StatusOK, c.resp)
+
+}
+
+func (c *Ctx) SetError(err interface{}, msgEx ...string) {
+
+	switch v := err.(type) {
+	case Err:
+		c.setError(v, msgEx...)
+	case validatorv10.ValidationErrors:
+		for _, fieldErr := range v {
+			c.SetError(NewErr(fieldErr.Translate(GetTranslator())))
+			return
+		}
+	//case json.UnmarshalTypeError:
+	case error:
+		c.setError(NewErr(v.Error()))
+	default:
+		c.setError(ErrUnknown)
+	}
 }
 
 func (c *Ctx) SetDataOrErr(data interface{}, err Err) {

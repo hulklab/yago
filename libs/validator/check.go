@@ -1,13 +1,13 @@
 package validator
 
 type Rule struct {
-	Params   []string
-	Method   interface{}
-	On       []string
-	Min      float64
-	Max      float64
-	Pattern  string
-	Message  string
+	Params  []string
+	Method  interface{}
+	On      []string
+	Min     float64
+	Max     float64
+	Pattern string
+	Message string
 }
 
 type Label map[string]string
