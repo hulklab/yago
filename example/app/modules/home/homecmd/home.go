@@ -40,9 +40,9 @@ func init() {
 }
 
 func (c *HomeCmd) TestAction(cmd *cobra.Command, args []string) {
-	homeapi.New().RpcHello()
+	homeapi.Ins().Hello()
 	time.Sleep(1 * time.Second)
-	homeapi.New().RpcHelloStream()
+	homeapi.InsRpc().Hello()
 }
 
 // ./example demo -a=hello -i 11 -x 66 -d 10ms -b=false -y=java,php -z=1,2,3 -f 3.14
