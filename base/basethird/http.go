@@ -235,6 +235,12 @@ func (a *HttpThird) SetTLSClientConfig(cfg *tls.Config) {
 	a.tlsCfg = cfg
 }
 
+func (a *HttpThird) SetTLSInsecure() {
+	a.tlsCfg = &tls.Config{
+		InsecureSkipVerify: true,
+	}
+}
+
 // 设置是否要关闭 info 日志
 func (a *HttpThird) SetLogInfoFlag(on bool) {
 	if on {
