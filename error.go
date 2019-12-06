@@ -8,18 +8,18 @@ import (
 
 type Err string
 
-const (
-	// 1-1000 系统错误, 1000 - 9999 业务公共错误, 10000 - .... 业务错误
+var (
+	// You can replace yago Err variable in your application,eg. yago.ErrParam = Err("4000=Param err")
 	OK           = Err("0")
-	E            = Err("1=") // 自定义错误信息
+	E            = Err("1=") // custom error
 	ErrParam     = Err("2=")
-	ErrSign      = Err("3=sign failed")
-	ErrAuth      = Err("4=auth failed")
-	ErrForbidden = Err("5=forbidden")
-	ErrNotLogin  = Err("6=user not login")
-	ErrSystem    = Err("7=system error")
+	ErrSign      = Err("3=Sign failed")
+	ErrAuth      = Err("4=Auth failed")
+	ErrForbidden = Err("5=Forbidden")
+	ErrNotLogin  = Err("6=User not login")
+	ErrSystem    = Err("7=System error")
 	ErrOperate   = Err("8=")
-	ErrUnknown   = Err("9=unknown error")
+	ErrUnknown   = Err("9=Unknown error")
 )
 
 func (e Err) Error() string {
