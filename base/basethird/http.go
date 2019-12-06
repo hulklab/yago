@@ -3,10 +3,12 @@ package basethird
 import (
 	"bytes"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -15,6 +17,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/hulklab/yago"
 
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/levigross/grequests"
@@ -65,10 +69,12 @@ func (r *Response) String() (string, error) {
 // 封装 http 接口的基础类
 type HttpThird struct {
 	client              *http.Client
-	Domain              string
+	Address             string
 	Hostname            string
 	ConnectTimeout      int
 	ReadWriteTimeout    int
+	SslOn               bool
+	CertFile            string
 	headers             map[string]string
 	username            string
 	password            string
@@ -77,6 +83,44 @@ type HttpThird struct {
 	once                sync.Once
 	maxIdleConnsPerHost int
 	maxConnsPerHost     int
+}
+
+func (a *HttpThird) InitConfig(configSection string) error {
+	if !yago.Config.IsSet(configSection) {
+		return fmt.Errorf("config section %s is not exists", configSection)
+	}
+
+	a.Address = yago.Config.GetString(configSection + ".address")
+	a.Hostname = yago.Config.GetString(configSection + ".hostname")
+	a.ReadWriteTimeout = yago.Config.GetInt(configSection + ".timeout")
+	a.ConnectTimeout = yago.Config.GetInt(configSection + ".conn_timeout")
+	a.SslOn = yago.Config.GetBool(configSection + ".ssl_on")
+	a.CertFile = yago.Config.GetString(configSection + ".cert_file")
+	if a.SslOn {
+		if a.CertFile == "" {
+			return fmt.Errorf("cert file is required in config section %s", configSection)
+		}
+
+		roots := x509.NewCertPool()
+
+		pem, err := ioutil.ReadFile(a.CertFile)
+		if err != nil {
+			return fmt.Errorf("read cert file %s error", a.CertFile)
+		}
+
+		isOk := roots.AppendCertsFromPEM(pem)
+		if !isOk {
+			return fmt.Errorf("load cert file %s error", a.CertFile)
+		}
+
+		sslConf := &tls.Config{
+			RootCAs: roots,
+		}
+
+		a.SetTLSClientConfig(sslConf)
+	}
+
+	return nil
 }
 
 func (a *HttpThird) SetMaxIdleConnsPerHost(num int) {
@@ -163,13 +207,13 @@ func (a *HttpThird) newRo() *grequests.RequestOptions {
 
 func (a *HttpThird) genUri(api string) string {
 	var uri string
-	if a.Domain != "" {
+	if a.Address != "" {
 		// 如果请求的 api 里面带有 http 协议，则保留不拼接
 		u, err := url.Parse(api)
 		if err == nil && (u.Scheme == "http" || u.Scheme == "https") {
 			uri = api
 		} else {
-			uri = strings.TrimRight(a.Domain, "/") + "/" + strings.TrimLeft(api, "/")
+			uri = strings.TrimRight(a.Address, "/") + "/" + strings.TrimLeft(api, "/")
 		}
 	} else {
 		uri = api
@@ -189,6 +233,12 @@ func (a *HttpThird) SetHeader(headers map[string]string) {
 
 func (a *HttpThird) SetTLSClientConfig(cfg *tls.Config) {
 	a.tlsCfg = cfg
+}
+
+func (a *HttpThird) SetTLSInsecure() {
+	a.tlsCfg = &tls.Config{
+		InsecureSkipVerify: true,
+	}
 }
 
 // 设置是否要关闭 info 日志

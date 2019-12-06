@@ -2,9 +2,12 @@ package basethird
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/hulklab/yago"
 
 	"google.golang.org/grpc/metadata"
 
@@ -32,6 +35,20 @@ type RpcThird struct {
 	beforeUnaryClientInterceptor  UnaryClientInterceptor
 	afterUnaryClientInterceptor   UnaryClientInterceptor
 	beforeStreamClientInterceptor StreamClientInterceptor
+}
+
+func (a *RpcThird) InitConfig(configSection string) error {
+	if !yago.Config.IsSet(configSection) {
+		return fmt.Errorf("config section %s is not exists", configSection)
+	}
+	a.Address = yago.Config.GetString(configSection + ".address")
+	a.SslOn = yago.Config.GetBool(configSection + ".ssl_on")
+	a.CertFile = yago.Config.GetString(configSection + ".cert_file")
+	a.Hostname = yago.Config.GetString(configSection + ".hostname")
+	a.Timeout = yago.Config.GetInt(configSection + ".timeout")
+	a.MaxRecvMsgsizeMb = yago.Config.GetInt(configSection + ".max_recv_msgsize_mb")
+	a.MaxSendMsgsizeMb = yago.Config.GetInt(configSection + ".max_send_msgsize_mb")
+	return nil
 }
 
 func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
