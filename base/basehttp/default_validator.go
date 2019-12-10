@@ -2,6 +2,7 @@ package basehttp
 
 import (
 	"reflect"
+	"strings"
 	"sync"
 
 	"github.com/hulklab/yago"
@@ -44,6 +45,17 @@ func (v *defaultValidator) lazyinit() {
 	v.once.Do(func() {
 		trans := yago.GetTranslator()
 		v.validate = validatelib.New(trans)
+
+		v.validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+			name := strings.SplitN(fld.Tag.Get("label"), ",", 2)[0]
+
+			if name == "-" {
+				return ""
+			}
+
+			return name
+
+		})
 		//v.validate.SetTagName("binding")
 	})
 }
