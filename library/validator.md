@@ -1,177 +1,105 @@
 # 验证器
 
-验证器主要是为了在控制器层进行参数校验的，目前主要在 Http 控制器中进行了集成。我们实现了几个常用的验证器功能：
-* [Required](#Required)：必传且不为空
-* [String](#String)：字符串验证器
-* [Number](#Number)：数字验证器
-* [Float](#Float)：浮点数验证器
-* [JSON](#JSON)：JSON 格式验证器
-* [IP](#IP)：IP 格式验证器
-* [Match](#Match)：正则验证器
-* [Custom](#Custom)：自定义验证器
+验证器主要是为了在控制器层进行参数校验的，目前我们使用的是 gin 的验证器。gin 内部使用的包是开源的 `https://github.com/go-playground/validator`。
 
-在 Http 控制器中，我们覆写 Rules 函数，在 Rules 函数中我们定义好验证器内容，然后返回一个验证器规则数组，yago 会在 Http 控制器的 BeforeAction 之后开始进行参数校验。
 
-```go
-func (h *HomeHttp) Rules() []validator.Rule {
-	return []validator.Rule{
-		{
-			Params: []string{"name"},
-			Method: validator.Required,
-			On:     []string{"add"},
-        },
-    }
-}
-```
-
-此外还有一个 `Label` 函数，用来对验证错误信息的参数名称进行替换和映射的。比如如果验证器错误信息为：name 参数不能为空，那么如果配置了 Label： `name=姓名`，则报错信息显示为 `姓名不能为空`。
-
-```go
-func (h *HomeHttp) Labels() validator.Label {
-	return map[string]string{
-		"id":       "ID",
-		"name":     "姓名",
-		"page":     "页码",
-		"pagesize": "页内数量",
-	}
-}
-```
-
-## 规则 Rule 的结构
-
-```go
-type Rule struct {
-	Params   []string // 参数名称，包括 URI 参数和表单参数
-	Method   interface{} // 指定需要用到的验证器方法
-	On       []string // 指定哪些 Action 会用到该条规则 Rule。选用当前 Action 在路由地址的末端名称。如果 on 为空则会对该控制器中的所有
-	Min      float64 // 最小值验证
-	Max      float64 // 最大值验证
-    Pattern  string // 正则验证
-	Message  string // 自定义验证错误信息，为空则展示默认错误信息
-}
-```
 
 ## 样例
-### Required
+比如有一个添加用户的接口，需要验证用户名必填，并且长度最大 20 个字符。
+>此样例仅展示了 required 和 max 验证器，更多的验证器请参考 [validator 官方文档](https://godoc.org/github.com/go-playground/validator)
 
-验证该控制器中的 add，update Action 中的参数 name 和 score 是否必传且不为空
 
+### 先定义一个结构体 p，用来接收请求的参数
 ```go
-validator.Rule{
-    Params: []string{"name", "score"},
-    Method: validator.Required,
-    On:     []string{"add", "update"},
-},
+type par struct {
+    Name string `json:"name" validate:"required,max=20" form:"name" label:"姓名"`
+}
 
 ```
 
-### String
+#### tag 说明
+* validate 标签：yago 保留了原生的 validate 标签，替换掉了 gin 默认的 binding 标签
+* json 标签：如果 Content-Type 是 application/json，gin 根据 json 标签的值来取值赋值
+* form 标签：如果 Content-Type 不是 application/json，gin 根据 form 标签来取值赋值
+* label 标签：是用来替换报错时的字段名信息的，上例中如果不指定默认是 Name
 
-验证该控制器中的 add Action 中的参数 name 是否为字符串，并且最短2个字符，最长10个字符。
-
+### 使用 ShouldBind 赋值并验证
+通过 ctx 的 ShouldBind 方法，将请求参数赋值给变量 p，ShouldBind 方法内部会调用 validator 包做验证
+调用 ctx 的 SetError 方法，yago 会自动处理验证的错误信息，并做相应的翻译。
 ```go
-validator.Rule{
-    Params: []string{"name"},
-    Method: validator.String,
-    On:     []string{"add"},
-    Min:    2,
-    Max:    10,
-},
+func (h *HomeHttp) AddAction(c *yago.Ctx) {
+	p := par{}
+	err := c.ShouldBind(&p)
+    if err != nil {
+        c.SetError(err)
+        return
+    }
+	
+	// your code here
+	c.SetData(g.Hash{"name":p.Name})
+	return
+}
 
 ```
 
-### Number
-
-验证该控制器中的 add Action 中的参数 age 是否为数字，并且最大为200。
-
-```go
-validator.Rule{
-    Params: []string{"age"},
-    Method: validator.Int,
-    On:     []string{"add"},
-    Max:    200,
-},
-
-```
-
-### Float
-
-验证该控制器中的所有 Action 中的参数 score 是否为浮点数，并且最大为100。
+## 特别说明
+### 默认值
+目前未发现 validator 包设置默认值的方法，我们可以在初始化变量时给出，如下例：
 
 ```go
-validator.Rule{
-    Params: []string{"score"},
-    Method: validator.Float,
-    Max:    100,
-},
-
-```
-
-### JSON
-
-验证该控制器中的所有 Action 中的参数 extend 是否为json格式。
-
-```go
-validator.Rule{
-    Params: []string{"extend"},
-    Method: validator.JSON,
-},
-
-```
-
-### IP
-
-验证该控制器中的所有 Action 中的参数 ip 是否为ip格式。
-
-```go
-validator.Rule{
-    Params: []string{"ip"},
-    Method: validator.IP,
-},
-
-```
-
-### Match
-
-验证该控制器中的所有 Action 中的参数 email 格式是否正确。
-
-```go
-validator.Rule{
-    Params: []string{"email"},
-    Method: validator.Match,
-    Pattern: `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`,
-},
-
-```
-
-### Custom
-
-自定义验证器支持我们自己定义验证函数
-
-```go
-func (h *HomeHttp) CheckNameExist(c *yago.Ctx, p string) (bool, error) {
-	val, _ := c.Get(p)
-	// check param p is exist
-	var exists bool
-
-	if val == "zhangsan" {
-		exists = true
+func (h *HomeHttp) ListAction(c *yago.Ctx) {
+	type p struct {
+		Q        string `json:"q" validate:"omitempty" form:"q"`
+		Page     int    `json:"page" validate:"omitempty" form:"name" label:"当前页"`
+		Pagesize int    `json:"pagesize" validate:"omitempty" form:"name" label:"页大小"`
+	}
+	
+	// 设置默认值
+	pi := &p{
+		Page:     1,
+		Pagesize: 10,
 	}
 
-	if exists {
-		return false, fmt.Errorf("name %s is exists", val)
+	err := c.ShouldBind(&pi)
+	if err != nil {
+		c.SetError(err)
+		return
 	}
-	return true, nil
-
+	
+	// your code here
+	c.SetData(g.Hash{})
+	return
 }
 ```
 
-验证该控制器中的所有 Action 中的参数 name 是否为 zhangsan。
+### 零值问题
+go 的 Struct 字段是有零值的，比如上文中 Name 字段不传，它的值就是空串，我们不能根据他是否为空串
+来判断用户是否有传这个字段，那么怎么处理咧，下文给出样例
 
 ```go
-validator.Rule{
-    Params: []string{"name"},
-    Method: h.CheckNameExist,
-},
+
+func (h *HomeHttp) AddAction(c *yago.Ctx) {
+	// 采用字符串指针代替字符串类型
+    type par struct {
+        *Name string `json:"name" validate:"omitempty" form:"name" label:"姓名"`
+    }
+	p := par{}
+	err := c.ShouldBind(&p)
+    if err != nil {
+        c.SetError(err)
+        return
+    }
+	
+	// 此处可以根据 par.Name 是否为 nil 来判断用户是否有传该值
+	if p.Name == nil{
+		// 说明用户没有传
+		c.SetData("no name")
+		return
+	}
+	
+	c.SetData(*p.Name)
+	return
+}
+
 
 ```

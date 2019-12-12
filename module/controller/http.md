@@ -41,20 +41,34 @@ Http Action 接收一个参数 c *yago.Ctx，它是 gin.Ctx 的扩展，主要�
 
 ```go
 func (h *HomeHttp) HelloAction(c *yago.Ctx) {
-	name := c.RequestString("name")
+    var p struct {
+        Name string `json:"name" validate:"omitempty,max=20" form:"name"`
+    }
+    err := c.ShouldBind(&p)
+    if err != nil {
+        c.SetError(err)
+        return
+    }
 
 	c.SetData("hello " + name)
-
 	return
 }
 
 func (h *HomeHttp) AddAction(c *yago.Ctx) {
-	name := c.RequestString("name")
+    var p struct {
+        Name string `json:"name" validate:"required,max=20" form:"name" label:"姓名"`
+    }
+    
+    err := c.ShouldBind(&p)
+    if err != nil {
+        c.SetError(err)
+        return
+    }
 
 	model := homemodel.NewHomeModel()
-	id, err := model.Add(name, nil)
-	if err.HasErr() {
-		c.SetError(err)
+	id, e := model.Add(p.Name, nil)
+	if e.HasErr() {
+		c.SetError(e)
 		return
 	}
 
@@ -63,31 +77,12 @@ func (h *HomeHttp) AddAction(c *yago.Ctx) {
 }
 ```
 
-我们扩展了 Request 系列的方法，用来整合 query_args 和 body_args，并且提供了类型转换。例如可以直接通过 c.RequestSliceString("names") 来获取一个逗号分隔的字符串类型的参数值并将其转换成切片返回。
-
 Action 内，可以通过 c.SetData 函数来返回正确的结果响应（json 格式），或者 c.SetError + return 来返回错误信息（json）。c.SetError 接收一个 yago.Err 类型的 error，yago.Err 定义来自 app/g/errors.go。 需要说明的是，c.SetError 并不能阻止程序往下运行，如果需要接口中断，请加 return。
 
-## Labels & Rules
+## Validate
 
-Labels，Rules 为验证器的两个函数，具体使用请看 [validator](../library/validator.md)。
+validate 采用 gin 的 validator，具体使用请看 [validator](../library/validator.md)。
 
-```go
-func (h *HomeHttp) Labels() validator.Label {
-	return map[string]string{
-		"name":     "姓名",
-	}
-}
-
-func (h *HomeHttp) Rules() []validator.Rule {
-	return []validator.Rule{
-		{
-			Params: []string{"name"},
-			Method: validator.Required,
-			On:     []string{"add"},
-		},
-	}
-}
-```
 
 ## WebSocket 服务
 
