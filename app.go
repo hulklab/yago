@@ -1,9 +1,12 @@
 package yago
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -59,6 +62,8 @@ type App struct {
 	HttpGzipLevel int
 	// http pprof
 	HttpPprof bool
+	// http biz log
+	HttpBizLogOn bool
 
 	// 开启task服务
 	TaskEnable bool
@@ -170,6 +175,9 @@ func NewApp() *App {
 		}
 
 		app.HttpPprof = Config.GetBool("app.http_pprof_on")
+
+		Config.SetDefault("app.http_bizlog_on", true)
+		app.HttpBizLogOn = Config.GetBool("app.http_bizlog_on")
 	}
 
 	// init rpc
@@ -277,38 +285,57 @@ func (a *App) loadHttpRouter() error {
 		pprof.Register(a.httpEngine)
 	}
 
-	// params
-	a.httpEngine.Use(func(c *gin.Context) {
-		req := c.Request
+	if a.HttpBizLogOn {
+		a.httpEngine.Use(func(c *gin.Context) {
+			req := c.Request
+			var paramKey = "__PARAMS__"
+			c.Set(paramKey, "")
 
-		query := req.URL.Query()
+			switch c.ContentType() {
+			case gin.MIMEJSON:
+				bodyBytes, err := ioutil.ReadAll(req.Body)
+				if err != nil {
+					log.Println("read body:", err.Error())
+					return
+				}
 
-		for k, v := range query {
-			c.Set(k, v[0])
-		}
+				err = req.Body.Close() //  must close
+				if err != nil {
+					log.Println("close body:", err.Error())
+					return
+				}
+				req.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
-		switch c.ContentType() {
-		case "application/x-www-form-urlencoded":
-			err := req.ParseForm()
-			if err != nil {
-				log.Println("parse form", err.Error())
-				return
-			}
-			for k, v := range req.PostForm {
-				c.Set(k, v[0])
-			}
-		case "multipart/form-data":
-			err := req.ParseMultipartForm(a.httpEngine.MaxMultipartMemory)
-			if err != nil {
-				log.Println("parse multi form", err.Error())
-				return
-			} else if req.MultipartForm != nil {
-				for k, v := range req.MultipartForm.Value {
-					c.Set(k, v[0])
+				c.Set(paramKey, string(bodyBytes))
+			case gin.MIMEPOSTForm:
+				err := req.ParseForm()
+				if err != nil {
+					log.Println("parse form", err.Error())
+					return
+				}
+				bs, err := json.Marshal(req.PostForm)
+				if err != nil {
+					log.Println("json encode err:", err.Error())
+				}
+
+				c.Set(paramKey, string(bs))
+
+			case gin.MIMEMultipartPOSTForm:
+				err := req.ParseMultipartForm(a.httpEngine.MaxMultipartMemory)
+				if err != nil {
+					log.Println("parse multi form", err.Error())
+					return
+				} else if req.MultipartForm != nil {
+					bs, err := json.Marshal(req.PostForm)
+					if err != nil {
+						log.Println("json encode err:", err.Error())
+					}
+					c.Set(paramKey, string(bs))
 				}
 			}
-		}
-	})
+		})
+
+	}
 
 	// no route handler
 	if httpNoRouterHandler != nil {
@@ -327,14 +354,10 @@ func (a *App) loadHttpRouter() error {
 			if e := controller.BeforeAction(ctx); e.HasErr() {
 				ctx.SetError(e)
 			} else {
-				if err := ctx.Validate(); err != nil {
-					ctx.SetError(ErrParam, err.Error())
-				} else {
-					action(ctx)
-				}
+				action(ctx)
 			}
 
-			controller.AfterAction(ctx)
+			go controller.AfterAction(ctx)
 		}
 
 		log.Println("[HTTP]", r.Url, runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name())

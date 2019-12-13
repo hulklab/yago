@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hulklab/yago/libs/validator"
 	"github.com/spf13/cobra"
 )
 
@@ -23,8 +22,6 @@ var HttpRouterMap = make(map[string]*HttpRouter)
 var httpNoRouterHandler HttpHandlerFunc
 
 type HttpInterface interface {
-	Labels() validator.Label
-	Rules() []validator.Rule
 	BeforeAction(c *Ctx) Err
 	AfterAction(c *Ctx)
 }
