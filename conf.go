@@ -3,10 +3,11 @@ package yago
 import (
 	"flag"
 	"fmt"
-	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 type AppConfig struct {
@@ -19,6 +20,10 @@ func IsEnvProd() bool {
 
 func IsEnvDev() bool {
 	return Config.GetString("app.env") == "dev"
+}
+
+func GetAppName() string {
+	return Config.GetString("app.app_name")
 }
 
 var Config *AppConfig

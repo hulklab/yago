@@ -34,6 +34,9 @@ http_stop_time_wait = 10
 # pprof route: /debug/pprof
 # http_pprof_on = false
 
+# 开启 http 业务请求日志
+# http_bizlog_on = true
+
 # http html 模版配置
 # http_view_render = true
 # http_view_path = "views/*"
@@ -67,7 +70,7 @@ task_stop_time_wait = 10
 ##########################################
 
 [logger]
-# json | text, default text
+# json | text, default json
 formatter = "json"
 # 日志最低等级 Panic = 0, Fatal = 1, Error = 2, Warn = 3, Info = 4, Debug = 5, Trace = 6
 level = 5
