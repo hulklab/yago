@@ -13,6 +13,8 @@ type Ctx struct {
 	resp *ResponseBody
 }
 
+const CtxParamsKey = "__PARAMS__"
+
 type ResponseBody struct {
 	ErrNo  int         `json:"errno"`
 	ErrMsg string      `json:"errmsg"`

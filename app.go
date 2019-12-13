@@ -288,7 +288,7 @@ func (a *App) loadHttpRouter() error {
 	if a.HttpBizLogOn {
 		a.httpEngine.Use(func(c *gin.Context) {
 			req := c.Request
-			var paramKey = "__PARAMS__"
+			var paramKey = CtxParamsKey
 			c.Set(paramKey, "")
 
 			switch c.ContentType() {

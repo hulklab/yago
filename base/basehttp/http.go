@@ -28,7 +28,7 @@ func (h *BaseHttp) AfterAction(c *yago.Ctx) {
 		return
 	}
 
-	params := c.GetString("__PARAMS__")
+	params := c.GetString(yago.CtxParamsKey)
 
 	if resp.ErrNo != 0 {
 		logger.Ins().Category("http.biz.error").WithFields(logrus.Fields{
