@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+
 	"github.com/hulklab/yago"
 
 	"google.golang.org/grpc/metadata"
@@ -24,17 +26,18 @@ type StreamClientInterceptor func(ctx context.Context, desc *grpc.StreamDesc, cc
 type RpcThird struct {
 	c *grpc.ClientConn
 	sync.Mutex
-	Address                       string
-	Timeout                       int
-	MaxRecvMsgsizeMb              int
-	MaxSendMsgsizeMb              int
-	SslOn                         bool
-	CertFile                      string
-	Hostname                      string
-	logInfoOff                    bool
-	beforeUnaryClientInterceptor  UnaryClientInterceptor
-	afterUnaryClientInterceptor   UnaryClientInterceptor
-	beforeStreamClientInterceptor StreamClientInterceptor
+	Address                         string
+	Timeout                         int
+	MaxRecvMsgsizeMb                int
+	MaxSendMsgsizeMb                int
+	SslOn                           bool
+	CertFile                        string
+	Hostname                        string
+	logInfoOff                      bool
+	unaryClientInterceptors         []grpc.UnaryClientInterceptor
+	streamClientInterceptors        []grpc.StreamClientInterceptor
+	disableDefaultUnaryInterceptor  bool
+	disableDefaultStreamInterceptor bool
 }
 
 func (a *RpcThird) InitConfig(configSection string) error {
@@ -48,6 +51,7 @@ func (a *RpcThird) InitConfig(configSection string) error {
 	a.Timeout = yago.Config.GetInt(configSection + ".timeout")
 	a.MaxRecvMsgsizeMb = yago.Config.GetInt(configSection + ".max_recv_msgsize_mb")
 	a.MaxSendMsgsizeMb = yago.Config.GetInt(configSection + ".max_send_msgsize_mb")
+
 	return nil
 }
 
@@ -65,10 +69,25 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 		}
 
 		dialOptions := []grpc.DialOption{
-			grpc.WithUnaryInterceptor(a.unaryClientInterceptor),
-			grpc.WithStreamInterceptor(a.streamClientInterceptor),
 			grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(a.MaxRecvMsgsizeMb * 1024 * 1024)),
 			grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(a.MaxSendMsgsizeMb * 1024 * 1024)),
+		}
+
+		// 注册日志插件(放到最后)
+		if !a.disableDefaultUnaryInterceptor {
+			a.AddUnaryClientInterceptor(a.unaryClientInterceptor)
+		}
+
+		if !a.disableDefaultStreamInterceptor {
+			a.AddStreamClientInterceptor(a.streamClientInterceptor)
+		}
+
+		if len(a.unaryClientInterceptors) > 0 {
+			dialOptions = append(dialOptions, grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(a.unaryClientInterceptors...)))
+		}
+
+		if len(a.streamClientInterceptors) > 0 {
+			dialOptions = append(dialOptions, grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(a.streamClientInterceptors...)))
 		}
 
 		if !a.SslOn {
@@ -95,6 +114,18 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 	return a.c, err
 }
 
+func (a *RpcThird) AddUnaryClientInterceptor(uci grpc.UnaryClientInterceptor) {
+	if a.unaryClientInterceptors == nil {
+		a.unaryClientInterceptors = make([]grpc.UnaryClientInterceptor, 0)
+	}
+
+	a.unaryClientInterceptors = append(a.unaryClientInterceptors, uci)
+}
+
+func (a *RpcThird) AddStreamClientInterceptor(sci grpc.StreamClientInterceptor) {
+	a.streamClientInterceptors = append(a.streamClientInterceptors, sci)
+}
+
 func (a *RpcThird) GetCtx() (context.Context, context.CancelFunc) {
 
 	if a.Timeout == 0 {
@@ -113,25 +144,15 @@ func (a *RpcThird) SetLogInfoFlag(on bool) {
 	}
 }
 
-func (a *RpcThird) SetBeforeUnaryClientInterceptor(unary UnaryClientInterceptor) {
-	a.beforeUnaryClientInterceptor = unary
+func (a *RpcThird) DisableDefaultUnaryInterceptor() {
+	a.disableDefaultUnaryInterceptor = true
 }
 
-func (a *RpcThird) SetAfterUnaryClientInterceptor(unary UnaryClientInterceptor) {
-	a.afterUnaryClientInterceptor = unary
-}
-
-func (a *RpcThird) SetBeforeStreamClientInterceptor(stream StreamClientInterceptor) {
-	a.beforeStreamClientInterceptor = stream
+func (a *RpcThird) DisableDefaultStreamInterceptor() {
+	a.disableDefaultStreamInterceptor = true
 }
 
 func (a *RpcThird) unaryClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-	if a.beforeUnaryClientInterceptor != nil {
-		err := a.beforeUnaryClientInterceptor(ctx, method, req, reply, cc, opts...)
-		if err != nil {
-			return err
-		}
-	}
 
 	logInfo := logrus.Fields{
 		"address":  a.Address,
@@ -170,19 +191,9 @@ func (a *RpcThird) unaryClientInterceptor(ctx context.Context, method string, re
 		return err
 	}
 
-	if a.afterUnaryClientInterceptor != nil {
-		return a.afterUnaryClientInterceptor(ctx, method, req, reply, cc, opts...)
-	}
 	return nil
 }
 func (a *RpcThird) streamClientInterceptor(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	if a.beforeStreamClientInterceptor != nil {
-		err := a.beforeStreamClientInterceptor(ctx, desc, cc, method, opts...)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	logInfo := logrus.Fields{
 		"address":  a.Address,
 		"timeout":  a.Timeout,

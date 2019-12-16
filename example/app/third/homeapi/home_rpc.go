@@ -29,6 +29,21 @@ func InsRpc() *homeRpcApi {
 		if err != nil {
 			log.Fatal("init rpc api config error")
 		}
+
+		// 添加业务自己的拦截器
+		api.AddUnaryClientInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+			fmt.Println("method:", method, "client before")
+			err := invoker(ctx, method, req, reply, cc, opts...)
+			fmt.Println("method:", method, "client after")
+			return err
+		})
+
+		api.AddStreamClientInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (stream grpc.ClientStream, e error) {
+			fmt.Println("method:", method, "stream before")
+			clientStream, err := streamer(ctx, desc, cc, method, opts...)
+			return clientStream, err
+		})
+
 		return api
 	})
 	return v.(*homeRpcApi)
@@ -36,14 +51,6 @@ func InsRpc() *homeRpcApi {
 
 // eg. homeapi.InsRpc().Hello()
 func (a *homeRpcApi) Hello() {
-	a.SetBeforeUnaryClientInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
-		fmt.Println("method:", method, "before")
-		return nil
-	})
-	a.SetAfterUnaryClientInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
-		fmt.Println("method:", method, "after")
-		return nil
-	})
 
 	var name = "zhangsan"
 
@@ -67,11 +74,6 @@ func (a *homeRpcApi) HelloStream() {
 
 	var name = "zhangsan"
 	req := &pb.HelloRequest{Name: name}
-
-	a.SetBeforeStreamClientInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) error {
-		fmt.Println("method:", method, "stop")
-		return nil
-	})
 
 	conn, _ := a.GetConn()
 	ctx, cancel := a.GetCtx()

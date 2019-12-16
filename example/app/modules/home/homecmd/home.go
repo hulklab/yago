@@ -43,6 +43,8 @@ func (c *HomeCmd) TestAction(cmd *cobra.Command, args []string) {
 	homeapi.Ins().Hello()
 	time.Sleep(1 * time.Second)
 	homeapi.InsRpc().Hello()
+	time.Sleep(1 * time.Second)
+	homeapi.InsRpc().HelloStream()
 }
 
 // ./example demo -a=hello -i 11 -x 66 -d 10ms -b=false -y=java,php -z=1,2,3 -f 3.14
