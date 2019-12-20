@@ -1,4 +1,4 @@
-# kafka 组件
+# Kafka 组件
 kafka 消息队列组件我们依赖的开源包是 `github.com/Shopify/sarama`。
 
 按照组件的设计，我们定义了自己的 kafka 结构对其进行了组合，在保留其原生的功能之外，以便扩展。

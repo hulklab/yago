@@ -25,6 +25,7 @@
     * [Redis 组件](component/rds.md)
     * [Kafka 组件](component/kafka.md)
     * [Mongo 组件](component/mgo.md)
+    * [Etcd 组件](component/etcd.md)
     * [Locker 组件](component/locker.md)
 * [类库](library/library.md)
     * [goroutine 限流](library/sema.md)

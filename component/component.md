@@ -124,4 +124,5 @@ yago 的组件分两部分，一部分十分常用的组件我们放在 `yago/co
 * [Redis 组件](/component/rds.md)
 * [Kafka 组件](/component/kafka.md)
 * [Mongo 组件](/component/mgo.md)
+* [Etcd 组件](/component/etcd.md)
 * [Locker 组件](/component/locker.md)
