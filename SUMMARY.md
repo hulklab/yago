@@ -37,6 +37,5 @@
 * [第三方调用](third/third.md)
     * [调用 http 接口](third/http.md)
     * [调用 rpc 接口](third/rpc.md)
-* [已知问题](problem/problem.md)
 * [感谢](thanks.md)
 

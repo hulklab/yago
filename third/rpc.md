@@ -116,35 +116,42 @@ homeapi.Ins().HelloStream()
 ```
 
 ### grpc-Interceptor
-RpcThird 使用了 grpc-Interceptor 用来记录请求的日志，并对外提供了钩子函数。
+RpcThird 使用了 grpc-Interceptor, 默认提供一个日志 interceptor，并对外提供了添加自定义 interceptor 的函数。
+interceptor 支持添加多个，执行顺序为添加的顺序，默认的日志 interceptor 总是在最后执行。
 
-* UnaryClientInterceptor 有前后两个钩子，用来处理请求前后的业务
+* UnaryClientInterceptor 
 
 ```go
 func (a *homeApi) RpcHello() {
-    a.SetBeforeUnaryClientInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
-        fmt.Println("method:", method, "before")
-        return nil
+	a.AddUnaryClientInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+        fmt.Println("method:", method, "client before")
+        err := invoker(ctx, method, req, reply, cc, opts...)
+        fmt.Println("method:", method, "client after")
+        return err
     })
-    a.SetAfterUnaryClientInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
-        fmt.Println("method:", method, "after")
-        return nil
-    })
-	
     // ...
 }
 ```
 
-* StreamClientInterceptor 提供了一个请求前钩子
+* StreamClientInterceptor
 
 ```go
 func (a *homeApi) RpcHelloStream() {
-	
-	a.SetBeforeStreamClientInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) error {
-		fmt.Println("method:", method, "stop")
-		return nil
-	})
-
+    a.AddStreamClientInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (stream grpc.ClientStream, e error) {
+        fmt.Println("method:", method, "stream before")
+        clientStream, err := streamer(ctx, desc, cc, method, opts...)
+        return clientStream, err
+    })
     // ...
 }
+```
+
+* 关闭默认的日志 interceptor
+
+```go
+// 关闭 unary
+a.DisableDefaultUnaryInterceptor()
+
+// 关闭 stream
+a.DisableDefaultStreamInterceptor()
 ```

@@ -18,7 +18,6 @@ go mod init
 ```bash
 go build
 ```
-> [如 go build 遇报错，请看解决方案](../problem/problem.md)
 
 ## 创建属于自己的配置文件，并启动
 
