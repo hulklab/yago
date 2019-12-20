@@ -43,6 +43,8 @@ func initEtcdConn(name string) *Etcd {
 	etcdCert := yago.Config.GetString(name + ".cert_file")
 	etcdCertKey := yago.Config.GetString(name + ".cert_key_file")
 	etcdCa := yago.Config.GetString(name + ".cert_ca_file")
+	maxCallRecvMsgSize := yago.Config.GetInt(name + ".max_call_recv_msgsize_byte")
+	maxCallSendMsgSize := yago.Config.GetInt(name + ".max_call_send_msgsize_byte")
 
 	if len(endpoints) == 0 {
 		log.Fatalf("Fatal error: etcd endpoints is empty")
@@ -53,6 +55,8 @@ func initEtcdConn(name string) *Etcd {
 	config.DialTimeout = dialTimeout
 	config.Username = username
 	config.Password = password
+	config.MaxCallRecvMsgSize = maxCallRecvMsgSize
+	config.MaxCallSendMsgSize = maxCallSendMsgSize
 
 	// tls
 	if etcdCert != "" && etcdCertKey != "" {
