@@ -118,6 +118,17 @@ cluster = "127.0.0.1:9092"
 topic = "demo"
 topic_cloud = "cloud"
 
+[etcd]
+endpoints    = ["10.16.61.34:2379"]
+dial_timeout = 2
+#username =""
+#password =""
+#max_call_recv_msg_size=0
+#max_call_send_msg_size=0
+#cert_file = "conf/ssl/etcd_cert.pem"
+#cert_key_file = "conf/ssl/etcd_cert_key.pem"
+#cert_ca_file = "conf/ssl/etcd_ca.pem"
+
 ##########################################
 # 以下是 api 区
 ##########################################
