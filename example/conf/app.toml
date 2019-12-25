@@ -137,8 +137,6 @@ dial_timeout = 2
 address = "http://127.0.0.1:8080"
 hostname = "localhost"
 timeout = 10
-max_recv_msgsize_mb =  10
-max_send_msgsize_mb =  10
 # ssl_on = true
 # cert_file = "./conf/server.pem"
 
