@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -38,7 +39,7 @@ func GenDir(srcPath string, destPath, app string) error {
 			return err
 		}
 		if !f.IsDir() {
-			path := strings.Replace(path, "\\", "/", -1)
+			//path := strings.Replace(path, "\\", "/", -1)
 			destNewPath := strings.Replace(path, srcPath, destPath, -1)
 			if err := GenFile(path, destNewPath, app); err != nil {
 				log.Println(fmt.Sprintf("create file %s error:", destNewPath), err.Error())
@@ -57,12 +58,12 @@ func GenFile(src, dest, app string) (err error) {
 	}
 	defer srcFile.Close()
 
-	destSplitPathDirs := strings.Split(dest, "/")
+	destSplitPathDirs := strings.Split(dest, string(filepath.Separator))
 
 	destSplitPath := ""
 	for index, dir := range destSplitPathDirs {
 		if index < len(destSplitPathDirs)-1 {
-			destSplitPath = destSplitPath + dir + "/"
+			destSplitPath = filepath.Join(destSplitPath, dir)
 			b, _ := pathExists(destSplitPath)
 			if b == false {
 				err := os.Mkdir(destSplitPath, os.ModePerm)
@@ -109,7 +110,8 @@ func pathExists(path string) (bool, error) {
 
 func getCurDir() string {
 	dir, _ := filepath.Abs(filepath.Dir("."))
-	return strings.Replace(dir, "\\", "/", -1)
+	return filepath.Clean(dir)
+	//return strings.Replace(dir, "\\", "/", -1)
 }
 
 func getGoPath() string {
@@ -134,11 +136,12 @@ var initCmd = &cobra.Command{
 		}
 		var src string
 		if useMod {
-			src = fmt.Sprintf("%s/pkg/mod/github.com/hulklab/yago@%s/example", getGoPath(), Version)
+			src = filepath.Join(getGoPath(), "pkg", "mod", "github.com", "hulklab", "yago@"+Version, "example")
 		} else {
-			src = fmt.Sprintf("%s/src/github.com/hulklab/yago/example", getGoPath())
+			src = filepath.Join(getGoPath(), "src", "github.com", "hulklab", "yago", "example")
 		}
 		dest := app
+		fmt.Println(src, dest, app)
 
 		if err := GenDir(src, dest, app); err != nil {
 			log.Println("create app error:", err.Error())
@@ -156,7 +159,7 @@ var newCmd = &cobra.Command{
 			return
 		}
 
-		curDir := strings.Split(getCurDir(), "/")
+		curDir := strings.Split(getCurDir(), string(filepath.Separator))
 		app := curDir[len(curDir)-1]
 
 		module, _ := cmd.Flags().GetString("module")
@@ -164,12 +167,14 @@ var newCmd = &cobra.Command{
 		log.Println("create module", module)
 		dirs := []string{"cmd", "dao", "http", "model", "rpc", "task"}
 		for _, d := range dirs {
-			dirPath := fmt.Sprintf("app/modules/%s/%s%s", module, module, d)
+			//dirPath := fmt.Sprintf("app/modules/%s/%s%s", module, module, d)
+			dirPath := filepath.Join("app", "modules", module, module+d)
 			if err := os.MkdirAll(dirPath, 0755); err != nil {
 				log.Println(fmt.Sprintf("create module dir %s error:", dirPath), err.Error())
 				return
 			}
-			filePath := fmt.Sprintf("%s/%s.go", dirPath, module)
+			//filePath := fmt.Sprintf("%s/%s.go", dirPath, module)
+			filePath := filepath.Join(dirPath, module+".go")
 			fileBody := fmt.Sprintf("package %s%s", module, d)
 			if err := ioutil.WriteFile(filePath, []byte(fileBody), 0644); err != nil {
 				log.Println(fmt.Sprintf("create module file %s error:", filePath), err.Error())
@@ -177,7 +182,8 @@ var newCmd = &cobra.Command{
 			}
 		}
 
-		routePath := "app/route/route.go"
+		//routePath := "app/route/route.go"
+		routePath := filepath.Join("app", "route", "route.go")
 		routes := []string{"cmd", "http", "rpc", "task"}
 		for _, d := range routes {
 			// routePath := fmt.Sprintf("app/routes/%sroute/%s.go", d, d)
@@ -293,8 +299,11 @@ func autoBuildApp(appName string) {
 	defer state.Unlock()
 
 	log.Println("[INFO] rebuild app start ...")
+	if runtime.GOOS == "windows" {
+		appName += ".exe"
+	}
 
-	bcmd := exec.Command("go", "build")
+	bcmd := exec.Command("go", "build", "-o", appName)
 	bcmd.Stderr = os.Stderr
 	bcmd.Stdout = os.Stdout
 	err := bcmd.Run()
@@ -331,12 +340,13 @@ func restartApp(appName string) {
 		cmd = exec.Command("./" + appName)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		go func() {
-			err := cmd.Run()
-			if err != nil && err.Error() != "signal: killed" {
-				log.Fatalln("[FATAL] start app error:", err)
-			}
-		}()
+		go cmd.Run()
+		//go func() {
+		//	err := cmd.Run()
+		//	if err != nil && err.Error() != "signal: killed" {
+		//		log.Fatalln("[FATAL] start app error:", err)
+		//	}
+		//}()
 	}()
 }
 
