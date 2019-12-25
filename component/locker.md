@@ -9,16 +9,16 @@ locker 组件采专用 driver 的机制，目前支持的 driver 有 redis。
 ```go
 // yago-coms/locker/locker.go
 type ILocker struct {
-	Lock(key string, timeout int64)
-	Unlock(key string)
+	Lock(key string, timeout int64) error
+	Unlock()
 }
 ```
 
 
-下面介绍 driver 为 redis 的使用方式。
-
+下面介绍具体的使用方式。
 
 ## 配置 locker 组件
+### 使用 redis 做 locker 驱动的组件
 ```toml
 [redis]
 addr = "127.0.0.1:6379"
@@ -31,21 +31,38 @@ idle_timeout = 30
 driver = "redis"
 driver_instance_id = "redis"
 ```
-
 locker 配置中只需要配置 driver 名称和 driver 实例 ID，
 上例中 driver_instance_id 为 redis 表示使用配置文件中 section 为 redis 的组件实例作为 locker 的 driver 驱动对象
+
+### 使用 etcd 做 locker 驱动的组件
+```toml
+[etcd]
+endpoints = ["127.0.0.1:2379"]
+
+[locker]
+driver = "etcd"
+driver_instance_id = "etcd"
+```
+上例中 driver_instance_id 为 etcd 表示使用配置文件中 section 为 etcd 的组件实例作为 locker 的 driver 驱动对象
 
 ## 使用 Locker 组件
 
 ```go
 key := "locker_name"
+// 锁的失效时间
 timeout := 10
+
+// 创建锁对象
+lo := locker.New()
 
 // Lock() will block until get the locker
 // Get locker
-locker.Ins().Lock(key, timeout)
+err := lo.Lock(key, timeout)
+if err != nil {
+	// err handler
+}
 // Release locker
-defer locker.Ins().Unlock(key)
+defer lo.Unlock()
 // your code here
 
 ```
