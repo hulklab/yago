@@ -281,7 +281,7 @@ func (r *Rds) HVals(key interface{}) (reply interface{}, err error) {
 
 func (r *Rds) HScan(key interface{}, cursor interface{}, opts ...interface{}) (reply interface{}, err error) {
 	args1 := mergeKeyAndArgs(cursor, opts...)
-	args := mergeKeyAndArgs(key, args1)
+	args := mergeKeyAndArgs(key, args1...)
 	return r.Do("HSCAN", args...)
 }
 
