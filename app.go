@@ -15,6 +15,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"testing"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -199,6 +200,9 @@ func NewApp() *App {
 
 // 此 init 最先执行，配置文件此处初始化
 func init() {
+	// avoid go test error
+	testing.Init()
+
 	initConfig()
 
 	log.SetFlags(log.LstdFlags)
