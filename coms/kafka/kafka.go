@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"errors"
 	"log"
 	"sync"
 
@@ -64,16 +65,32 @@ func NewKafka(connect []string, config *cluster.Config, topic string) *Kafka {
 	}
 }
 
+func (q *Kafka) Close() error {
+	q.syncProducers.Range(func(key, value interface{}) bool {
+		if p, ok := value.(*SyncProducer); ok {
+			p.close()
+		}
+		return true
+	})
+	q.asyncProducers.Range(func(key, value interface{}) bool {
+		if p, ok := value.(*AsyncProducer); ok {
+			p.close()
+		}
+		return true
+	})
+	return nil
+}
+
 type Consumer struct {
 	conn      *cluster.Consumer
 	closeChan chan bool
 }
 
-func (q *Kafka) NewConsumer(group string, topic ...string) (*Consumer, error) {
-	var topics []string
-	if len(topic) == 0 {
-		topics = []string{q.topic}
+func (q *Kafka) NewConsumer(group string, topics ...string) (*Consumer, error) {
+	if len(topics) == 0 {
+		return nil, errors.New("kafka: consumer topics can not be empty")
 	}
+
 	consumer, err := cluster.NewConsumer(q.connect, group, topics, q.config)
 	if err != nil {
 		log.Println(err.Error())
@@ -123,13 +140,9 @@ type SyncProducer struct {
 	conn  sarama.SyncProducer
 }
 
-func (q *Kafka) SyncProducer(topic ...string) (*SyncProducer, error) {
+func (q *Kafka) SyncProducer(topic string) (*SyncProducer, error) {
 	var p SyncProducer
-	if len(topic) == 0 {
-		p.topic = q.topic
-	} else {
-		p.topic = topic[0]
-	}
+	p.topic = topic
 
 	v, ok := q.syncProducers.Load(p.topic)
 	if ok {
@@ -157,27 +170,18 @@ func (p *SyncProducer) Produce(value string) (partition int32, offset int64, err
 	return partition, offset, err
 }
 
-func (p *SyncProducer) Close() {
+func (p *SyncProducer) close() {
 	_ = p.conn.Close()
 }
 
 type AsyncProducer struct {
 	topic string
 	conn  sarama.AsyncProducer
-	wg    sync.WaitGroup
-
-	successes int64
-	errors    int64
-	enqueued  int64
 }
 
-func (q *Kafka) AsyncProducer(topic ...string) (*AsyncProducer, error) {
+func (q *Kafka) AsyncProducer(topic string) (*AsyncProducer, error) {
 	var p AsyncProducer
-	if len(topic) == 0 {
-		p.topic = q.topic
-	} else {
-		p.topic = topic[0]
-	}
+	p.topic = topic
 
 	v, ok := q.asyncProducers.Load(p.topic)
 	if ok {
@@ -189,22 +193,6 @@ func (q *Kafka) AsyncProducer(topic ...string) (*AsyncProducer, error) {
 		log.Println(err.Error())
 		return nil, err
 	}
-
-	p.wg.Add(2)
-	go func() {
-		defer p.wg.Done()
-		for range p.conn.Successes() {
-			p.successes++
-		}
-	}()
-
-	go func() {
-		defer p.wg.Done()
-		for err := range p.conn.Errors() {
-			log.Printf("Kafka error: %+v, err：%s\n", err.Msg, err.Err)
-			p.errors++
-		}
-	}()
 	p.conn = producer
 
 	q.asyncProducers.LoadOrStore(p.topic, &p)
@@ -215,10 +203,8 @@ func (q *Kafka) AsyncProducer(topic ...string) (*AsyncProducer, error) {
 func (p *AsyncProducer) Produce(value string) {
 	msg := &sarama.ProducerMessage{Topic: p.topic, Value: sarama.StringEncoder(value)}
 	p.conn.Input() <- msg
-	p.enqueued++
 }
 
-func (p *AsyncProducer) Close() {
-	p.conn.AsyncClose()
-	p.wg.Wait()
+func (p *AsyncProducer) close() {
+	_ = p.conn.Close()
 }

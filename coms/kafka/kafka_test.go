@@ -5,16 +5,16 @@ import (
 	"testing"
 )
 
-//  go test -v ./coms/kafka  -args "-c=${PWD}/example/conf/app.toml"
+// go test -v ./coms/kafka  -args "-c=${PWD}/example/conf/app.toml"
 
 // go test -v ./coms/kafka -run TestSyncProducer_Produce -args "-c=${PWD}/example/conf/app.toml"
 func TestSyncProducer_Produce(t *testing.T) {
 	k := Ins()
-	p, err := k.SyncProducer()
+	p, err := k.SyncProducer("demo")
 	if err != nil {
 		t.Fatalf("init sync producer error: %s", err)
 	}
-	defer p.Close()
+	defer p.close()
 
 	_, _, err = p.Produce("i am a sync produced msg")
 	if err != nil {
@@ -25,11 +25,11 @@ func TestSyncProducer_Produce(t *testing.T) {
 // go test -v ./coms/kafka -run BenchmarkSyncProducer_Produce -bench=BenchmarkSyncProducer_Produce -args "-c=${PWD}/example/conf/app.toml"
 func BenchmarkSyncProducer_Produce(b *testing.B) {
 	k := Ins()
-	p, err := k.SyncProducer()
+	p, err := k.SyncProducer("demo")
 	if err != nil {
 		b.Fatalf("init sync producer error: %s", err)
 	}
-	defer p.Close()
+	defer p.close()
 
 	for i := 0; i < 1000; i++ {
 		_, _, err := p.Produce("i am an sync produced msg")
@@ -47,7 +47,7 @@ func TestAsyncProducer_Produce(t *testing.T) {
 	if err != nil {
 		t.Fatalf("init async producer error: %s", err)
 	}
-	defer p.Close()
+	defer p.close()
 
 	p.Produce("i am an async produced msg")
 }
@@ -55,11 +55,11 @@ func TestAsyncProducer_Produce(t *testing.T) {
 // go test -v ./coms/kafka -run BenchmarkAsyncProducer_Produce -bench=BenchmarkAsyncProducer_Produce -args "-c=${PWD}/example/conf/app.toml"
 func BenchmarkAsyncProducer_Produce(b *testing.B) {
 	k := Ins()
-	p, err := k.AsyncProducer()
+	p, err := k.AsyncProducer("demo1")
 	if err != nil {
 		b.Fatalf("init async producer error: %s", err)
 	}
-	defer p.Close()
+	defer p.close()
 
 	for i := 0; i < 1000; i++ {
 		p.Produce("i am an async produced msg")
@@ -69,7 +69,7 @@ func BenchmarkAsyncProducer_Produce(b *testing.B) {
 // go test -v ./coms/kafka -run TestConsumer_Consume -args "-c=${PWD}/example/conf/app.toml"
 func TestConsumer_Consume(t *testing.T) {
 	var k = Ins()
-	consumer, err := k.NewConsumer("zjl")
+	consumer, err := k.NewConsumer("zjl", "demo", "demo1")
 	if err != nil {
 		t.Errorf("new consumer error: %s", err)
 	}
