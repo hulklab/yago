@@ -117,7 +117,7 @@ mongodb_uri = "mongodb://user:password@127.0.0.1:27017/?connectTimeoutMS=5000&so
 database = "test"
 
 [kafka]
-cluster = "127.0.0.1:9092"
+cluster = "10.208.251.93:39092"
 topic = "demo"
 topic_cloud = "cloud"
 

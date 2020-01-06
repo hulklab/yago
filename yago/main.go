@@ -141,7 +141,6 @@ var initCmd = &cobra.Command{
 			src = filepath.Join(getGoPath(), "src", "github.com", "hulklab", "yago", "example")
 		}
 		dest := app
-		fmt.Println(src, dest, app)
 
 		if err := GenDir(src, dest, app); err != nil {
 			log.Println("create app error:", err.Error())

@@ -12,13 +12,15 @@ import (
 )
 
 type Kafka struct {
-	connect []string
-	config  *cluster.Config
-	topic   string
-
-	syncProducers  sync.Map
-	asyncProducers sync.Map
+	connect  []string
+	config   *cluster.Config
+	producer sync.Map
 }
+
+const (
+	syncProducer  = "sync_producer"
+	asyncProducer = "async_producer"
+)
 
 // 返回 kafka 组件单例
 func Ins(id ...string) *Kafka {
@@ -44,11 +46,7 @@ func Ins(id ...string) *Kafka {
 		}
 		conn := str.Split(brokers.(string))
 
-		topic, ok := conf["topic"]
-		if !ok || len(topic.(string)) == 0 {
-			log.Fatal("kafka: default topic is empty")
-		}
-		val := NewKafka(conn, config, topic.(string))
+		val := NewKafka(conn, config)
 
 		return val
 	})
@@ -57,24 +55,24 @@ func Ins(id ...string) *Kafka {
 }
 
 // 实例化一个全新的 Kafka
-func NewKafka(connect []string, config *cluster.Config, topic string) *Kafka {
+func NewKafka(connect []string, config *cluster.Config) *Kafka {
 	return &Kafka{
 		connect: connect,
 		config:  config,
-		topic:   topic,
 	}
 }
 
 func (q *Kafka) Close() error {
-	q.syncProducers.Range(func(key, value interface{}) bool {
-		if p, ok := value.(*SyncProducer); ok {
-			p.close()
+	q.producer.Range(func(key, value interface{}) bool {
+		if key == syncProducer {
+			if p, ok := value.(*SyncProducer); ok {
+				p.close()
+			}
 		}
-		return true
-	})
-	q.asyncProducers.Range(func(key, value interface{}) bool {
-		if p, ok := value.(*AsyncProducer); ok {
-			p.close()
+		if key == asyncProducer {
+			if p, ok := value.(*AsyncProducer); ok {
+				p.close()
+			}
 		}
 		return true
 	})
@@ -112,19 +110,19 @@ func (q *Kafka) NewConsumer(group string, topics ...string) (*Consumer, error) {
 	return c, nil
 }
 
-func (c *Consumer) Consume(cb func([]byte)) error {
+func (c *Consumer) Consume(cb func([]byte) bool) error {
 	for {
 		select {
 		case msg, ok := <-c.conn.Messages():
 			if ok {
-				// 回调函数处理消息
-				cb(msg.Value)
+				processed := cb(msg.Value)
 				// mark message as processed
-				c.conn.MarkOffset(msg, "")
+				if processed {
+					c.conn.MarkOffset(msg, "")
+				}
 			}
 		case err := <-c.conn.Errors():
 			log.Println(err.Error())
-			return err
 		case <-c.closeChan:
 			return nil
 		}
@@ -136,15 +134,11 @@ func (c *Consumer) Close() {
 }
 
 type SyncProducer struct {
-	topic string
-	conn  sarama.SyncProducer
+	conn sarama.SyncProducer
 }
 
-func (q *Kafka) SyncProducer(topic string) (*SyncProducer, error) {
-	var p SyncProducer
-	p.topic = topic
-
-	v, ok := q.syncProducers.Load(p.topic)
+func (q *Kafka) SyncProducer() (*SyncProducer, error) {
+	v, ok := q.producer.Load(syncProducer)
 	if ok {
 		return v.(*SyncProducer), nil
 	}
@@ -154,15 +148,16 @@ func (q *Kafka) SyncProducer(topic string) (*SyncProducer, error) {
 		log.Println(err.Error())
 		return nil, err
 	}
-	p.conn = producer
 
-	q.syncProducers.LoadOrStore(p.topic, &p)
+	var p SyncProducer
+	p.conn = producer
+	q.producer.LoadOrStore(syncProducer, &p)
 
 	return &p, nil
 }
 
-func (p *SyncProducer) Produce(value string) (partition int32, offset int64, err error) {
-	msg := &sarama.ProducerMessage{Topic: p.topic, Value: sarama.StringEncoder(value)}
+func (p *SyncProducer) Produce(topic, value string) (partition int32, offset int64, err error) {
+	msg := &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(value)}
 	partition, offset, err = p.conn.SendMessage(msg)
 	if err != nil {
 		log.Println(err.Error())
@@ -175,15 +170,12 @@ func (p *SyncProducer) close() {
 }
 
 type AsyncProducer struct {
-	topic string
-	conn  sarama.AsyncProducer
+	conn sarama.AsyncProducer
+	wg   sync.WaitGroup
 }
 
-func (q *Kafka) AsyncProducer(topic string) (*AsyncProducer, error) {
-	var p AsyncProducer
-	p.topic = topic
-
-	v, ok := q.asyncProducers.Load(p.topic)
+func (q *Kafka) AsyncProducer() (*AsyncProducer, error) {
+	v, ok := q.producer.Load(asyncProducer)
 	if ok {
 		return v.(*AsyncProducer), nil
 	}
@@ -193,18 +185,35 @@ func (q *Kafka) AsyncProducer(topic string) (*AsyncProducer, error) {
 		log.Println(err.Error())
 		return nil, err
 	}
+	var p AsyncProducer
 	p.conn = producer
 
-	q.asyncProducers.LoadOrStore(p.topic, &p)
+	p.wg.Add(1)
+	go func() {
+		defer p.wg.Done()
+		for range p.conn.Successes() {
+		}
+	}()
+
+	p.wg.Add(1)
+	go func() {
+		defer p.wg.Done()
+		for err := range p.conn.Errors() {
+			log.Println(err)
+		}
+	}()
+
+	q.producer.LoadOrStore(asyncProducer, &p)
 
 	return &p, nil
 }
 
-func (p *AsyncProducer) Produce(value string) {
-	msg := &sarama.ProducerMessage{Topic: p.topic, Value: sarama.StringEncoder(value)}
+func (p *AsyncProducer) Produce(topic, value string) {
+	msg := &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(value)}
 	p.conn.Input() <- msg
 }
 
 func (p *AsyncProducer) close() {
-	_ = p.conn.Close()
+	p.conn.AsyncClose()
+	p.wg.Wait()
 }

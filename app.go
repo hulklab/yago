@@ -574,11 +574,16 @@ func (a *App) Close() {
 		a.comCloseDoneChan <- 1
 	}()
 
-	ticker := time.NewTicker(time.Duration(Config.GetInt64("app.com_stop_time_wait")) * time.Second)
+	var comCloseTimeWait time.Duration
+	if Config.IsSet("app.com_close_time_wait") {
+		comCloseTimeWait = time.Duration(Config.GetInt64("app.com_stop_time_wait")) * time.Second
+	} else {
+		comCloseTimeWait = 10 * time.Second
+	}
 	select {
 	case <-a.comCloseDoneChan:
 		log.Println("Components Close OK")
-	case <-ticker.C:
+	case <-time.After(comCloseTimeWait):
 		log.Println("Components Close Timeout")
 	}
 }
