@@ -144,7 +144,7 @@ func (h *HomeHttp) ListAction(c *yago.Ctx) {
 	type p struct {
 		Q        string `json:"q" validate:"omitempty" form:"q"`
 		Page     int    `json:"page" validate:"omitempty" form:"name" label:"当前页"`
-		Pagesize int    `json:"pagesize" validate:"omitempty" form:"name" label:"页大小"`
+		Pagesize int    `json:"pagesize" validate:"omitempty" form:"pagesize" label:"页大小"`
 	}
 
 	pi := &p{

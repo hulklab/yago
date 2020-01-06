@@ -81,6 +81,9 @@ type App struct {
 	// rpc close chan
 	rpcCloseChan     chan int
 	rpcCloseDoneChan chan int
+
+	// com close chan
+	comCloseDoneChan chan int
 }
 
 var (
@@ -194,6 +197,8 @@ func NewApp() *App {
 		app.taskCloseChan = make(chan int, 1)
 		app.taskCloseDoneChan = make(chan int, 1)
 	}
+
+	app.comCloseDoneChan = make(chan int, 1)
 
 	return app
 }
@@ -564,10 +569,23 @@ func (a *App) Close() {
 		log.Println("Rpc Server Stop OK")
 	}
 
-	// broad close chan
-	close(GlobalCloseChan)
+	go func() {
+		Component.Close()
+		a.comCloseDoneChan <- 1
+	}()
+
+	var comCloseTimeWait time.Duration
+	if Config.IsSet("app.com_close_time_wait") {
+		comCloseTimeWait = time.Duration(Config.GetInt64("app.com_stop_time_wait")) * time.Second
+	} else {
+		comCloseTimeWait = 10 * time.Second
+	}
+	select {
+	case <-a.comCloseDoneChan:
+		log.Println("Components Close OK")
+	case <-time.After(comCloseTimeWait):
+		log.Println("Components Close Timeout")
+	}
 }
 
 var TaskCloseChan = make(chan int)
-
-var GlobalCloseChan = make(chan int)

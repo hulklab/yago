@@ -1,10 +1,11 @@
 package hometask
 
 import (
-	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/base/basetask"
 	"log"
 	"time"
+
+	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/base/basetask"
 )
 
 type HomeTask struct {
