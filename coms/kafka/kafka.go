@@ -12,15 +12,12 @@ import (
 )
 
 type Kafka struct {
-	connect  []string
-	config   *cluster.Config
-	producer sync.Map
+	connect       []string
+	config        *cluster.Config
+	asyncProducer *AsyncProducer
+	syncProducer  *SyncProducer
+	mu            sync.Mutex
 }
-
-const (
-	syncProducer  = "sync_producer"
-	asyncProducer = "async_producer"
-)
 
 // 返回 kafka 组件单例
 func Ins(id ...string) *Kafka {
@@ -63,19 +60,12 @@ func NewKafka(connect []string, config *cluster.Config) *Kafka {
 }
 
 func (q *Kafka) Close() error {
-	q.producer.Range(func(key, value interface{}) bool {
-		if key == syncProducer {
-			if p, ok := value.(*SyncProducer); ok {
-				p.close()
-			}
-		}
-		if key == asyncProducer {
-			if p, ok := value.(*AsyncProducer); ok {
-				p.close()
-			}
-		}
-		return true
-	})
+	if q.asyncProducer != nil {
+		q.asyncProducer.close()
+	}
+	if q.syncProducer != nil {
+		q.syncProducer.close()
+	}
 	return nil
 }
 
@@ -138,10 +128,12 @@ type SyncProducer struct {
 }
 
 func (q *Kafka) SyncProducer() (*SyncProducer, error) {
-	v, ok := q.producer.Load(syncProducer)
-	if ok {
-		return v.(*SyncProducer), nil
+	if q.syncProducer != nil {
+		return q.syncProducer, nil
 	}
+
+	q.mu.Lock()
+	defer q.mu.Unlock()
 
 	producer, err := sarama.NewSyncProducer(q.connect, nil)
 	if err != nil {
@@ -151,7 +143,6 @@ func (q *Kafka) SyncProducer() (*SyncProducer, error) {
 
 	var p SyncProducer
 	p.conn = producer
-	q.producer.LoadOrStore(syncProducer, &p)
 
 	return &p, nil
 }
@@ -175,10 +166,12 @@ type AsyncProducer struct {
 }
 
 func (q *Kafka) AsyncProducer() (*AsyncProducer, error) {
-	v, ok := q.producer.Load(asyncProducer)
-	if ok {
-		return v.(*AsyncProducer), nil
+	if q.asyncProducer != nil {
+		return q.asyncProducer, nil
 	}
+
+	q.mu.Lock()
+	defer q.mu.Unlock()
 
 	producer, err := sarama.NewAsyncProducer(q.connect, nil)
 	if err != nil {
@@ -202,8 +195,6 @@ func (q *Kafka) AsyncProducer() (*AsyncProducer, error) {
 			log.Println(err)
 		}
 	}()
-
-	q.producer.LoadOrStore(asyncProducer, &p)
 
 	return &p, nil
 }

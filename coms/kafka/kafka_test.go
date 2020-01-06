@@ -79,10 +79,10 @@ func TestConsumer_Consume(t *testing.T) {
 		t.Errorf("new consumer error: %s", err)
 	}
 	err = consumer.Consume(func(bytes []byte) bool {
-		fmt.Println(string(bytes))
 		if strings.Contains(string(bytes), "5") {
 			return false
 		}
+		fmt.Println(string(bytes))
 		return true
 	})
 	if err != nil {
@@ -97,10 +97,10 @@ func TestConsumer_Consume1(t *testing.T) {
 		t.Errorf("new consumer error: %s", err)
 	}
 	err = consumer.Consume(func(bytes []byte) bool {
-		fmt.Println(string(bytes))
 		if strings.Contains(string(bytes), "1") {
 			return false
 		}
+		fmt.Println(string(bytes))
 		return true
 	})
 	if err != nil {
