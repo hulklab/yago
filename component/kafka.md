@@ -27,6 +27,7 @@ topic = "demo"
 ## 使用 kafka 组件
 
 * 同步生产消息
+
 ```go
 k := kafka.Ins()
 p, err := k.SyncProducer()
@@ -44,6 +45,7 @@ for i := 0; i < 10; i++ {
 ```
 
 * 异步生产消息
+
 ```go
 k := kafka.Ins()
 p, err := k.AsyncProducer()
@@ -58,6 +60,7 @@ for i := 0; i < 10; i++ {
 ```
 
 * 消费消息
+
 ```go
 k := kafka.Ins()
 // 可以指定多个topic

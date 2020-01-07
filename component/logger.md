@@ -1,5 +1,5 @@
-# 日志组件
-日志组件我们依赖的开源包是 `github.com/sirupsen/logrus`。
+# Logger 组件
+Logger 组件我们依赖的开源包是 `github.com/sirupsen/logrus`。
 
 按照组件的设计，我们定义了自己的日志结构对其进行了组合，在保留其原生的功能之外，以便扩展。
 

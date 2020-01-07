@@ -20,7 +20,7 @@
     * [模型](module/model.md)
     * [数据访问对象](module/dao.md)
 * [组件](component/component.md)
-    * [日志组件](component/logger.md)
+    * [Logger 组件](component/logger.md)
     * [ORM 组件](component/orm.md)
     * [Redis 组件](component/rds.md)
     * [Kafka 组件](component/kafka.md)
