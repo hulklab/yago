@@ -788,21 +788,51 @@
 <p>&#x6211;&#x4EEC;&#x5728;&#x6A21;&#x7248; app.toml &#x4E2D;&#x9ED8;&#x8BA4;&#x914D;&#x7F6E;&#x5F00;&#x542F;&#x4E86; kafka &#x7EC4;&#x4EF6;&#xFF0C;&#x53EF;&#x6839;&#x636E;&#x5B9E;&#x9645;&#x60C5;&#x51B5;&#x8FDB;&#x884C;&#x8C03;&#x6574;&#x3002;</p>
 <h2 id="&#x4F7F;&#x7528;_kafka_&#x7EC4;&#x4EF6;">2. &#x4F7F;&#x7528; kafka &#x7EC4;&#x4EF6;</h2>
 <ul>
-<li><p>&#x751F;&#x4EA7;&#x6D88;&#x606F;</p>
-<pre class="language-"><code class="lang-go">kafka<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Product</span><span class="token punctuation">(</span><span class="token string">&quot;topic&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;value&quot;</span><span class="token punctuation">)</span>
-</code></pre>
-</li>
-<li><p>&#x6D88;&#x8D39;&#x6D88;&#x606F;</p>
-<pre class="language-"><code class="lang-go">consumer<span class="token punctuation">,</span> err <span class="token operator">:=</span> k<span class="token punctuation">.</span><span class="token function">NewConsumer</span><span class="token punctuation">(</span><span class="token string">&quot;topic&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;group&quot;</span><span class="token punctuation">)</span>
-<span class="token keyword">if</span> err <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
-  <span class="token comment">// Consume &#x4F1A;&#x4E00;&#x76F4;&#x963B;&#x585E;&#x7B49;&#x5F85;&#x6D88;&#x606F;&#xFF0C;&#x76F4;&#x5230; err</span>
-  err <span class="token operator">:=</span> consumer<span class="token punctuation">.</span><span class="token function">Consume</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>bytes <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">)</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<li>&#x540C;&#x6B65;&#x751F;&#x4EA7;&#x6D88;&#x606F;
+```go
+k := kafka.Ins()
+p, err := k.SyncProducer()
+if err != nil {
+  log.Fatalf(&quot;init sync producer error: %s&quot;, err)
+}
+defer p.close()</li>
+</ul>
+<p>for i := 0; i &lt; 10; i++ {
+    <em>, </em>, err = p.Produce(&quot;demo&quot;, fmt.Sprintf(&quot;sync msg: %d&quot;, i))
+    if err != nil {
+        log.Fatalf(&quot;sync produce error: %s&quot;, err)
+    }
+}</p>
+<pre class="language-"><code>
+* &#x5F02;&#x6B65;&#x751F;&#x4EA7;&#x6D88;&#x606F;
+```go
+k := kafka.Ins()
+p, err := k.AsyncProducer()
+if err != nil {
+    log.Fatalf(&quot;init async producer error: %s&quot;, err)
+}
+defer p.close()
 
-  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
-      log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+for i := 0; i &lt; 10; i++ {
+    p.Produce(&quot;demo&quot;, fmt.Sprintf(&quot;async msg: %d&quot;, i))
+}
+</code></pre><ul>
+<li>&#x6D88;&#x8D39;&#x6D88;&#x606F;<pre class="language-"><code class="lang-go">k <span class="token operator">:=</span> kafka<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment">// &#x53EF;&#x4EE5;&#x6307;&#x5B9A;&#x591A;&#x4E2A;topic</span>
+consumer<span class="token punctuation">,</span> err <span class="token operator">:=</span> k<span class="token punctuation">.</span><span class="token function">NewConsumer</span><span class="token punctuation">(</span><span class="token string">&quot;zjl&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;demo&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;demo1&quot;</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+  t<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">&quot;new consumer error: %s&quot;</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// &#x5982;&#x679C;&#x533F;&#x540D;&#x51FD;&#x6570;&#x8FD4;&#x56DE;false&#xFF0C;&#x5219;&#x8DF3;&#x8FC7;ack</span>
+err <span class="token operator">=</span> consumer<span class="token punctuation">.</span><span class="token function">Consume</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>bytes <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token builtin">bool</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> strings<span class="token punctuation">.</span><span class="token function">Contains</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">&quot;5&quot;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token boolean">false</span>
   <span class="token punctuation">}</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token boolean">true</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+  t<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">&quot;consume error: %s&quot;</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 </code></pre>
 </li>
@@ -850,7 +880,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Kafka 组件","level":"1.6.4","depth":2,"next":{"title":"Mongo 组件","level":"1.6.5","depth":2,"path":"component/mgo.md","ref":"component/mgo.md","articles":[]},"previous":{"title":"Redis 组件","level":"1.6.3","depth":2,"path":"component/rds.md","ref":"component/rds.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"component/kafka.md","mtime":"2019-12-25T02:34:44.600Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-12-25T04:29:50.815Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Kafka 组件","level":"1.6.4","depth":2,"next":{"title":"Mongo 组件","level":"1.6.5","depth":2,"path":"component/mgo.md","ref":"component/mgo.md","articles":[]},"previous":{"title":"Redis 组件","level":"1.6.3","depth":2,"path":"component/rds.md","ref":"component/rds.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"component/kafka.md","mtime":"2020-01-07T03:21:16.421Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-01-07T03:23:29.296Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
