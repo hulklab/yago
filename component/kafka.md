@@ -25,22 +25,54 @@ topic = "demo"
 我们在模版 app.toml 中默认配置开启了 kafka 组件，可根据实际情况进行调整。
 
 ## 使用 kafka 组件
-* 生产消息
+* 同步生产消息
 ```go
-kafka.Ins().Product("topic","value")
+k := kafka.Ins()
+p, err := k.SyncProducer()
+if err != nil {
+    log.Fatalf("init sync producer error: %s", err)
+}
+defer p.close()
+
+for i := 0; i < 10; i++ {
+    _, _, err = p.Produce("demo", fmt.Sprintf("sync msg: %d", i))
+    if err != nil {
+        log.Fatalf("sync produce error: %s", err)
+    }
+}
+```
+
+* 异步生产消息
+```go
+k := kafka.Ins()
+p, err := k.AsyncProducer()
+if err != nil {
+    log.Fatalf("init async producer error: %s", err)
+}
+defer p.close()
+
+for i := 0; i < 10; i++ {
+    p.Produce("demo", fmt.Sprintf("async msg: %d", i))
+}
 ```
 
 * 消费消息
 ```go
-consumer, err := k.NewConsumer("topic","group")
-if err == nil {
-    // Consume 会一直阻塞等待消息，直到 err
-    err := consumer.Consume(func(bytes []byte) {
-        fmt.Println(string(bytes))
-    })
-    
-    if err != nil {
-        log.Println(err.Error())
+k := kafka.Ins()
+// 可以指定多个topic
+consumer, err := k.NewConsumer("zjl", "demo", "demo1")
+if err != nil {
+    t.Errorf("new consumer error: %s", err)
+}
+// 如果匿名函数返回false，则跳过ack
+err = consumer.Consume(func(bytes []byte) bool {
+    if strings.Contains(string(bytes), "5") {
+        return false
     }
+    fmt.Println(string(bytes))
+    return true
+})
+if err != nil {
+    t.Errorf("consume error: %s", err)
 }
 ```

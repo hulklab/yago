@@ -62,6 +62,9 @@ rpc_stop_time_wait = 10
 task_enable = true
 # http服务关闭最大等待时长, 秒
 task_stop_time_wait = 10
+
+# 组件资源关闭最大等待时长, 秒
+com_stop_time_wait = 10
 ```
 
 | 配置项 | 类型 | 说明 |
@@ -97,6 +100,7 @@ task_stop_time_wait = 10
 | app.rpc_key_file | String | grpc SSL私钥文件地址 |
 | app.task_enable | Bool | 是否开启task服务 ｜
 | app.task_stop_time_wait | Duration | task服务收到关闭信号时的最大等待时长，默认10s |
+| app.com_stop_time_wait | Duration | 组件资源关闭最大等待时长，默认10s |
 
 
 ## 日志组件
@@ -203,14 +207,11 @@ database = "test"
 ```toml
 [kafka]
 cluster = "127.0.0.1:9092"
-topic = "demo"
-topic_cloud = "cloud"
 ```
 
 | 配置项 | 类型 | 说明 |
 | ------- | ------- |------- |
 | kafka.cluster | String | Kafka集群地址 |
-| kafka.topic | String | topic名称 |
 
 ## 第三方API调用
 
