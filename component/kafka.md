@@ -25,6 +25,7 @@ topic = "demo"
 我们在模版 app.toml 中默认配置开启了 kafka 组件，可根据实际情况进行调整。
 
 ## 使用 kafka 组件
+
 * 同步生产消息
 ```go
 k := kafka.Ins()

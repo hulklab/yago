@@ -114,12 +114,15 @@ logger.Ins().Info("this is a test msg")
 logger.Ins() 返回的是 yago 定义的 Logger，同时它又可以完整的使用 logrus.Logger 的方法。从上面定义 logger 的 Ins() 方法可以看出，Ins() 是可以传参的，参数就是全局组件容器里面的 key，
 这在项目需要多个同类型组件时是十分有用的，比如使用多个数据库连接，我们可以通过调用不同的 key 获取不同的数据库连接。
 
+## 组件关闭
+如果组件实现了Closer接口，那么com会在程序收到关闭信号的最后，去close所有已经注册进来的并且已经实现close接口的这些组件。
+
 ## 组件组成
 yago 的组件分两部分，一部分十分常用的组件我们放在 `yago/coms` 下，
 还有一部分我们认为并不是每个项目都需要，单独开源了一个项目，`https://github.com/hulklab/yago-coms`，里面的每个组件可以单独下载。
 
  
-* [日志组件](/component/logger.md)
+* [Logger 组件](/component/logger.md)
 * [ORM 组件](/component/orm.md)
 * [Redis 组件](/component/rds.md)
 * [Kafka 组件](/component/kafka.md)
