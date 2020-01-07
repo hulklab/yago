@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>日志组件 · yago 中文文档</title>
+        <title>Logger 组件 · yago 中文文档</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -443,7 +443,7 @@
                     
                         <b>1.6.1.</b>
                     
-                    日志组件
+                    Logger 组件
             
                 </a>
             
@@ -753,7 +753,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >日志组件</a>
+        <a href=".." >Logger 组件</a>
     </h1>
 </div>
 
@@ -768,8 +768,8 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;">&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</h1>
-<p>&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;&#x6211;&#x4EEC;&#x4F9D;&#x8D56;&#x7684;&#x5F00;&#x6E90;&#x5305;&#x662F; <code>github.com/sirupsen/logrus</code>&#x3002;</p>
+                                <h1 id="Logger_&#x7EC4;&#x4EF6;">Logger &#x7EC4;&#x4EF6;</h1>
+<p>Logger &#x7EC4;&#x4EF6;&#x6211;&#x4EEC;&#x4F9D;&#x8D56;&#x7684;&#x5F00;&#x6E90;&#x5305;&#x662F; <code>github.com/sirupsen/logrus</code>&#x3002;</p>
 <p>&#x6309;&#x7167;&#x7EC4;&#x4EF6;&#x7684;&#x8BBE;&#x8BA1;&#xFF0C;&#x6211;&#x4EEC;&#x5B9A;&#x4E49;&#x4E86;&#x81EA;&#x5DF1;&#x7684;&#x65E5;&#x5FD7;&#x7ED3;&#x6784;&#x5BF9;&#x5176;&#x8FDB;&#x884C;&#x4E86;&#x7EC4;&#x5408;&#xFF0C;&#x5728;&#x4FDD;&#x7559;&#x5176;&#x539F;&#x751F;&#x7684;&#x529F;&#x80FD;&#x4E4B;&#x5916;&#xFF0C;&#x4EE5;&#x4FBF;&#x6269;&#x5C55;&#x3002;</p>
 <pre class="language-"><code class="lang-go"><span class="token comment">// yago/coms/logger/logger.go</span>
 <span class="token keyword">type</span> Logger <span class="token keyword">struct</span> <span class="token punctuation">{</span>
@@ -838,7 +838,7 @@ logger<span class="token punctuation">.</span><span class="token function">Ins</
 <pre class="language-"><code class="lang-json"><span class="token comment">// category &#x4F1A;&#x4EE5;&#x5355;&#x72EC;&#x7684; Key &#x5B58;&#x5728;</span>
 <span class="token punctuation">{</span><span class="token property">&quot;category&quot;</span><span class="token operator">:</span><span class="token string">&quot;mycate&quot;</span><span class="token punctuation">,</span><span class="token property">&quot;file&quot;</span><span class="token operator">:</span><span class="token string">&quot;home.go:23&quot;</span><span class="token punctuation">,</span><span class="token property">&quot;func&quot;</span><span class="token operator">:</span><span class="token string">&quot;homecmd.(*HomeCmd).DemoAction&quot;</span><span class="token punctuation">,</span><span class="token property">&quot;level&quot;</span><span class="token operator">:</span><span class="token string">&quot;info&quot;</span><span class="token punctuation">,</span><span class="token property">&quot;msg&quot;</span><span class="token operator">:</span><span class="token string">&quot;&quot;</span><span class="token punctuation">,</span><span class="token property">&quot;time&quot;</span><span class="token operator">:</span><span class="token string">&quot;2019-11-06T14:50:02+08:00&quot;</span><span class="token punctuation">}</span>
 </code></pre>
-<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;">&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</a></p><li><a href="#&#x914D;&#x7F6E;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;">1. &#x914D;&#x7F6E;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</a></li><li><a href="#&#x4F7F;&#x7528;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;">2. &#x4F7F;&#x7528;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</a></li></ul></div><a href="#&#x914D;&#x7F6E;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;" id="goTop"><i class="fa fa-arrow-up"></i></a>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Logger_&#x7EC4;&#x4EF6;">Logger &#x7EC4;&#x4EF6;</a></p><li><a href="#&#x914D;&#x7F6E;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;">1. &#x914D;&#x7F6E;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</a></li><li><a href="#&#x4F7F;&#x7528;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;">2. &#x4F7F;&#x7528;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</a></li></ul></div><a href="#&#x914D;&#x7F6E;&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -881,7 +881,7 @@ logger<span class="token punctuation">.</span><span class="token function">Ins</
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"日志组件","level":"1.6.1","depth":2,"next":{"title":"ORM 组件","level":"1.6.2","depth":2,"path":"component/orm.md","ref":"component/orm.md","articles":[]},"previous":{"title":"组件","level":"1.6","depth":1,"path":"component/component.md","ref":"component/component.md","articles":[{"title":"日志组件","level":"1.6.1","depth":2,"path":"component/logger.md","ref":"component/logger.md","articles":[]},{"title":"ORM 组件","level":"1.6.2","depth":2,"path":"component/orm.md","ref":"component/orm.md","articles":[]},{"title":"Redis 组件","level":"1.6.3","depth":2,"path":"component/rds.md","ref":"component/rds.md","articles":[]},{"title":"Kafka 组件","level":"1.6.4","depth":2,"path":"component/kafka.md","ref":"component/kafka.md","articles":[]},{"title":"Mongo 组件","level":"1.6.5","depth":2,"path":"component/mgo.md","ref":"component/mgo.md","articles":[]},{"title":"Etcd 组件","level":"1.6.6","depth":2,"path":"component/etcd.md","ref":"component/etcd.md","articles":[]},{"title":"Locker 组件","level":"1.6.7","depth":2,"path":"component/locker.md","ref":"component/locker.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"component/logger.md","mtime":"2020-01-07T03:23:45.478Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-01-07T03:31:44.718Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Logger 组件","level":"1.6.1","depth":2,"next":{"title":"ORM 组件","level":"1.6.2","depth":2,"path":"component/orm.md","ref":"component/orm.md","articles":[]},"previous":{"title":"组件","level":"1.6","depth":1,"path":"component/component.md","ref":"component/component.md","articles":[{"title":"Logger 组件","level":"1.6.1","depth":2,"path":"component/logger.md","ref":"component/logger.md","articles":[]},{"title":"ORM 组件","level":"1.6.2","depth":2,"path":"component/orm.md","ref":"component/orm.md","articles":[]},{"title":"Redis 组件","level":"1.6.3","depth":2,"path":"component/rds.md","ref":"component/rds.md","articles":[]},{"title":"Kafka 组件","level":"1.6.4","depth":2,"path":"component/kafka.md","ref":"component/kafka.md","articles":[]},{"title":"Mongo 组件","level":"1.6.5","depth":2,"path":"component/mgo.md","ref":"component/mgo.md","articles":[]},{"title":"Etcd 组件","level":"1.6.6","depth":2,"path":"component/etcd.md","ref":"component/etcd.md","articles":[]},{"title":"Locker 组件","level":"1.6.7","depth":2,"path":"component/locker.md","ref":"component/locker.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"component/logger.md","mtime":"2020-01-07T03:37:53.023Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-01-07T03:40:44.617Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

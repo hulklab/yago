@@ -443,7 +443,7 @@
                     
                         <b>1.6.1.</b>
                     
-                    日志组件
+                    Logger 组件
             
                 </a>
             
@@ -1004,7 +1004,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;">2. &#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</h2>
+<h2 id="Logger_&#x7EC4;&#x4EF6;">2. Logger &#x7EC4;&#x4EF6;</h2>
 <pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">logger</span><span class="token punctuation">]</span>
 <span class="token comment"># json | text, default text</span>
 <span class="token key property">formatter</span> <span class="token punctuation">=</span> <span class="token string">&quot;json&quot;</span>
@@ -1156,11 +1156,11 @@
 <tr>
 <td>db.show_log</td>
 <td>Bool</td>
-<td>&#x662F;&#x5426;&#x6253;&#x5370;SQL&#x65E5;&#x5FD7;&#xFF0C;&#x9ED8;&#x8BA4;true</td>
+<td>&#x662F;&#x5426;&#x6253;&#x5370; SQL &#x65E5;&#x5FD7;&#xFF0C;&#x9ED8;&#x8BA4;true</td>
 </tr>
 </tbody>
 </table>
-<h2 id="Redis&#x7EC4;&#x4EF6;">4. Redis&#x7EC4;&#x4EF6;</h2>
+<h2 id="Redis_&#x7EC4;&#x4EF6;">4. Redis &#x7EC4;&#x4EF6;</h2>
 <pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">redis</span><span class="token punctuation">]</span>
 <span class="token key property">addr</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:6379&quot;</span>
 <span class="token key property">auth</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
@@ -1204,7 +1204,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="Mongodb&#x7EC4;&#x4EF6;">5. Mongodb&#x7EC4;&#x4EF6;</h2>
+<h2 id="Mongodb_&#x7EC4;&#x4EF6;">5. Mongodb &#x7EC4;&#x4EF6;</h2>
 <pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">mongodb</span><span class="token punctuation">]</span>
 <span class="token comment"># https://docs.mongodb.com/manual/reference/connection-string/</span>
 <span class="token key property">mongodb_uri</span> <span class="token punctuation">=</span> <span class="token string">&quot;mongodb://user:password@127.0.0.1:27017/?connectTimeoutMS=5000&amp;socketTimeoutMS=5000&amp;maxPoolSize=100&quot;</span>
@@ -1222,7 +1222,7 @@
 <tr>
 <td>mongodb.mongodb_uri</td>
 <td>String</td>
-<td>Mongodb&#x8FDE;&#x63A5;uri<br>&#x53C2;&#x8003;<a href="https://docs.mongodb.com/manual/reference/connection-string/" target="_blank">https://docs.mongodb.com/manual/reference/connection-string/</a></td>
+<td>Mongodb &#x8FDE;&#x63A5; uri<br>&#x53C2;&#x8003;<a href="https://docs.mongodb.com/manual/reference/connection-string/" target="_blank">https://docs.mongodb.com/manual/reference/connection-string/</a></td>
 </tr>
 <tr>
 <td>mongodb.database</td>
@@ -1231,7 +1231,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="Kafka&#x7EC4;&#x4EF6;">6. Kafka&#x7EC4;&#x4EF6;</h2>
+<h2 id="Kafka_&#x7EC4;&#x4EF6;">6. Kafka &#x7EC4;&#x4EF6;</h2>
 <pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">kafka</span><span class="token punctuation">]</span>
 <span class="token key property">cluster</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:9092&quot;</span>
 </code></pre>
@@ -1247,11 +1247,11 @@
 <tr>
 <td>kafka.cluster</td>
 <td>String</td>
-<td>Kafka&#x96C6;&#x7FA4;&#x5730;&#x5740;</td>
+<td>Kafka &#x96C6;&#x7FA4;&#x5730;&#x5740;</td>
 </tr>
 </tbody>
 </table>
-<h2 id="&#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;">7. &#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;</h2>
+<h2 id="&#x7B2C;&#x4E09;&#x65B9;_API_&#x8C03;&#x7528;">7. &#x7B2C;&#x4E09;&#x65B9; API &#x8C03;&#x7528;</h2>
 <pre class="language-"><code class="lang-toml"><span class="token punctuation">[</span><span class="token table class-name">home_api</span><span class="token punctuation">]</span>
 <span class="token key property">domain</span> <span class="token punctuation">=</span> <span class="token string">&quot;http://127.0.0.1:8080&quot;</span>
 <span class="token key property">hostname</span> <span class="token punctuation">=</span> <span class="token string">&quot;localhost&quot;</span>
@@ -1313,7 +1313,7 @@
 </tr>
 </tbody>
 </table>
-<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Yago_&#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;">Yago &#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;</a></p><li><a href="#&#x5E94;&#x7528;&#x914D;&#x7F6E;">1. &#x5E94;&#x7528;&#x914D;&#x7F6E;</a></li><li><a href="#&#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;">2. &#x65E5;&#x5FD7;&#x7EC4;&#x4EF6;</a></li><li><a href="#&#x6570;&#x636E;&#x5E93;&#x7EC4;&#x4EF6;(SQL)">3. &#x6570;&#x636E;&#x5E93;&#x7EC4;&#x4EF6;(SQL)</a></li><li><a href="#Redis&#x7EC4;&#x4EF6;">4. Redis&#x7EC4;&#x4EF6;</a></li><li><a href="#Mongodb&#x7EC4;&#x4EF6;">5. Mongodb&#x7EC4;&#x4EF6;</a></li><li><a href="#Kafka&#x7EC4;&#x4EF6;">6. Kafka&#x7EC4;&#x4EF6;</a></li><li><a href="#&#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;">7. &#x7B2C;&#x4E09;&#x65B9;API&#x8C03;&#x7528;</a></li></ul></div><a href="#&#x5E94;&#x7528;&#x914D;&#x7F6E;" id="goTop"><i class="fa fa-arrow-up"></i></a>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Yago_&#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;">Yago &#x7A0B;&#x5E8F;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;</a></p><li><a href="#&#x5E94;&#x7528;&#x914D;&#x7F6E;">1. &#x5E94;&#x7528;&#x914D;&#x7F6E;</a></li><li><a href="#Logger_&#x7EC4;&#x4EF6;">2. Logger &#x7EC4;&#x4EF6;</a></li><li><a href="#&#x6570;&#x636E;&#x5E93;&#x7EC4;&#x4EF6;(SQL)">3. &#x6570;&#x636E;&#x5E93;&#x7EC4;&#x4EF6;(SQL)</a></li><li><a href="#Redis_&#x7EC4;&#x4EF6;">4. Redis &#x7EC4;&#x4EF6;</a></li><li><a href="#Mongodb_&#x7EC4;&#x4EF6;">5. Mongodb &#x7EC4;&#x4EF6;</a></li><li><a href="#Kafka_&#x7EC4;&#x4EF6;">6. Kafka &#x7EC4;&#x4EF6;</a></li><li><a href="#&#x7B2C;&#x4E09;&#x65B9;_API_&#x8C03;&#x7528;">7. &#x7B2C;&#x4E09;&#x65B9; API &#x8C03;&#x7528;</a></li></ul></div><a href="#&#x5E94;&#x7528;&#x914D;&#x7F6E;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -1356,7 +1356,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"next":{"title":"路由","level":"1.4","depth":1,"path":"route/route.md","ref":"route/route.md","articles":[]},"previous":{"title":"配置","level":"1.3","depth":1,"path":"config/config.md","ref":"config/config.md","articles":[{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"path":"config/detail.md","ref":"config/detail.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"config/detail.md","mtime":"2020-01-07T03:23:45.480Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-01-07T03:31:44.718Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"next":{"title":"路由","level":"1.4","depth":1,"path":"route/route.md","ref":"route/route.md","articles":[]},"previous":{"title":"配置","level":"1.3","depth":1,"path":"config/config.md","ref":"config/config.md","articles":[{"title":"配置文件详细介绍","level":"1.3.1","depth":2,"path":"config/detail.md","ref":"config/detail.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"config/detail.md","mtime":"2020-01-07T03:39:54.561Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-01-07T03:40:44.617Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
