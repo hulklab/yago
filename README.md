@@ -1,8 +1,6 @@
-# Yago Scafford
+# Yago Scafford - Web开发脚手架
 
-![avatar](http://p0.qhimg.com/t0162ed78090852688f.png)
-
-### Yago web开发脚手架
+![avatar](http://p0.qhimg.com/t0162ed78090852688f.png) 
 
 ## 目录
 
