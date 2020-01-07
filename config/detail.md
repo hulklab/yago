@@ -103,7 +103,7 @@ com_stop_time_wait = 10
 | app.com_stop_time_wait | Duration | 组件资源关闭最大等待时长，默认10s |
 
 
-## 日志组件
+## Logger 组件
 
 ```toml
 [logger]
@@ -167,9 +167,9 @@ show_log = true
 | db.max_life_time | Duration | 最大连接生命周期 |
 | db.max_idle_conn | Int | 连接池最大空闲连接数，默认20 |
 | db.max_open_conn | Int | 连接池最大打开连接数，默认500 |
-| db.show_log | Bool | 是否打印SQL日志，默认true |
+| db.show_log | Bool | 是否打印 SQL 日志，默认true |
 
-## Redis组件
+## Redis 组件
 
 ```toml
 [redis]
@@ -188,7 +188,7 @@ idle_timeout = 30
 | redis.max_idle | Int | Redis 连接池最大空闲连接数 |
 | redis.idle_timeout | Int | Redis 连接池空闲超时时间 |
 
-## Mongodb组件
+## Mongodb 组件
 
 ```toml
 [mongodb]
@@ -199,10 +199,10 @@ database = "test"
 
 | 配置项 | 类型 | 说明 |
 | ------- | ------- |------- |
-| mongodb.mongodb_uri | String | Mongodb连接uri<br>参考https://docs.mongodb.com/manual/reference/connection-string/ |
+| mongodb.mongodb_uri | String | Mongodb 连接 uri<br>参考https://docs.mongodb.com/manual/reference/connection-string/ |
 | mongodb.database | String | 默认数据库 |
 
-## Kafka组件
+## Kafka 组件
 
 ```toml
 [kafka]
@@ -211,9 +211,9 @@ cluster = "127.0.0.1:9092"
 
 | 配置项 | 类型 | 说明 |
 | ------- | ------- |------- |
-| kafka.cluster | String | Kafka集群地址 |
+| kafka.cluster | String | Kafka 集群地址 |
 
-## 第三方API调用
+## 第三方 API 调用
 
 ```toml
 [home_api]
