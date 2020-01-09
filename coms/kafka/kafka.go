@@ -128,12 +128,11 @@ type SyncProducer struct {
 }
 
 func (q *Kafka) SyncProducer() (*SyncProducer, error) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	if q.syncProducer != nil {
 		return q.syncProducer, nil
 	}
-
-	q.mu.Lock()
-	defer q.mu.Unlock()
 
 	producer, err := sarama.NewSyncProducer(q.connect, nil)
 	if err != nil {
@@ -143,6 +142,7 @@ func (q *Kafka) SyncProducer() (*SyncProducer, error) {
 
 	var p SyncProducer
 	p.conn = producer
+	q.syncProducer = &p
 
 	return &p, nil
 }
@@ -166,12 +166,12 @@ type AsyncProducer struct {
 }
 
 func (q *Kafka) AsyncProducer() (*AsyncProducer, error) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
 	if q.asyncProducer != nil {
 		return q.asyncProducer, nil
 	}
-
-	q.mu.Lock()
-	defer q.mu.Unlock()
 
 	producer, err := sarama.NewAsyncProducer(q.connect, nil)
 	if err != nil {
@@ -195,6 +195,8 @@ func (q *Kafka) AsyncProducer() (*AsyncProducer, error) {
 			log.Println(err)
 		}
 	}()
+
+	q.asyncProducer = &p
 
 	return &p, nil
 }
