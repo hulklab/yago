@@ -79,17 +79,13 @@ func (a *homeApi) UploadFile(filepath string) (*basethird.Response, error){
 
 ```go
 func (a *homeApi) AddUser(id int64,name string) (*basethird.Response, error){
-	
-	a.SetHeader(map[string]string{"Content-Type":"application/json"})
-	
-	u := g.Hash{"id":id, "name":name}
-	user,_ := json.Marshal(u)
 
-	params := map[string]interface{}{
-		"body": basethird.Body(string(user)),
-	}
-	resp, err := a.Post("/home/user/add", params)
-	return resp, err
+    u := g.Hash{"id":id, "name":name}
+
+    resp, err := a.Post("/home/user/add", nil, &grequests.RequestOptions{
+        JSON: u,
+    })
+    return resp, err
 }
 ```
 
