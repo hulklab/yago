@@ -398,7 +398,7 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 
 		log.WithFields(logInfo).Error()
 
-		return nil, fmt.Errorf("http status error: %d", res.StatusCode)
+		return &Response{res}, fmt.Errorf("http status error: %d", res.StatusCode)
 	}
 
 	log.WithFields(logInfo).Info()
