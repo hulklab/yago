@@ -81,7 +81,7 @@ go 的 Struct 字段是有零值的，比如上文中 Name 字段不传，它的
 func (h *HomeHttp) AddAction(c *yago.Ctx) {
 	// 采用字符串指针代替字符串类型
     type par struct {
-        *Name string `json:"name" validate:"omitempty" form:"name" label:"姓名"`
+        Name *string `json:"name" validate:"omitempty" form:"name" label:"姓名"`
     }
 	p := par{}
 	err := c.ShouldBind(&p)
