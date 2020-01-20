@@ -94,9 +94,25 @@ func (c *Ctx) SetError(err interface{}, msgEx ...string) {
 	}
 }
 
-func (c *Ctx) SetDataOrErr(data interface{}, err Err) {
-	if err.HasErr() {
-		c.SetError(err)
+func (c *Ctx) SetDataOrErr(data interface{}, err interface{}) {
+	if err == nil {
+		c.SetData(data)
+		return
+	}
+
+	switch v := err.(type) {
+	case error:
+		if v != nil {
+			c.SetError(v)
+			return
+		}
+	case Err:
+		if v.HasErr() {
+			c.SetError(v)
+			return
+		}
+	default:
+		c.setError(ErrUnknown)
 		return
 	}
 
