@@ -101,13 +101,13 @@ func (c *Ctx) SetDataOrErr(data interface{}, err interface{}) {
 	}
 
 	switch v := err.(type) {
-	case error:
-		if v != nil {
+	case Err:
+		if v.HasErr() {
 			c.SetError(v)
 			return
 		}
-	case Err:
-		if v.HasErr() {
+	case error:
+		if v != nil {
 			c.SetError(v)
 			return
 		}
