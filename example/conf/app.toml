@@ -118,8 +118,6 @@ database = "test"
 
 [kafka]
 cluster = "127.0.0.1:39092"
-topic = "demo"
-topic_cloud = "cloud"
 
 [etcd]
 endpoints    = ["127.0.0.1:2379"]
