@@ -27,7 +27,6 @@ var RpcTemplate = `package {{PACKAGE}}
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/hulklab/yago"
@@ -99,10 +98,6 @@ func (t *{{NAME}}Task) HelloAction() {
 `
 
 var ModelTemplate = `package {{PACKAGE}} 
-
-import (
-	"github.com/hulklab/yago"
-)
 
 type {{LNAME}}Model struct {
 }
