@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"sync"
@@ -216,6 +217,103 @@ var versionCmd = &cobra.Command{
 	},
 }
 
+func camelString(s string) (string, error) {
+	s = strings.Trim(s, "_")
+
+	r, _ := regexp.Compile("^[a-zA-Z][a-zA-Z_0-9]*[a-zA-Z0-9]$")
+	if !r.MatchString(s) {
+		return "", errors.New("only support a-z A-Z _")
+	}
+
+	ss := strings.Split(s, "_")
+	for k, v := range ss {
+		ss[k] = strings.Title(v)
+	}
+	return strings.Join(ss, ""), nil
+}
+
+func genFileByTemplate(filename, template string) {
+	pkgName := strings.ToLower(filepath.Base(getCurDir()))
+	name, err := camelString(filename)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if len(name) < 2 {
+		log.Fatalln("the filename length is greater than at least 2")
+	}
+
+	lname := fmt.Sprintf("%s%s", strings.ToLower(name[0:1]), name[1:])
+
+	r := strings.NewReplacer("{{PACKAGE}}", pkgName, "{{NAME}}", name, "{{LNAME}}", lname)
+	content := r.Replace(template)
+
+	filePath := filepath.Join(getCurDir(), filename+".go")
+	if err := ioutil.WriteFile(filePath, []byte(content), 0644); err != nil {
+		log.Println(fmt.Sprintf("create file %s error:", filePath), err.Error())
+		return
+	} else {
+		log.Println(fmt.Sprintf("create file %s succ", filePath))
+	}
+}
+
+var genCmd = &cobra.Command{
+	Use:   "gen",
+	Short: "auto generate file",
+	Long:  `auto generate http, rpc, task, cmd, model file`,
+	Run: func(cmd *cobra.Command, args []string) {
+		a, err := cmd.Flags().GetString("http")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		if len(a) > 0 {
+			genFileByTemplate(a, HttpTemplate)
+			return
+		}
+
+		r, err := cmd.Flags().GetString("rpc")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		if len(r) > 0 {
+			genFileByTemplate(r, RpcTemplate)
+			return
+		}
+
+		c, err := cmd.Flags().GetString("cmd")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		if len(c) > 0 {
+			genFileByTemplate(c, CmdTemplate)
+			return
+		}
+
+		t, err := cmd.Flags().GetString("task")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		if len(t) > 0 {
+			genFileByTemplate(t, TaskTemplate)
+			return
+		}
+
+		m, err := cmd.Flags().GetString("model")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		if len(m) > 0 {
+			genFileByTemplate(m, ModelTemplate)
+			return
+		}
+	},
+}
+
 var (
 	lastUpdateTime = time.Now().Unix()
 	state          sync.Mutex
@@ -384,6 +482,7 @@ func main() {
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(newCmd)
 	rootCmd.AddCommand(runCmd)
+	rootCmd.AddCommand(genCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Println("cmd run error:", err.Error())
@@ -401,4 +500,11 @@ func init() {
 	// module cmd
 	newCmd.Flags().StringP("module", "m", "", "module name")
 	_ = newCmd.MarkFlagRequired("module")
+
+	// gen cmd
+	genCmd.Flags().StringP("http", "p", "", "http file name")
+	genCmd.Flags().StringP("rpc", "r", "", "rpc file name")
+	genCmd.Flags().StringP("cmd", "c", "", "cmd file name")
+	genCmd.Flags().StringP("task", "t", "", "task file name")
+	genCmd.Flags().StringP("model", "m", "", "model file name")
 }
