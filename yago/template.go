@@ -52,9 +52,6 @@ func (r *{{NAME}}Rpc) Hello(ctx context.Context, in *pb.HelloRequest) (*pb.Hello
 var CmdTemplate = `package {{PACKAGE}} 
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basecmd"
 	"github.com/spf13/cobra"
