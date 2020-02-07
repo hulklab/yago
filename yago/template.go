@@ -78,9 +78,6 @@ func (c *{{NAME}}Cmd) DemoAction(cmd *cobra.Command, args []string) {
 var TaskTemplate = `package {{PACKAGE}} 
 
 import (
-	"log"
-	"time"
-
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basetask"
 )
