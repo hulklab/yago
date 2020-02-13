@@ -108,7 +108,11 @@ func NewApp() *App {
 		gin.SetMode(app.HttpRunMode)
 		app.httpEngine = gin.New()
 		// use logger
-		app.httpEngine.Use(gin.Logger())
+		if app.DebugMode == true {
+			app.httpEngine.Use(gin.Logger())
+		} else {
+			app.httpEngine.Use(gin.Recovery())
+		}
 		app.httpCloseChan = make(chan int, 1)
 		app.httpCloseDoneChan = make(chan int, 1)
 
