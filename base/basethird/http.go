@@ -291,6 +291,10 @@ func mergeOptions(ro *grequests.RequestOptions, opts ...*grequests.RequestOption
 	if opt.BeforeRequest != nil {
 		ro.BeforeRequest = opt.BeforeRequest
 	}
+
+	if opt.Files != nil {
+		ro.Files = opt.Files
+	}
 }
 
 func (a *HttpThird) call(method string, api string, params map[string]interface{}, opts ...*grequests.RequestOptions) (*Response, error) {
