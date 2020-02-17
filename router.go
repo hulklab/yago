@@ -12,10 +12,11 @@ import (
 type HttpHandlerFunc func(c *Ctx)
 
 type HttpRouter struct {
-	Url    string
-	Method string
-	Action HttpHandlerFunc
-	h      HttpInterface
+	Url      string
+	Method   string
+	Action   HttpHandlerFunc
+	h        HttpInterface
+	Metadata interface{}
 }
 
 var HttpRouterMap = make(map[string]*HttpRouter)
@@ -26,11 +27,23 @@ type HttpInterface interface {
 	AfterAction(c *Ctx)
 }
 
-func AddHttpRouter(url, method string, action HttpHandlerFunc, h HttpInterface) {
+func AddHttpRouter(url, method string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
 	if _, ok := HttpRouterMap[url]; ok {
 		log.Panicf("http router duplicate : %s", url)
 	}
-	HttpRouterMap[url] = &HttpRouter{url, method, action, h}
+
+	router := &HttpRouter{
+		Url:    url,
+		Method: method,
+		Action: action,
+		h:      h,
+	}
+
+	if len(md) > 0 {
+		router.Metadata = md[0]
+	}
+
+	HttpRouterMap[url] = router
 }
 
 func SetHttpNoRouter(action HttpHandlerFunc) {
