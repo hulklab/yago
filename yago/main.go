@@ -163,9 +163,14 @@ var newCmd = &cobra.Command{
 		app := curDir[len(curDir)-1]
 
 		module, _ := cmd.Flags().GetString("module")
+		advance, _ := cmd.Flags().GetBool("advance")
 
 		log.Println("create module", module)
 		dirs := []string{"cmd", "dao", "http", "model", "rpc", "task"}
+		if advance {
+			dirs = append(dirs, "service")
+		}
+
 		for _, d := range dirs {
 			//dirPath := fmt.Sprintf("app/modules/%s/%s%s", module, module, d)
 			dirPath := filepath.Join("app", "modules", module, module+d)
@@ -260,7 +265,7 @@ func genFileByTemplate(filename, template string) {
 var genCmd = &cobra.Command{
 	Use:   "gen",
 	Short: "auto generate file",
-	Long:  `auto generate http, rpc, task, cmd, model file`,
+	Long:  `auto generate http, rpc, task, cmd, service, model file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		a, err := cmd.Flags().GetString("http")
 		if err != nil {
@@ -299,6 +304,16 @@ var genCmd = &cobra.Command{
 
 		if len(t) > 0 {
 			genFileByTemplate(t, TaskTemplate)
+			return
+		}
+
+		s, err := cmd.Flags().GetString("service")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		if len(s) > 0 {
+			genFileByTemplate(s, ServiceTemplate)
 			return
 		}
 
@@ -499,6 +514,7 @@ func init() {
 
 	// module cmd
 	newCmd.Flags().StringP("module", "m", "", "module name")
+	newCmd.Flags().BoolP("advance", "a", false, "gen advance module which include service")
 	_ = newCmd.MarkFlagRequired("module")
 
 	// gen cmd
@@ -506,5 +522,6 @@ func init() {
 	genCmd.Flags().StringP("rpc", "r", "", "rpc file name")
 	genCmd.Flags().StringP("cmd", "c", "", "cmd file name")
 	genCmd.Flags().StringP("task", "t", "", "task file name")
+	genCmd.Flags().StringP("service", "s", "", "service file name")
 	genCmd.Flags().StringP("model", "m", "", "model file name")
 }

@@ -13,6 +13,10 @@ type HomeHttp struct {
 	basehttp.BaseHttp
 }
 
+type HttpMetadata struct {
+	Label string `json:"label"`
+}
+
 func init() {
 	homeHttp := new(HomeHttp)
 	yago.AddHttpRouter("/home/hello", http.MethodGet, homeHttp.HelloAction, homeHttp)
@@ -22,6 +26,9 @@ func init() {
 	yago.AddHttpRouter("/home/update", http.MethodPost, homeHttp.UpdateAction, homeHttp)
 	yago.AddHttpRouter("/home/list", http.MethodPost, homeHttp.ListAction, homeHttp)
 	yago.AddHttpRouter("/home/upload", http.MethodPost, homeHttp.UploadAction, homeHttp)
+	yago.AddHttpRouter("/home/metadata", http.MethodGet, homeHttp.MetadataAction, homeHttp, HttpMetadata{
+		Label: "自定义HTTP名称",
+	})
 	yago.SetHttpNoRouter(homeHttp.NoRouterAction)
 }
 
@@ -43,8 +50,9 @@ func (h *HomeHttp) HelloAction(c *yago.Ctx) {
 		return
 	}
 
-	c.SetData("hello " + p.Name)
+	data := "hello " + p.Name
 
+	c.SetData(data)
 	return
 }
 
@@ -177,4 +185,21 @@ func (h *HomeHttp) UploadAction(c *yago.Ctx) {
 	}
 
 	c.SetData(file.Filename)
+}
+
+func (h *HomeHttp) MetadataAction(c *yago.Ctx) {
+	data := "get label from metadata:"
+
+	for _, router := range yago.HttpRouterMap {
+		if router.Url == "/home/metadata" {
+			v, ok := router.Metadata.(HttpMetadata)
+			if ok {
+				data = data + v.Label
+			}
+			break
+		}
+	}
+
+	c.SetData(data)
+
 }

@@ -107,3 +107,14 @@ func New{{NAME}}Model() *{{LNAME}}Model {
 }
 
 `
+
+var ServiceTemplate = `package {{PACKAGE}} 
+
+type {{LNAME}}Service struct {
+}
+
+func New{{NAME}}Service() *{{LNAME}}Service {
+	return &{{LNAME}}Service{}
+}
+
+`
