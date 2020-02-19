@@ -23,6 +23,7 @@ func init() {
 	homeHttp := new(HomeHttp)
 	yago.AddHttpRouter("/home/hello", http.MethodGet, homeHttp.HelloAction, homeHttp)
 	yago.AddHttpRouter("/home/add", http.MethodPost, homeHttp.AddAction, homeHttp)
+	yago.AddHttpRouter("/home/metadata", http.MethodPost, homeHttp.MetadataAction, homeHttp,HttpMetaData{Label:"接口的名称"})
 }
 ```
 
@@ -34,6 +35,7 @@ AddHttpRouter参数说明
 | 2 | String | 允许访问的 http method |
 | 3 | Func | http 接口对应的 Action Func |
 | 4 | Struct | http 控制器对象 |
+| 5 | interface{} | 可选参数，http 接口的 metadata 信息，是用户自定义的对象，用来设置与接口相关的信息|
 
 ## HttpAction
 
@@ -81,7 +83,7 @@ Action 内，可以通过 c.SetData 函数来返回正确的结果响应（json 
 
 ## Validate
 
-validate 采用 gin 的 validator，具体使用请看 [validator](../library/validator.md)。
+validate 采用 gin 的 validator，具体使用请看 [validator](/library/validator.md)。
 
 
 ## WebSocket 服务
