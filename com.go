@@ -20,12 +20,24 @@ func (c *components) Ins(key string, f func() interface{}) interface{} {
 	return v
 }
 
-func (c *components) Del(key string, cb ...func()) {
+func (c *components) Del(key interface{}, cb ...func()) {
 	c.m.Delete(key)
 
 	if len(cb) > 0 {
 		// 执行回调关闭链接
 		go cb[0]()
+	}
+}
+
+func (c *components) clear() {
+	comKeys := make([]interface{}, 0)
+	c.m.Range(func(key, value interface{}) bool {
+		comKeys = append(comKeys, key)
+		return true
+	})
+
+	for _, key := range comKeys {
+		c.m.Delete(key)
 	}
 }
 

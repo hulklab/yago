@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/spf13/viper"
 )
@@ -60,12 +61,26 @@ func defaultCfgPath() string {
 	return fmt.Sprintf("%s/app.toml", defaultDir)
 }
 
+var cfgPath *string
+var cfgLock = new(sync.Mutex)
+
 func initConfig() {
-	cfgPath := flag.String("c", defaultCfgPath(), "config file path")
+	cfgPath = flag.String("c", defaultCfgPath(), "config file path")
 	_ = flag.Bool("h", false, "help")
 	_ = flag.Bool("help", false, "help")
 	flag.Parse()
 	Config = NewAppConfig(*cfgPath)
+}
+
+func ReloadConfig() {
+	cfgLock.Lock()
+	defer cfgLock.Unlock()
+
+	// 重新加载配置文件
+	Config = NewAppConfig(*cfgPath)
+
+	// 清理组件
+	Component.clear()
 }
 
 func getPidFile() (string, bool) {

@@ -40,8 +40,8 @@ func (a *App) startSignal() {
 			log.Println("Process", pid, "Restart ok")
 			os.Exit(0)
 		case syscall.SIGUSR2:
-			// @todo 刷新配置
 			log.Println("Graceful reload...")
+			ReloadConfig()
 			log.Println("reload config ok...")
 		}
 	}
