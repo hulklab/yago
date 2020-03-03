@@ -45,6 +45,12 @@ func NewAppConfig(cfgPath string) *AppConfig {
 	cfg.AutomaticEnv()
 	replacer := strings.NewReplacer(".", "_")
 	cfg.SetEnvKeyReplacer(replacer)
+	//cfg.WatchConfig()
+	//cfg.OnConfigChange(func(e fsnotify.Event) {
+	//	// viper配置发生变化了 执行响应的操作
+	//	fmt.Println("Config file changed:", e.Name, e.String())
+	//})
+
 	return cfg
 }
 
@@ -61,26 +67,29 @@ func defaultCfgPath() string {
 	return fmt.Sprintf("%s/app.toml", defaultDir)
 }
 
-var cfgPath *string
 var cfgLock = new(sync.Mutex)
 
 func initConfig() {
-	cfgPath = flag.String("c", defaultCfgPath(), "config file path")
+	cfgPath := flag.String("c", defaultCfgPath(), "config file path")
 	_ = flag.Bool("h", false, "help")
 	_ = flag.Bool("help", false, "help")
 	flag.Parse()
 	Config = NewAppConfig(*cfgPath)
 }
 
-func ReloadConfig() {
+func ReloadConfig() error {
 	cfgLock.Lock()
 	defer cfgLock.Unlock()
 
 	// 重新加载配置文件
-	Config = NewAppConfig(*cfgPath)
+	err := Config.ReadInConfig()
+	if err != nil {
+		return err
+	}
 
 	// 清理组件
 	Component.clear()
+	return nil
 }
 
 func getPidFile() (string, bool) {

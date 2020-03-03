@@ -41,8 +41,12 @@ func (a *App) startSignal() {
 			os.Exit(0)
 		case syscall.SIGUSR2:
 			log.Println("Graceful reload...")
-			ReloadConfig()
-			log.Println("reload config ok...")
+			err := ReloadConfig()
+			if err != nil {
+				log.Printf("reload config fail, err: %s", err)
+			} else {
+				log.Println("reload config ok...")
+			}
 		}
 	}
 
