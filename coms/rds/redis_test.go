@@ -3,6 +3,7 @@ package rds
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"testing"
 	"time"
 
@@ -333,8 +334,9 @@ func TestTrans(t *testing.T) {
 
 func TestPubSub(t *testing.T) {
 	topic := "test_subscribe"
+	topic2 := "test_subscribe2"
 
-	subscriber, err := Ins().NewSubscriber(topic)
+	subscriber, err := Ins().NewSubscriber(topic, topic2)
 	if err != nil {
 		log.Println(err.Error())
 		return
@@ -343,13 +345,23 @@ func TestPubSub(t *testing.T) {
 	go func() {
 		r := Ins()
 		//defer r.Close()
-		time.Sleep(time.Second)
-		r.Do("publish", topic, "hello")
+		for i := 0; i < 4; i++ {
+			time.Sleep(time.Second)
+			if i%2 == 0 {
+				_, _ = r.Publish(topic, "hello"+strconv.Itoa(i))
+			} else {
+				_, _ = r.Publish(topic2, "hello"+strconv.Itoa(i))
+			}
+		}
 	}()
 
-	err = subscriber.Subscribe(func(bytes []byte) {
-		fmt.Println("msg:", string(bytes))
-		subscriber.Close()
+	i := 0
+	err = subscriber.Subscribe(func(topic string, bytes []byte) {
+		i++
+		fmt.Println("msg:", string(bytes), "topic:", topic)
+		if i == 4 {
+			subscriber.Close()
+		}
 	})
 
 	if err != nil {
