@@ -3,12 +3,16 @@ package yago
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 
+	"github.com/hulklab/yago/libs/arr"
+
 	"github.com/spf13/viper"
+	//_ "github.com/spf13/viper/remote"
 )
 
 type AppConfig struct {
@@ -21,24 +25,60 @@ func (c *AppConfig) ReadFileConfig(cfgPath string) error {
 		return fmt.Errorf("Fatal error config file: %s \n, \"--help\" gives usage information", err)
 	}
 
-	// deal with include file
-	if c.IsSet("include.file") {
-		includeFile := c.GetString("include.file")
+	// deal with import file
+	importFiles, err := c.readImportFiles(cfgPath)
+	if err != nil {
+		return fmt.Errorf("Fatal error merge import config file: %s ", err)
+	}
+
+	if len(importFiles) >= 2 {
+		log.Println("import configs:", importFiles)
+		// the last one don't need merge
+		for i := len(importFiles) - 2; i >= 0; i-- {
+			importFile := importFiles[i]
+
+			c.SetConfigFile(importFile)
+			_ = c.MergeInConfig()
+		}
+	}
+	return err
+}
+
+func (c *AppConfig) readImportFiles(cfgPath string) ([]string, error) {
+	if !c.IsSet("import") {
+		return nil, nil
+	}
+
+	importFiles := make([]string, 0)
+	// put current file into the head of list
+	importFiles = append(importFiles, cfgPath)
+
+	for {
+		includeFile := c.GetString("import")
+		last := c.GetString("import")
 		if !filepath.IsAbs(includeFile) {
 			includeFile, _ = filepath.Abs(filepath.Join(filepath.Dir(cfgPath), includeFile))
 		}
 
-		c.SetConfigFile(includeFile)
-		err = c.MergeInConfig()
-		if err != nil {
-			return fmt.Errorf("Fatal error merge include config file: %s ", err)
+		if arr.InArray(includeFile, importFiles) {
+			return importFiles, fmt.Errorf("circle import config file")
 		}
 
-		c.SetConfigFile(cfgPath)
-		err = c.MergeInConfig()
+		importFiles = append(importFiles, includeFile)
+
+		c.SetConfigFile(includeFile)
+
+		err := c.MergeInConfig()
+		if err != nil {
+			return importFiles, fmt.Errorf("Fatal error merge include config file: %s ", err)
+		}
+
+		if c.GetString("import") == last {
+			break
+		}
 	}
 
-	return err
+	return importFiles, nil
 }
 
 func IsEnvProd() bool {
@@ -57,6 +97,15 @@ var Config *AppConfig
 
 func NewAppConfig(cfgPath string) *AppConfig {
 	cfg := &AppConfig{viper.New()}
+
+	// 设置远程配置
+	//err := cfg.AddRemoteProvider("etcd", "http://127.0.0.1:2379", "/yago/conf/app.toml")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//cfg.SetConfigType("toml")
+	//err = cfg.ReadRemoteConfig()
+
 	cfg.SetConfigFile(cfgPath)
 	err := cfg.ReadFileConfig(cfgPath)
 	if err != nil {
@@ -70,12 +119,6 @@ func NewAppConfig(cfgPath string) *AppConfig {
 	cfg.AutomaticEnv()
 	replacer := strings.NewReplacer(".", "_")
 	cfg.SetEnvKeyReplacer(replacer)
-
-	//cfg.WatchConfig()
-	//cfg.OnConfigChange(func(e fsnotify.Event) {
-	//	// viper配置发生变化了 执行响应的操作
-	//	fmt.Println("Config file changed:", e.Name, e.String())
-	//})
 
 	return cfg
 }
@@ -104,17 +147,17 @@ func initConfig() {
 	Config = NewAppConfig(*cfgPath)
 }
 
-func ReloadConfig() error {
+func reloadConfig() error {
 	cfgLock.Lock()
 	defer cfgLock.Unlock()
 
-	// 重新加载配置文件
+	// reload file
 	err := Config.ReadFileConfig(*cfgPath)
 	if err != nil {
 		return err
 	}
 
-	// 清理组件
+	// clear components config
 	Component.clear()
 	return nil
 }
