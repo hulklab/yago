@@ -55,7 +55,6 @@ func (c *AppConfig) readImportFiles(cfgPath string) ([]string, error) {
 
 	for {
 		includeFile := c.GetString("import")
-		last := c.GetString("import")
 		if !filepath.IsAbs(includeFile) {
 			includeFile, _ = filepath.Abs(filepath.Join(filepath.Dir(cfgPath), includeFile))
 		}
@@ -68,12 +67,12 @@ func (c *AppConfig) readImportFiles(cfgPath string) ([]string, error) {
 
 		c.SetConfigFile(includeFile)
 
-		err := c.MergeInConfig()
+		err := c.ReadInConfig()
 		if err != nil {
 			return importFiles, fmt.Errorf("Fatal error merge include config file: %s ", err)
 		}
 
-		if c.GetString("import") == last {
+		if !c.IsSet("import") {
 			break
 		}
 	}
