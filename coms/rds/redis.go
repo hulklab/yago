@@ -135,17 +135,17 @@ func pingRedis(c redis.Conn, t time.Time) error {
 }
 
 type Subscriber struct {
-	topic     []interface{}
+	channel   []interface{}
 	conn      *redis.PubSubConn
 	closeChan chan bool
 }
 
-func (r *Rds) NewSubscriber(topic ...interface{}) (*Subscriber, error) {
+func (r *Rds) NewSubscriber(channel ...interface{}) (*Subscriber, error) {
 	s := new(Subscriber)
 	s.closeChan = make(chan bool, 1)
-	s.topic = topic
+	s.channel = channel
 	prc := redis.PubSubConn{Conn: r.GetConn()}
-	err := prc.Subscribe(s.topic...)
+	err := prc.Subscribe(s.channel...)
 	if err != nil {
 		log.Println("redis: ", err.Error())
 		return nil, err
