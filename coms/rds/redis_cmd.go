@@ -459,6 +459,10 @@ func (r *Rds) ZScan(key, cursor interface{}, opts ...interface{}) (reply interfa
 	return r.Do("ZSCAN", args...)
 }
 
+func (r *Rds) Publish(channel, message interface{}) (reply interface{}, err error) {
+	return r.Do("PUBLISH", channel, message)
+}
+
 func mergeKeyAndArgs(key interface{}, args ...interface{}) []interface{} {
 	args2 := make([]interface{}, 0)
 	args2 = append(args2, key)
