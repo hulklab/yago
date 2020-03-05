@@ -238,3 +238,32 @@ max_send_msgsize_mb =  10
 | *_api.ssl_on | Bool | grpc请求是否开启证书校验 |
 | *_api.cert_file | String | grpc证书地址 |
 
+## 配置嵌套
+Yago 采用 import 字段自己实现了一套配置嵌套的方法，下面演示几种常用格式的使用方法：
+
+### toml
+```toml
+import = "./conf/app.toml"
+
+[app]
+http_addr = ":8088"
+
+```
+
+### json
+```json
+{
+  "import": "./conf/app.toml",
+  "app": {"http_addr": ":8088"}
+}
+```
+
+### yaml
+```yaml
+import: "./conf/app.toml"
+app:
+  http_addr: ":8080"
+
+```
+
+其中 `import` 设置的值表示继承配置的路径，可以是相对路径或者绝对路径，Yago 支持多级继承，但是使用时要避开循环引用。
