@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,7 +13,7 @@ import (
 	"github.com/hulklab/yago/libs/arr"
 
 	"github.com/spf13/viper"
-	//_ "github.com/spf13/viper/remote"
+	_ "github.com/spf13/viper/remote"
 )
 
 type AppConfig struct {
@@ -97,18 +98,46 @@ var Config *AppConfig
 func NewAppConfig(cfgPath string) *AppConfig {
 	cfg := &AppConfig{viper.New()}
 
-	// 设置远程配置
-	//err := cfg.AddRemoteProvider("etcd", "http://127.0.0.1:2379", "/yago/conf/app.toml")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//cfg.SetConfigType("toml")
-	//err = cfg.ReadRemoteConfig()
+	if strings.HasPrefix(cfgPath, "etcd+") {
+		// only support etcd now
+		cs := strings.Split(cfgPath, "+")
+		if len(cs) != 2 {
+			panic("remote config only support like this: etcd+http://127.0.0.1:2379/yago/conf/app.toml")
+		}
 
-	cfg.SetConfigFile(cfgPath)
-	err := cfg.ReadFileConfig(cfgPath)
-	if err != nil {
-		panic(err)
+		u, err := url.Parse(cs[1])
+		if err != nil {
+			panic("parse config err: " + err.Error())
+		}
+
+		err = cfg.AddRemoteProvider("etcd", u.Scheme+"://"+u.Host, u.Path)
+		if err != nil {
+			panic(err)
+		}
+
+		// 获取 path 后缀
+		ext := filepath.Ext(u.Path)
+		if len(ext) > 1 {
+			cfg.SetConfigType(ext[1:])
+		} else {
+			cfg.SetConfigType("toml")
+		}
+
+		err = cfg.ReadRemoteConfig()
+		if err != nil {
+			panic(err)
+		}
+
+		err = cfg.WatchRemoteConfigOnChannel()
+		if err != nil {
+			log.Println("watch remote config err:", err.Error())
+		}
+	} else {
+		cfg.SetConfigFile(cfgPath)
+		err := cfg.ReadFileConfig(cfgPath)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	cfg.SetDefault("app.app_name", "APP")

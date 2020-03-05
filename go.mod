@@ -6,6 +6,7 @@ require (
 	github.com/Shopify/sarama v1.19.0
 	github.com/bsm/sarama-cluster v2.1.15+incompatible
 	github.com/bwmarrin/snowflake v0.3.0
+	github.com/coreos/etcd v3.3.18+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-contrib/cors v1.3.0
