@@ -1,6 +1,7 @@
 package yago
 
 import (
+	"fmt"
 	"mime/multipart"
 	"net/http"
 
@@ -14,6 +15,7 @@ type Ctx struct {
 }
 
 const CtxParamsKey = "__PARAMS__"
+const ctxYagoKey = "__YagoCtx__"
 
 type ResponseBody struct {
 	ErrNo  int         `json:"errno"`
@@ -22,9 +24,27 @@ type ResponseBody struct {
 }
 
 func NewCtx(c *gin.Context) *Ctx {
-	return &Ctx{
+	ctx := &Ctx{
 		Context: c,
 	}
+
+	c.Set(ctxYagoKey, ctx)
+	return ctx
+}
+
+func getCtxFromGin(c *gin.Context) (*Ctx, error) {
+	v, ok := c.Get(ctxYagoKey)
+	if !ok {
+		ctx := NewCtx(c)
+		return ctx, nil
+	}
+
+	ctx, ok := v.(*Ctx)
+	if !ok {
+		return nil, fmt.Errorf("get yago ctx err, yago ctx type error")
+	}
+
+	return ctx, nil
 }
 
 func (c *Ctx) GetFileContent(key string) ([]byte, error) {

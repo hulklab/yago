@@ -358,12 +358,29 @@ func (a *App) loadHttpRouter() error {
 		})
 	}
 
+	for _, mid := range httpMiddlewares {
+		mid := mid
+		a.httpEngine.Use(func(i *gin.Context) {
+			ctx, err := getCtxFromGin(i)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			mid(ctx)
+		})
+	}
+
 	for _, r := range HttpRouterMap {
 		method := strings.ToUpper(r.Method)
 		action := r.Action
 		controller := r.h
 		handler := func(c *gin.Context) {
-			ctx := NewCtx(c)
+			ctx, err := getCtxFromGin(c)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			//ctx := NewCtx(c)
 			if e := controller.BeforeAction(ctx); e.HasErr() {
 				ctx.SetError(e)
 			} else {
@@ -393,6 +410,7 @@ func (a *App) loadHttpRouter() error {
 			a.httpEngine.Any(r.Url, handler)
 		}
 	}
+
 	return nil
 }
 

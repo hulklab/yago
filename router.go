@@ -21,6 +21,7 @@ type HttpRouter struct {
 
 var HttpRouterMap = make(map[string]*HttpRouter)
 var httpNoRouterHandler HttpHandlerFunc
+var httpMiddlewares = make([]HttpHandlerFunc, 0)
 
 type HttpInterface interface {
 	BeforeAction(c *Ctx) Err
@@ -48,6 +49,10 @@ func AddHttpRouter(url, method string, action HttpHandlerFunc, h HttpInterface, 
 
 func SetHttpNoRouter(action HttpHandlerFunc) {
 	httpNoRouterHandler = action
+}
+
+func UseHttp(handlerFunc HttpHandlerFunc) {
+	httpMiddlewares = append(httpMiddlewares, handlerFunc)
 }
 
 // task
