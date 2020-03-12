@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/levigross/grequests"
+
 	"github.com/hulklab/yago"
 
 	"github.com/hulklab/yago/base/basethird"
@@ -24,6 +26,18 @@ func Ins() *homeApi {
 		if err != nil {
 			log.Fatal("init home api config error")
 		}
+
+		// 添加中间件
+		api.AddInterceptor(func(method, uri string, ro *grequests.RequestOptions, call basethird.Caller) (response *basethird.Response, e error) {
+			fmt.Println("before caller....", uri, method)
+
+			resp, err := call(method, uri, ro)
+
+			fmt.Println("after caller....", resp.StatusCode)
+
+			return resp, err
+		})
+
 		return api
 	})
 	return v.(*homeApi)
