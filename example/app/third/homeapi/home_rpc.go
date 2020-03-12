@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/hulklab/yago/base/basethird"
-	pb "github.com/hulklab/yago/example/app/third/homeapi/homepb"
+	pb "github.com/hulklab/yago/example/app/modules/home/homerpc/homepb"
 )
 
 type homeRpcApi struct {

@@ -359,11 +359,13 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 	consume := end.Sub(begin).Nanoseconds() / 1e6
 
 	logInfo := logrus.Fields{
-		"url":            uri,
-		"hostname":       a.Hostname,
-		"params":         logParams,
-		"consume":        consume,
-		"request_header": ro.Headers,
+		"url":             uri,
+		"hostname":        a.Hostname,
+		"method":          method,
+		"params":          logParams,
+		"consume":         consume,
+		"request_header":  ro.Headers,
+		"response_header": res.Header,
 	}
 
 	if ro.JSON != nil {
