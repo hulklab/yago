@@ -101,4 +101,28 @@ resp, err := homeapi.Ins().UploadFile("/tmp/test.jpeg")
 resp, err := homeapi.Ins().AddUser(1,"zhangsan")
 ```
 
+### http-Interceptor
+HttpThird 实现了 Interceptor 中间件机制, 默认提供一个日志 interceptor，并对外提供了添加自定义 interceptor 的函数。
+interceptor 支持添加多个，执行顺序为添加的顺序。
 
+* HttpInterceptor 
+
+```go
+// 添加中间件
+api.AddInterceptor(func(method, uri string, ro *grequests.RequestOptions, call basethird.Caller) (response *basethird.Response, e error) {
+    fmt.Println("before caller....", uri, method)
+
+    resp, err := call(method, uri, ro)
+
+    fmt.Println("after caller....", resp.StatusCode)
+
+    return resp, err
+})
+```
+
+* 关闭默认的日志 interceptor
+
+```go
+// 关闭
+api.DisableDefaultInterceptor()
+```
