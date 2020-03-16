@@ -47,6 +47,12 @@ driver_instance_id = "etcd"
 
 ## 使用 Locker 组件
 
+说明一下，locker 组件默认只注册了 redis，etcd-locker 需要业务方在使用时加载注册一下
+```go
+import _ "github.com/hulklab/yago-coms/locker/etcd"
+
+```
+
 ```go
 key := "locker_name"
 // 锁的失效时间
