@@ -66,23 +66,29 @@ func (r *Response) String() (string, error) {
 	return r.Response.String(), r.Error
 }
 
+type Caller func(method, uri string, ro *grequests.RequestOptions) (resp *Response, err error)
+
+type HttpInterceptor func(method, uri string, ro *grequests.RequestOptions, call Caller) (*Response, error)
+
 // 封装 http 接口的基础类
 type HttpThird struct {
-	client              *http.Client
-	Address             string
-	Hostname            string
-	ConnectTimeout      int
-	ReadWriteTimeout    int
-	SslOn               bool
-	CertFile            string
-	headers             map[string]string
-	username            string
-	password            string
-	tlsCfg              *tls.Config
-	logInfoOff          bool
-	once                sync.Once
-	maxIdleConnsPerHost int
-	maxConnsPerHost     int
+	client                    *http.Client
+	Address                   string
+	Hostname                  string
+	ConnectTimeout            int
+	ReadWriteTimeout          int
+	SslOn                     bool
+	CertFile                  string
+	headers                   map[string]string
+	username                  string
+	password                  string
+	tlsCfg                    *tls.Config
+	logInfoOff                bool
+	once                      sync.Once
+	maxIdleConnsPerHost       int
+	maxConnsPerHost           int
+	interceptors              []HttpInterceptor
+	disableDefaultInterceptor bool
 }
 
 func (a *HttpThird) InitConfig(configSection string) error {
@@ -302,11 +308,10 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 
 	ro := a.newRo()
 
-	logParams := make(map[string]interface{})
 	dataParams := make(map[string]string)
 
 	for k, v := range params {
-		logParams[k] = v
+		//logParams[k] = v
 		switch val := v.(type) {
 		case PostFile: // 文件上传
 			uf, err := val.Value(k)
@@ -317,9 +322,6 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 			ro.Files = append(ro.Files, uf)
 		case string:
 			dataParams[k] = val
-			if len(val) > 1000 {
-				logParams[k] = val[:1000] + "..."
-			}
 		case int64:
 			dataParams[k] = strconv.Itoa(int(val))
 		case int:
@@ -347,17 +349,81 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 
 	mergeOptions(ro, opts...)
 
-	//fmt.Printf("%+v", ro)
-
 	uri := a.genUri(api)
 
+	chainCaller := a.chainCaller()
+
+	return chainCaller(method, uri, ro)
+}
+
+func (a *HttpThird) AddInterceptor(hi HttpInterceptor) {
+	if a.interceptors == nil {
+		a.interceptors = make([]HttpInterceptor, 0)
+	}
+
+	a.interceptors = append(a.interceptors, hi)
+}
+
+// build caller chain
+// TODO cache?
+func (a *HttpThird) chainCaller() Caller {
+	innerCaller := func(method, uri string, ro *grequests.RequestOptions) (*Response, error) {
+		res, err := grequests.Req(method, uri, ro)
+		return &Response{res}, err
+	}
+
+	chainWrap := func(currentInter HttpInterceptor, currentCaller Caller) Caller {
+		return func(method, uri string, ro *grequests.RequestOptions) (*Response, error) {
+			return currentInter(method, uri, ro, currentCaller)
+		}
+	}
+
+	chainedCaller := innerCaller
+
+	// 注册日志插件(放到最后)
+	if !a.disableDefaultInterceptor {
+		a.AddInterceptor(a.logInterceptor)
+	}
+
+	n := len(a.interceptors)
+
+	if n >= 1 {
+		for i := n - 1; i >= 0; i-- {
+			chainedCaller = chainWrap(a.interceptors[i], chainedCaller)
+		}
+	}
+	return chainedCaller
+}
+
+func (a *HttpThird) DisableDefaultInterceptor() {
+	a.disableDefaultInterceptor = true
+}
+
+func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOptions, call Caller) (*Response, error) {
+	log := logger.Ins().Category("third.http")
+
+	var logParams map[string]string
+	if method == http.MethodGet {
+		logParams = ro.Params
+	} else {
+		logParams = ro.Data
+	}
+
+	if len(logParams) > 0 {
+		for k, val := range logParams {
+			if len(val) > 1000 {
+				logParams[k] = val[:1000] + "..."
+			}
+		}
+	}
+
+	//log.Printf("before invoker. method: %+v, request:%+v", method, req)
 	begin := time.Now()
 
-	res, err := grequests.Req(method, uri, ro)
+	resp, err := call(method, uri, ro)
 
 	end := time.Now()
 	consume := end.Sub(begin).Nanoseconds() / 1e6
-
 	logInfo := logrus.Fields{
 		"url":             uri,
 		"hostname":        a.Hostname,
@@ -365,7 +431,7 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 		"params":          logParams,
 		"consume":         consume,
 		"request_header":  ro.Headers,
-		"response_header": res.Header,
+		"response_header": resp.Header,
 	}
 
 	if ro.JSON != nil {
@@ -392,24 +458,24 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 		return nil, err
 	}
 
-	retStr := res.String()
+	retStr, _ := resp.String()
 
 	// 默认是日志没关
 	if !a.logInfoOff {
 		logInfo["result"] = retStr
 	}
 
-	if !res.Ok {
-		logInfo["hint"] = fmt.Sprintf("http status err,code:%d", res.StatusCode)
+	if !resp.Ok {
+		logInfo["hint"] = fmt.Sprintf("http status err,code:%d", resp.StatusCode)
 
 		log.WithFields(logInfo).Error()
 
-		return &Response{res}, fmt.Errorf("http status error: %d, body: %s", res.StatusCode, res.String())
+		return resp, fmt.Errorf("http status error: %d, body: %s", resp.StatusCode, retStr)
 	}
 
 	log.WithFields(logInfo).Info()
 
-	return &Response{res}, nil
+	return resp, nil
 }
 
 func (a *HttpThird) Post(api string, params map[string]interface{}, opts ...*grequests.RequestOptions) (*Response, error) {
