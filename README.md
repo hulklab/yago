@@ -1,4 +1,4 @@
-# Yago Scafford - Web开发脚手架
+# Yago Scaffold - Web开发脚手架
 
 ![avatar](http://p0.qhimg.com/t0162ed78090852688f.png) 
 
@@ -8,11 +8,10 @@
 - [安装](#安装)
 - [依赖](#依赖)
 - [快速开始](#快速开始)
-- [已知问题及解决方案](#已知问题及解决方案)
 - [感谢](#感谢)
 
 ## 文档
-[yago 文档](https://hulklab.github.io/yago/)
+[Yago 文档](https://hulklab.github.io/yago/)
 
 ## 安装
 
@@ -47,7 +46,6 @@ go mod init
 ```bash
 go build
 ```
-> [如 go build 遇报错，请看解决方案](#已知问题及解决方案)
 
 ##### 4. 创建属于自己的配置文件，并启动
 ```bash
@@ -71,22 +69,6 @@ sh env.init.sh yourname
 2. 如果还有标红的提示，点击 Sync packages
 
 ![](http://p406.qhimgs4.com/t019f0fcae328f7a0e0.png)
-
-
-## 已知问题及解决方案
-
-1.  unknown import path "github.com/ugorji/go/codec": ambiguous import: found github.com/ugorji/go/codec in multiple modules 模块冲突问题
-
-	原因参考：
-	
-	> https://cloud.tencent.com/developer/article/1417112
-	
-	解决方案：
-	在go.mod文件最下面添加如下代码
-	```go
-	replace github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
-	```
-
 
 ## 感谢
 [gin](https://github.com/gin-gonic/gin)
