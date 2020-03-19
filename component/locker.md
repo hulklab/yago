@@ -9,7 +9,7 @@ locker 组件采专用 driver 的机制，目前支持的 driver 有 redis, etcd
 ```go
 // yago-coms/locker/locker.go
 type ILocker struct {
-	Lock(key string, timeout int64) error
+	Lock(key string, opts ...SessionOption) error
 	Unlock()
 }
 ```
@@ -46,18 +46,38 @@ driver_instance_id = "etcd"
 上例中 driver_instance_id 为 etcd 表示使用配置文件中 section 为 etcd 的组件实例作为 locker 的 driver 驱动对象
 
 ## 使用 Locker 组件
-
+### 构建永久锁
 ```go
 key := "locker_name"
-// 锁的失效时间
-timeout := 10
+// 锁的默认租期是 60s，如果拿锁进程异常，会续约失败，释放锁
 
 // 创建锁对象
 lo := locker.New()
 
 // Lock() will block until get the locker
 // Get locker
-err := lo.Lock(key, timeout)
+err := lo.Lock(key)
+if err != nil {
+	// err handler
+}
+// Release locker
+defer lo.Unlock()
+// your code here
+
+```
+
+### 构建一个带有效期的锁
+```go
+key := "locker_name"
+// 锁的默认租期是 60s，也可以自行指定
+timeout := 10
+
+// 创建锁对象
+lo := locker.New()
+
+// Lock() will block until get the locker
+// 带有效期的锁，需要关闭 keepAlive 自动续约参数
+err := lo.Lock(key,lock.WithTTL(timeout),lock.WithDisableKeepAlive())
 if err != nil {
 	// err handler
 }
