@@ -87,6 +87,29 @@ defer lo.Unlock()
 
 ```
 
+### 构建一个设置等待时间的锁
+```go
+key := "locker_name"
+
+// 创建锁对象
+lo := locker.New()
+
+// Lock() will block until get the locker
+// 客户端会等待 3s，如果 3s 还是没能拿到锁则自动退出争抢
+err := lo.Lock(key,lock.WithWaitTime(time.Second*3))
+if err != nil {
+	// 用来判断是否为超时错误，超时错误算是预期内错误，业务可能需要特殊处理
+	if errors.Is(err, context.DeadlineExceeded) {
+		return
+	}
+	// err handler
+}
+// Release locker
+defer lo.Unlock()
+// your code here
+
+```
+
 说明一下，locker 组件默认只注册了 redis，etcd-locker 需要业务方在使用时加载注册一下
 ```go
 import _ "github.com/hulklab/yago-coms/locker/etcd"
