@@ -429,13 +429,17 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 	end := time.Now()
 	consume := end.Sub(begin).Nanoseconds() / 1e6
 	logInfo := logrus.Fields{
-		"url":             uri,
-		"hostname":        a.Hostname,
-		"method":          method,
-		"params":          logParams,
-		"consume":         consume,
-		"request_header":  ro.Headers,
-		"response_header": resp.Header,
+		"url":            uri,
+		"hostname":       a.Hostname,
+		"method":         method,
+		"params":         logParams,
+		"consume":        consume,
+		"request_header": ro.Headers,
+		//"response_header": resp.Header,
+	}
+
+	if resp != nil {
+		logInfo["response_header"] = resp.Header
 	}
 
 	if ro.JSON != nil {
