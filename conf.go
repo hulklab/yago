@@ -3,7 +3,6 @@ package yago
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,7 +31,7 @@ func (c *AppConfig) ReadFileConfig(cfgPath string) error {
 	}
 
 	if len(importFiles) >= 2 {
-		log.Println("import configs:", importFiles)
+		//log.Println("import configs:", importFiles)
 		// the last one don't need merge
 		for i := len(importFiles) - 2; i >= 0; i-- {
 			importFile := importFiles[i]
