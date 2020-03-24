@@ -402,17 +402,21 @@ func (a *HttpThird) DisableDefaultInterceptor() {
 func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOptions, call Caller) (*Response, error) {
 	log := logger.Ins().Category("third.http")
 
-	var logParams map[string]string
+	var dataParams map[string]string
+	logParams := make(map[string]string)
+
 	if method == http.MethodGet {
-		logParams = ro.Params
+		dataParams = ro.Params
 	} else {
-		logParams = ro.Data
+		dataParams = ro.Data
 	}
 
-	if len(logParams) > 0 {
-		for k, val := range logParams {
+	if len(dataParams) > 0 {
+		for k, val := range dataParams {
 			if len(val) > 1000 {
 				logParams[k] = val[:1000] + "..."
+			} else {
+				logParams[k] = val
 			}
 		}
 	}
