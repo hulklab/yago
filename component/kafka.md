@@ -69,11 +69,11 @@ if err != nil {
     t.Errorf("new consumer error: %s", err)
 }
 // 如果匿名函数返回false，则跳过ack
-err = consumer.Consume(func(bytes []byte) bool {
+err = consumer.Consume(func(topic string, bytes []byte) bool {
     if strings.Contains(string(bytes), "5") {
         return false
     }
-    fmt.Println(string(bytes))
+    fmt.Println(topic, string(bytes))
     return true
 })
 if err != nil {
