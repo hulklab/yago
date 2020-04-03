@@ -100,12 +100,12 @@ func (q *Kafka) NewConsumer(group string, topics ...string) (*Consumer, error) {
 	return c, nil
 }
 
-func (c *Consumer) Consume(cb func([]byte) bool) error {
+func (c *Consumer) Consume(cb func(topic string, data []byte) bool) error {
 	for {
 		select {
 		case msg, ok := <-c.conn.Messages():
 			if ok {
-				processed := cb(msg.Value)
+				processed := cb(msg.Topic, msg.Value)
 				// mark message as processed
 				if processed {
 					c.conn.MarkOffset(msg, "")
