@@ -1,7 +1,6 @@
 package basehttp
 
 import (
-	"errors"
 	"reflect"
 	"strings"
 	"sync"
@@ -29,8 +28,6 @@ func (v *defaultValidator) ValidateStruct(obj interface{}) error {
 		if err := v.validate.Struct(obj); err != nil {
 			return err
 		}
-	} else {
-		return errors.New("unsupported type: " + valueType.String())
 	}
 	return nil
 }
@@ -47,7 +44,7 @@ func (v *defaultValidator) Engine() interface{} {
 func (v *defaultValidator) lazyinit() {
 	v.once.Do(func() {
 		trans := yago.GetTranslator()
-		v.validate = validatelib.Ins(trans)
+		v.validate = validatelib.New(trans)
 
 		v.validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
 			name := strings.SplitN(fld.Tag.Get("label"), ",", 2)[0]
