@@ -1,14 +1,23 @@
 package validatelib
 
 import (
-	ut "github.com/go-playground/universal-translator"
+	"sync"
+
+	"github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/translations/en"
 	"github.com/go-playground/validator/v10/translations/zh"
 )
 
-func New(trans ut.Translator) *validator.Validate {
-	v := validator.New()
+var v *validator.Validate
+var once sync.Once
+
+func Ins(trans ut.Translator) *validator.Validate {
+
+	once.Do(func() {
+		v = validator.New()
+	})
+
 	if trans == nil {
 		return v
 	}
