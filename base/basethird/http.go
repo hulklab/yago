@@ -294,6 +294,22 @@ func mergeOptions(ro *grequests.RequestOptions, opts ...*grequests.RequestOption
 		ro.UserAgent = opt.UserAgent
 	}
 
+	if opt.RequestBody != nil {
+		ro.RequestBody = opt.RequestBody
+	}
+
+	if opt.RedirectLimit != 0 {
+		ro.RedirectLimit = opt.RedirectLimit
+	}
+
+	if opt.Proxies != nil {
+		ro.Proxies = opt.Proxies
+	}
+
+	if opt.LocalAddr != nil {
+		ro.LocalAddr = opt.LocalAddr
+	}
+
 	if opt.BeforeRequest != nil {
 		ro.BeforeRequest = opt.BeforeRequest
 	}
