@@ -89,7 +89,7 @@ func (h *HomeHttp) HelloAction(c *yago.Ctx) {
 	c.SetData(data)
 }
 
-// curl 'http://127.0.0.1:8080/home/add' -H "Content-type:application/x-www-form-urlencoded" -XPOST -d name=lisi&phone=13090001112
+// curl 'http://127.0.0.1:8080/home/add' -H "Content-type:application/x-www-form-urlencoded" -XPOST -d "name=lisi&phone=13090001112"
 func (h *HomeHttp) AddAction(c *yago.Ctx) {
 	var p struct {
 		Name  string `json:"name" validate:"required,max=20" form:"name" label:"姓名"`
