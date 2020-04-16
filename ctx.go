@@ -1,6 +1,7 @@
 package yago
 
 import (
+	"errors"
 	"mime/multipart"
 	"net/http"
 
@@ -11,6 +12,7 @@ import (
 type Ctx struct {
 	*gin.Context
 	resp *ResponseBody
+	err  error
 }
 
 const CtxParamsKey = "__PARAMS__"
@@ -72,7 +74,10 @@ func (c *Ctx) setError(err Err, msgEx ...string) {
 	}
 
 	c.JSON(http.StatusOK, c.resp)
+}
 
+func (c *Ctx) GetError() error {
+	return c.err
 }
 
 func (c *Ctx) SetError(err interface{}, msgEx ...string) {
@@ -88,7 +93,13 @@ func (c *Ctx) SetError(err interface{}, msgEx ...string) {
 		}
 	//case json.UnmarshalTypeError:
 	case error:
-		c.setError(NewErr(v.Error()))
+		e := errors.Unwrap(v.(error))
+		if er, ok := e.(Err); ok {
+			c.setError(er)
+		} else {
+			c.setError(NewErr(er.Error()))
+		}
+		c.err = v
 	default:
 		c.setError(ErrUnknown)
 	}

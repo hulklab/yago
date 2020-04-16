@@ -2,7 +2,11 @@ package homehttp
 
 import (
 	"net/http"
+	"regexp"
 
+	"github.com/gin-gonic/gin/binding"
+	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basehttp"
 	"github.com/hulklab/yago/example/app/g"
@@ -30,6 +34,36 @@ func init() {
 		Label: "自定义HTTP名称",
 	})
 	yago.SetHttpNoRouter(homeHttp.NoRouterAction)
+
+	// 注册自定义验证器和翻译
+	// 例：添加一个手机号验证器
+	e := binding.Validator.Engine()
+	if v, ok := e.(*validator.Validate); ok {
+		// 添加手机号验证器
+		_ = v.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
+			regular := "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$"
+
+			reg := regexp.MustCompile(regular)
+			return reg.MatchString(fl.Field().String())
+		})
+
+		// 添加手机号验证器的翻译
+		_ = v.RegisterTranslation("phone", yago.GetTranslator(), func(ut ut.Translator) error {
+			var e error
+			switch ut.Locale() {
+			case "zh":
+				e = ut.Add("phone", "{0} 必须是一个有效的手机号", false)
+			case "en":
+				e = ut.Add("phone", "{0} must be a valid phone number", false)
+			default:
+				e = ut.Add("phone", "{0} 必须是一个有效的手机号", false)
+			}
+			return e
+		}, func(ut ut.Translator, fe validator.FieldError) string {
+			t, _ := ut.T("phone", fe.Field())
+			return t
+		})
+	}
 }
 
 func (h *HomeHttp) NoRouterAction(c *yago.Ctx) {
@@ -53,13 +87,13 @@ func (h *HomeHttp) HelloAction(c *yago.Ctx) {
 	data := "hello " + p.Name
 
 	c.SetData(data)
-	return
 }
 
-// curl 'http://127.0.0.1:8080/home/add' -H "Content-type:application/x-www-form-urlencoded" -XPOST -d name=lisi
+// curl 'http://127.0.0.1:8080/home/add' -H "Content-type:application/x-www-form-urlencoded" -XPOST -d name=lisi&phone=13090001112
 func (h *HomeHttp) AddAction(c *yago.Ctx) {
 	var p struct {
-		Name string `json:"name" validate:"required,max=20" form:"name" label:"姓名"`
+		Name  string `json:"name" validate:"required,max=20" form:"name" label:"姓名"`
+		Phone string `json:"phone" validate:"required,phone" form:"phone" label:"手机号"`
 	}
 
 	err := c.ShouldBind(&p)
@@ -76,7 +110,6 @@ func (h *HomeHttp) AddAction(c *yago.Ctx) {
 	}
 
 	c.SetData(map[string]interface{}{"id": id})
-	return
 }
 
 var p struct {
@@ -201,5 +234,4 @@ func (h *HomeHttp) MetadataAction(c *yago.Ctx) {
 	}
 
 	c.SetData(data)
-
 }
