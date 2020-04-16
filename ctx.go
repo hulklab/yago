@@ -97,7 +97,7 @@ func (c *Ctx) SetError(err interface{}, msgEx ...string) {
 		if er, ok := e.(Err); ok {
 			c.setError(er)
 		} else {
-			c.setError(NewErr(er.Error()))
+			c.setError(NewErr(v.Error()))
 		}
 		c.err = v
 	default:
