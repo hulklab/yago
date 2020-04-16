@@ -79,3 +79,7 @@ func NewErr(err interface{}, args ...interface{}) Err {
 	}
 	return Err(s)
 }
+
+func Error(ye Err, err error) error {
+	return fmt.Errorf("%w: %s", ye, err)
+}
