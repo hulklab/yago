@@ -14,8 +14,8 @@ func init() {
 	binding.Validator = &defaultValidator{}
 }
 
-func (h *BaseHttp) BeforeAction(c *yago.Ctx) yago.Err {
-	return yago.OK
+func (h *BaseHttp) BeforeAction(c *yago.Ctx) error {
+	return nil
 }
 
 func (h *BaseHttp) AfterAction(c *yago.Ctx) {

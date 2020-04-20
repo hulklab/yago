@@ -364,7 +364,7 @@ func (a *App) loadHttpRouter() error {
 		controller := r.h
 		handler := func(c *gin.Context) {
 			ctx := NewCtx(c)
-			if e := controller.BeforeAction(ctx); e.HasErr() {
+			if e := controller.BeforeAction(ctx); e != nil {
 				ctx.SetError(e)
 			} else {
 				action(ctx)

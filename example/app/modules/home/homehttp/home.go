@@ -70,7 +70,7 @@ func (h *HomeHttp) AddAction(c *yago.Ctx) {
 
 	model := homemodel.NewHomeModel()
 	id, e := model.Add(p.Name, nil)
-	if e.HasErr() {
+	if e != nil {
 		c.SetError(e)
 		return
 	}
@@ -139,7 +139,7 @@ func (h *HomeHttp) UpdateAction(c *yago.Ctx) {
 	}
 
 	user, e := model.UpdateById(p.Id, options)
-	if e.HasErr() {
+	if e != nil {
 		c.SetError(err)
 		return
 	}
