@@ -49,6 +49,7 @@ func (e Err) getError() (int, string) {
 	return code, err[1]
 }
 
+// Deprecated
 func (e Err) HasErr() bool {
 	return e.Code() != 0
 }

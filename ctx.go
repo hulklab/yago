@@ -108,21 +108,15 @@ func (c *Ctx) SetDataOrErr(data interface{}, err interface{}) {
 
 	switch v := err.(type) {
 	case Err:
-		if v.HasErr() {
-			c.SetError(v)
-			return
-		}
+		c.SetError(v)
+		return
 	case error:
-		if v != nil {
-			c.SetError(v)
-			return
-		}
+		c.SetError(v)
+		return
 	default:
 		c.setError(ErrUnknown)
 		return
 	}
-
-	c.SetData(data)
 }
 
 func (c *Ctx) GetResponse() (*ResponseBody, bool) {
