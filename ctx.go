@@ -86,14 +86,14 @@ func (c *Ctx) SetError(err interface{}) {
 		}
 	//case json.UnmarshalTypeError:
 	case error:
-		e := errors.Unwrap(v.(error))
-		c.err = v
-		if er, ok := e.(Err); ok {
-			c.setError(er)
+		var ye Err
+		e := errors.As(v, &ye)
+		if e {
+			c.setError(ye)
 		} else {
 			c.setError(NewErr(v.Error()))
 		}
-
+		c.err = v
 	default:
 		c.err = ErrUnknown
 		c.setError(ErrUnknown)
