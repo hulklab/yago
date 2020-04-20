@@ -49,8 +49,8 @@ func (c *Ctx) GetFileContent(key string) ([]byte, error) {
 
 func (c *Ctx) SetData(data interface{}) {
 	c.resp = &ResponseBody{
-		ErrNo:  OK.Code(),
-		ErrMsg: OK.Error(),
+		ErrNo:  ok.Code(),
+		ErrMsg: ok.Error(),
 		Data:   data,
 	}
 

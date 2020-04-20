@@ -10,7 +10,7 @@ type Err string
 
 var (
 	// You can replace yago Err variable in your application,eg. yago.ErrParam = Err("4000=Param err")
-	OK           = Err("0")
+	ok           = Err("0")
 	E            = Err("1=") // custom error
 	ErrParam     = Err("2=")
 	ErrSign      = Err("3=Sign failed")
@@ -37,7 +37,7 @@ func (e Err) Code() int {
 }
 
 func (e Err) getError() (int, string) {
-	if e == OK || e == "" {
+	if e == ok || e == "" {
 		return 0, ""
 	}
 
@@ -59,14 +59,14 @@ func (e Err) HasErr() bool {
 // eg. yago.NewErr("%s is err","query")
 func NewErr(err interface{}, args ...interface{}) Err {
 	if err == nil {
-		return OK
+		return ok
 	}
 
 	var s string
 	switch e := err.(type) {
 	case error:
 		if e == nil {
-			return OK
+			return ok
 		} else {
 			s = E.String() + e.Error()
 		}
@@ -80,12 +80,12 @@ func NewErr(err interface{}, args ...interface{}) Err {
 	return Err(s)
 }
 
-//
+// 返回业务报错（业务报错给接口展示），包裹系统错误（系统错误转到日志记录）
 func WrapErr(ye Err, err error) error {
 	if err == nil {
 		return NewErr("err can not be nil when use yago.WrapErr()")
 	}
-	if ye == OK {
+	if ye == ok {
 		return NewErr("ye can not be OK when use yago.WrapErr()")
 	}
 	return fmt.Errorf("%w: %s", ye, err)
