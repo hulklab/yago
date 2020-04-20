@@ -3,7 +3,7 @@ package validatelib
 import (
 	"sync"
 
-	"github.com/go-playground/universal-translator"
+	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/translations/en"
 	"github.com/go-playground/validator/v10/translations/zh"
@@ -32,6 +32,7 @@ func Ins(trans ut.Translator) *validator.Validate {
 		_ = zh.RegisterDefaultTranslations(v, trans)
 	}
 
-	return v
+	registerPhoneValidator(v)
 
+	return v
 }

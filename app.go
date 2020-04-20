@@ -370,7 +370,7 @@ func (a *App) loadHttpRouter() error {
 				action(ctx)
 			}
 
-			go controller.AfterAction(ctx)
+			go controller.AfterAction(ctx.Copy())
 		}
 
 		log.Println("[HTTP]", r.Url, runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name())

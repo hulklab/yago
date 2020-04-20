@@ -80,6 +80,13 @@ func NewErr(err interface{}, args ...interface{}) Err {
 	return Err(s)
 }
 
-func Error(ye Err, err error) error {
+//
+func WrapErr(ye Err, err error) error {
+	if err == nil {
+		return NewErr("err can not be nil when use yago.WrapErr()")
+	}
+	if ye == OK {
+		return NewErr("ye can not be OK when use yago.WrapErr()")
+	}
 	return fmt.Errorf("%w: %s", ye, err)
 }
