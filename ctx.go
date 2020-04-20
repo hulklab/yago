@@ -57,19 +57,10 @@ func (c *Ctx) SetData(data interface{}) {
 	c.JSON(http.StatusOK, c.resp)
 }
 
-func (c *Ctx) setError(err Err, msgEx ...string) {
-	errMsg := err.Error()
-	if len(msgEx) > 0 {
-		if errMsg == "" {
-			errMsg = msgEx[0]
-		} else {
-			errMsg = errMsg + ": " + msgEx[0]
-		}
-	}
-
+func (c *Ctx) setError(err Err) {
 	c.resp = &ResponseBody{
 		ErrNo:  err.Code(),
-		ErrMsg: errMsg,
+		ErrMsg: err.Error(),
 		Data:   map[string]interface{}{},
 	}
 
@@ -80,27 +71,31 @@ func (c *Ctx) GetError() error {
 	return c.err
 }
 
-func (c *Ctx) SetError(err interface{}, msgEx ...string) {
+func (c *Ctx) SetError(err interface{}) {
 
 	switch v := err.(type) {
 	case Err:
-		c.setError(v, msgEx...)
+		c.err = v
+		c.setError(v)
 	case validatorv10.ValidationErrors:
 		for _, fieldErr := range v {
 			e := ErrParam.String() + fieldErr.Translate(GetTranslator())
+			c.err = Err(e)
 			c.setError(Err(e))
 			return
 		}
 	//case json.UnmarshalTypeError:
 	case error:
 		e := errors.Unwrap(v.(error))
+		c.err = v
 		if er, ok := e.(Err); ok {
 			c.setError(er)
 		} else {
 			c.setError(NewErr(v.Error()))
 		}
-		c.err = v
+
 	default:
+		c.err = ErrUnknown
 		c.setError(ErrUnknown)
 	}
 }
@@ -136,4 +131,9 @@ func (c *Ctx) GetResponse() (*ResponseBody, bool) {
 	}
 
 	return c.resp, true
+}
+
+func (c *Ctx) Copy() *Ctx {
+	c.Context = c.Context.Copy()
+	return c
 }

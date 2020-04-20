@@ -2,9 +2,9 @@ package homemodel
 
 import (
 	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/coms/orm"
 	"github.com/hulklab/yago/example/app/g"
 	"github.com/hulklab/yago/libs/date"
-	"github.com/hulklab/yago/coms/orm"
 
 	"github.com/hulklab/yago/example/app/modules/home/homedao"
 )
@@ -68,16 +68,18 @@ func (m *HomeModel) UpdateById(id int64, options map[string]interface{}) (*homed
 
 }
 
-func (m *HomeModel) DeleteById(id int64) (int64, yago.Err) {
+func (m *HomeModel) DeleteById(id int64) (int64, error) {
 	user := &homedao.HomeDao{Id: id}
 	n, err := orm.Ins().Delete(user)
-	return n, yago.NewErr(err)
+	return n, yago.WrapErr(yago.ErrSystem, err)
 }
 
 func (m *HomeModel) GetDetail(id int64) *homedao.HomeDao {
 	user := &homedao.HomeDao{Id: id}
-	orm.Ins().Get(user)
-
+	_, err := orm.Ins().Get(user)
+	if err != nil {
+		return nil
+	}
 	return user
 }
 
