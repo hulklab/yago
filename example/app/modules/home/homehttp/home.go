@@ -94,7 +94,7 @@ func (h *HomeHttp) DeleteAction(c *yago.Ctx) {
 	model := homemodel.NewHomeModel()
 
 	n, e := model.DeleteById(p.Id)
-	if e.HasErr() {
+	if e != nil {
 		c.SetError(err)
 		return
 	}
