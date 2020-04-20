@@ -14,8 +14,8 @@ func init() {
 	binding.Validator = &defaultValidator{}
 }
 
-func (h *BaseHttp) BeforeAction(c *yago.Ctx) yago.Err {
-	return yago.OK
+func (h *BaseHttp) BeforeAction(c *yago.Ctx) error {
+	return nil
 }
 
 func (h *BaseHttp) AfterAction(c *yago.Ctx) {
@@ -36,7 +36,7 @@ func (h *BaseHttp) AfterAction(c *yago.Ctx) {
 			"params":  params,
 			"header":  c.Request.Header,
 			"user_ip": c.ClientIP(),
-		}).Error(resp.ErrMsg)
+		}).Error(c.GetError())
 
 	} else {
 		logger.Ins().Category("http.biz.info").WithFields(logrus.Fields{

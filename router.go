@@ -23,7 +23,7 @@ var HttpRouterMap = make(map[string]*HttpRouter)
 var httpNoRouterHandler HttpHandlerFunc
 
 type HttpInterface interface {
-	BeforeAction(c *Ctx) Err
+	BeforeAction(c *Ctx) error
 	AfterAction(c *Ctx)
 }
 

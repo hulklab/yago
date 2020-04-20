@@ -53,13 +53,13 @@ func (h *HomeHttp) HelloAction(c *yago.Ctx) {
 	data := "hello " + p.Name
 
 	c.SetData(data)
-	return
 }
 
-// curl 'http://127.0.0.1:8080/home/add' -H "Content-type:application/x-www-form-urlencoded" -XPOST -d name=lisi
+// curl 'http://127.0.0.1:8080/home/add' -H "Content-type:application/x-www-form-urlencoded" -XPOST -d "name=lisi&phone=13090001112"
 func (h *HomeHttp) AddAction(c *yago.Ctx) {
 	var p struct {
-		Name string `json:"name" validate:"required,max=20" form:"name" label:"姓名"`
+		Name  string `json:"name" validate:"required,max=20" form:"name" label:"姓名"`
+		Phone string `json:"phone" validate:"required,phone" form:"phone" label:"手机号"`
 	}
 
 	err := c.ShouldBind(&p)
@@ -70,13 +70,12 @@ func (h *HomeHttp) AddAction(c *yago.Ctx) {
 
 	model := homemodel.NewHomeModel()
 	id, e := model.Add(p.Name, nil)
-	if e.HasErr() {
+	if e != nil {
 		c.SetError(e)
 		return
 	}
 
 	c.SetData(map[string]interface{}{"id": id})
-	return
 }
 
 var p struct {
@@ -95,7 +94,7 @@ func (h *HomeHttp) DeleteAction(c *yago.Ctx) {
 	model := homemodel.NewHomeModel()
 
 	n, e := model.DeleteById(p.Id)
-	if e.HasErr() {
+	if e != nil {
 		c.SetError(err)
 		return
 	}
@@ -140,7 +139,7 @@ func (h *HomeHttp) UpdateAction(c *yago.Ctx) {
 	}
 
 	user, e := model.UpdateById(p.Id, options)
-	if e.HasErr() {
+	if e != nil {
 		c.SetError(err)
 		return
 	}
@@ -201,5 +200,4 @@ func (h *HomeHttp) MetadataAction(c *yago.Ctx) {
 	}
 
 	c.SetData(data)
-
 }
