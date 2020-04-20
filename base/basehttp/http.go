@@ -37,7 +37,6 @@ func (h *BaseHttp) AfterAction(c *yago.Ctx) {
 			"header":  c.Request.Header,
 			"user_ip": c.ClientIP(),
 		}).Error(c.GetError())
-
 	} else {
 		logger.Ins().Category("http.biz.info").WithFields(logrus.Fields{
 			"url":     c.Request.URL.String(),
