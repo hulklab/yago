@@ -88,6 +88,7 @@ type HttpThird struct {
 	maxIdleConnsPerHost       int
 	maxConnsPerHost           int
 	interceptors              []HttpInterceptor
+	onceInter                 sync.Once
 	disableDefaultInterceptor bool
 }
 
@@ -380,6 +381,18 @@ func (a *HttpThird) AddInterceptor(hi HttpInterceptor) {
 	a.interceptors = append(a.interceptors, hi)
 }
 
+func (a *HttpThird) getInterceptors() []HttpInterceptor {
+
+	a.onceInter.Do(func() {
+		// 注册日志插件(放到最后)
+		if !a.disableDefaultInterceptor {
+			a.AddInterceptor(a.logInterceptor)
+		}
+	})
+
+	return a.interceptors
+}
+
 // build caller chain
 // TODO cache?
 func (a *HttpThird) chainCaller() Caller {
@@ -396,16 +409,12 @@ func (a *HttpThird) chainCaller() Caller {
 
 	chainedCaller := innerCaller
 
-	// 注册日志插件(放到最后)
-	if !a.disableDefaultInterceptor {
-		a.AddInterceptor(a.logInterceptor)
-	}
-
-	n := len(a.interceptors)
+	interceptors := a.getInterceptors()
+	n := len(interceptors)
 
 	if n >= 1 {
 		for i := n - 1; i >= 0; i-- {
-			chainedCaller = chainWrap(a.interceptors[i], chainedCaller)
+			chainedCaller = chainWrap(interceptors[i], chainedCaller)
 		}
 	}
 	return chainedCaller
@@ -479,7 +488,7 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 
 		log.WithFields(logInfo).Error()
 
-		return nil, err
+		return resp, err
 	}
 
 	retStr, _ := resp.String()

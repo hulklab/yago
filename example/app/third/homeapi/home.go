@@ -43,18 +43,23 @@ func Ins() *homeApi {
 	return v.(*homeApi)
 }
 
-func (a *homeApi) Hello() {
-	params := map[string]interface{}{
-		"name": "zhangsan",
+func (a *homeApi) Hello(name string) {
+
+	params := map[string]interface{}{}
+
+	if name != "" {
+		params["name"] = name
 	}
 
 	req, err := a.Get("/home/hello", params)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		s, _ := req.String()
-		fmt.Println(s)
-	}
+
+	fmt.Println("req:", req, "err: ", err)
+	//if err != nil {
+	//	fmt.Println(err.Error())
+	//} else {
+	//	s, _ := req.String()
+	//	fmt.Println(s)
+	//}
 }
 
 func (a *homeApi) GetUserById(id int64) string {
