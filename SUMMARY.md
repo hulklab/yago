@@ -19,6 +19,7 @@
         * [Protobuf 规范](module/controller/protobuf.md)
     * [模型](module/model.md)
     * [数据访问对象](module/dao.md)
+    * [错误处理](module/error.md)
 * [组件](component/component.md)
     * [Logger 组件](component/logger.md)
     * [ORM 组件](component/orm.md)
