@@ -1,15 +1,19 @@
 package orm
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
+	"log"
+	"net/url"
+	"strings"
+	"time"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
-	"log"
-	"net/url"
-	"time"
 	"xorm.io/core"
 )
 
@@ -44,9 +48,79 @@ func (orm *Orm) Transactional(f func(session *xorm.Session) error) (err error) {
 	return err
 }
 
+type OrmArg struct {
+	Session *xorm.Session
+}
+
+type OrmOption func(arg *OrmArg)
+
+func WithSession(session *xorm.Session) OrmOption {
+	return func(arg *OrmArg) {
+		arg.Session = session
+	}
+}
+
+func ExtractOption(opts ...OrmOption) OrmArg {
+	arg := OrmArg{}
+	for _, opt := range opts {
+		opt(&arg)
+	}
+	return arg
+}
+
+func (orm *Orm) Upsert(table interface{}, columns map[string]interface{}, opts ...OrmOption) (sql.Result, error) {
+	if table == nil {
+		return nil, errors.New("table is required in orm upsert")
+	}
+
+	if len(columns) == 0 {
+		return nil, errors.New("columns is required in orm upsert")
+	}
+
+	cols := make([]string, 0)
+	args := make([]interface{}, 0)
+	values := make([]interface{}, 0)
+	placeholders := make([]interface{}, 0)
+
+	for field, value := range columns {
+		cols = append(cols, Ins().Quote(field))
+		values = append(values, value)
+		placeholders = append(placeholders, value)
+	}
+
+	tableName := orm.TableName(table)
+	colStr := strings.Join(cols, ", ")
+	valuePlaceStr := strings.TrimLeft(strings.Repeat(", ?", len(cols)), ", ")
+	updateStr := strings.Join(cols, " = ?, ") + "= ?"
+
+	statement := "INSERT INTO " + tableName + "(" + colStr + ") values(" + valuePlaceStr + ") on DUPLICATE key update " + updateStr + ";"
+
+	args = append(args, statement)
+
+	for _, place := range placeholders {
+		args = append(args, place)
+	}
+
+	for _, val := range values {
+		args = append(args, val)
+	}
+
+	var session *xorm.Session
+	if len(opts) > 0 {
+		ormArg := ExtractOption(opts...)
+		session = ormArg.Session
+	}
+
+	if session == nil {
+		return orm.Exec(args...)
+
+	} else {
+		return session.Exec(args...)
+	}
+}
+
 // 返回 orm 组件单例
 func Ins(id ...string) *Orm {
-
 	var name string
 
 	if len(id) == 0 {

@@ -96,7 +96,6 @@ user = "user"
 password = "password"
 port = "3306"
 database = "db"
-prefix =""
 timezone = "Asia/Shanghai"
 charset = "utf8"
 max_life_time = 8
