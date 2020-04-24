@@ -68,6 +68,9 @@ func ExtractOption(opts ...OrmOption) OrmArg {
 	return arg
 }
 
+// 添加或者修改的原子操作，但是要求 columns 里面必须包含唯一键，否则会一直执行添加操作
+// Upsert("table_name",g.Hash{"name":"zhangsan","uuid":"abcdef"})
+// Upsert("table_name",g.Hash{"name":"zhangsan","uuid":"abcdef"},orm.WithSession(session)) 事务中使用
 func (orm *Orm) Upsert(table interface{}, columns map[string]interface{}, opts ...OrmOption) (sql.Result, error) {
 	if table == nil {
 		return nil, errors.New("table is required in orm upsert")
