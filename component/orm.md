@@ -213,3 +213,22 @@ err := orm.Ins().Transactional(func(session *xorm.Session) error {
     return nil
 })
 ``` 
+
+### Upsert
+yago 扩展了一个 Upsert 的功能，用来处理添加或者修改数据库时需要保障原子性的业务场景
+
+```go
+// 非事务下使用
+res, err := orm.Ins().Upsert(new(homedao.HomeDao), g.Hash{
+   "name":     "KowloonZh4",
+   "uuid": "P4HgNK5n2ATfMX6w",
+  })
+
+
+// 事务下使用
+res, err := orm.Ins().Upsert("user", g.Hash{
+   "name":     "KowloonZh",
+   "uuid": "P4HgNK5n2ATfMX6w",
+  },orm.WithSession(session))
+```
+> 注：表名参数可以是一个字串，也可以是一个 xorm 的 ORM 结构体实例
