@@ -18,6 +18,9 @@ func (b BaseTask) RunLoop(handlerFunc func(), interval ...time.Duration) {
 
 		go func() {
 			handlerFunc()
+			if intervalOne > 0 {
+				time.Sleep(intervalOne)
+			}
 			ch <- true
 		}()
 
@@ -26,10 +29,6 @@ func (b BaseTask) RunLoop(handlerFunc func(), interval ...time.Duration) {
 		case <-yago.TaskCloseChan:
 			return
 		case <-ch:
-		}
-
-		if intervalOne > 0 {
-			time.Sleep(intervalOne)
 		}
 	}
 }
@@ -45,7 +44,13 @@ func (b BaseTask) RunLoopWhile(handlerFunc func() bool, interval ...time.Duratio
 		ch := make(chan bool)
 
 		go func() {
-			ch <- handlerFunc()
+			b := handlerFunc()
+
+			if intervalOne > 0 {
+				time.Sleep(intervalOne)
+			}
+
+			ch <- b
 		}()
 
 		//if !handlerFunc() {
@@ -58,10 +63,6 @@ func (b BaseTask) RunLoopWhile(handlerFunc func() bool, interval ...time.Duratio
 			if !b {
 				return
 			}
-		}
-
-		if intervalOne > 0 {
-			time.Sleep(intervalOne)
 		}
 	}
 }
