@@ -13,18 +13,19 @@ func (b BaseTask) RunLoop(handlerFunc func(), interval ...time.Duration) {
 	if len(interval) > 0 {
 		intervalOne = interval[0]
 	}
+
 	for {
 		ch := make(chan bool)
 
+		handlerFunc()
+
 		go func() {
-			handlerFunc()
 			if intervalOne > 0 {
 				time.Sleep(intervalOne)
 			}
 			ch <- true
 		}()
 
-		//handlerFunc()
 		select {
 		case <-yago.TaskCloseChan:
 			return
