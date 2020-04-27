@@ -46,7 +46,7 @@ func (r *Rds) Do(commandName string, args ...interface{}) (reply interface{}, er
 	defer func(rc redis.Conn) {
 		err := rc.Close()
 		if err != nil {
-			log.Println("[ERROR] close redis conn err: ", err.Error())
+			log.Println("[Redis] close redis conn err: ", err.Error())
 		}
 	}(rc)
 	return rc.Do(commandName, args...)
@@ -58,7 +58,7 @@ func initRedisConnPool(name string) *redis.Pool {
 	addr := config["addr"].(string)
 
 	if addr == "" {
-		log.Fatalf("Fatal error: Redis addr is empty")
+		log.Fatalf("[Redis] Fatal error: Redis addr is empty")
 	}
 
 	var maxIdle = 5
@@ -125,11 +125,10 @@ func initRedisConnPool(name string) *redis.Pool {
 	}
 }
 
-// @todo log
 func pingRedis(c redis.Conn, t time.Time) error {
 	_, err := c.Do("ping")
 	if err != nil {
-		log.Println("[ERROR] ping redis fail", err)
+		log.Println("[Redis] ping redis fail", err)
 	}
 	return err
 }
@@ -147,7 +146,7 @@ func (r *Rds) NewSubscriber(channel ...interface{}) (*Subscriber, error) {
 	prc := redis.PubSubConn{Conn: r.GetConn()}
 	err := prc.Subscribe(s.channel...)
 	if err != nil {
-		log.Println("redis: ", err.Error())
+		log.Println("[Redis] subscribe err: ", err.Error())
 		return nil, err
 	}
 	s.conn = &prc

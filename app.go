@@ -373,7 +373,8 @@ func (a *App) loadHttpRouter() error {
 			go controller.AfterAction(ctx.Copy())
 		}
 
-		log.Println("[HTTP]", r.Url, runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name())
+		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
+		log.Printf("[HTTP] %-6s %-25s --> %s\n", method, r.Url, strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
 		switch method {
 		case http.MethodGet:
 			a.httpEngine.GET(r.Url, handler)
@@ -462,11 +463,13 @@ func (a *App) runTask() {
 	wg := sync.WaitGroup{}
 	for _, router := range TaskRouterList {
 		action := router.Action
+		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
+		name = strings.NewReplacer("(", "", ")", "", "*", "").Replace(name)
 		if router.Spec == "@loop" {
 			go func() {
 				wg.Add(1)
 				action()
-				log.Println("[TASK]", "stop", runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name())
+				log.Printf("[TASK] %-32s --> %s\n", "stop", name)
 				wg.Done()
 			}()
 		} else {
@@ -479,7 +482,7 @@ func (a *App) runTask() {
 				continue
 			}
 		}
-		log.Println("[TASK]", router.Spec, runtime.FuncForPC(reflect.ValueOf(router.Action).Pointer()).Name())
+		log.Printf("[TASK] %-32s --> %s\n", router.Spec, name)
 	}
 
 	c.Start()
@@ -531,7 +534,7 @@ func (a *App) runRpc() {
 
 	for k, v := range a.rpcEngine.GetServiceInfo() {
 		for _, method := range v.Methods {
-			log.Println("[GRPC]", k, method.Name)
+			log.Printf("[TASK] %-32s --> %s\n", k, method.Name)
 		}
 	}
 
