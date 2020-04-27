@@ -107,12 +107,11 @@ HEAVEN:
 
 			err := mu.Lock(arg.LockKey, lock.WithTTL(arg.LockTTL), lock.WithErrorNotify())
 
-			time.Sleep(arg.LockInterval)
-
 			if err == nil {
 				ch <- true
-
 			} else {
+				time.Sleep(arg.LockInterval)
+
 				ch <- false
 				log.Printf("[RunLoopWithLock] err: %s", err.Error())
 			}
