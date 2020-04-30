@@ -6,7 +6,6 @@ import (
 )
 
 const DefaultSessionTTL = 60
-const DefaultErrorBufferSize = 4086
 
 type SessionOptions struct {
 	TTL              int64
@@ -52,7 +51,7 @@ var locks sync.Map
 type ILocker interface {
 	Lock(key string, opts ...SessionOption) error
 	Unlock()
-	Errors() <-chan error
+	ErrC() <-chan error
 }
 
 type NewFunc func(configId string) ILocker
