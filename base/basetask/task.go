@@ -139,7 +139,7 @@ HELL:
 		select {
 		case <-yago.TaskCloseChan:
 			return
-		case err := <-mu.Errors():
+		case err := <-mu.ErrC():
 			log.Println("[RunLoopWithLock] some err occur in lock:", err)
 			mu.Unlock()
 			goto HEAVEN

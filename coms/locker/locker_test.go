@@ -125,7 +125,7 @@ func doTestForever() {
 
 	go func() {
 		r1 := New()
-		err := r1.Lock(key, lock.WithTTL(1))
+		err := r1.Lock(key, lock.WithTTL(2))
 		if err != nil {
 			fmt.Println("get lock in forever fun1 err", err.Error())
 			return
@@ -138,7 +138,7 @@ func doTestForever() {
 		}
 	}()
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(6 * time.Second)
 	r2 := New()
 	err := r2.Lock(key, lock.WithTTL(12))
 	if err != nil {
