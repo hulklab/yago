@@ -66,6 +66,12 @@ func (r *Response) String() (string, error) {
 	return r.Response.String(), r.Error
 }
 
+func ErrResponse(err error) *Response {
+	res := &grequests.Response{Error: err}
+
+	return &Response{res}
+}
+
 type Caller func(method, uri string, ro *grequests.RequestOptions) (resp *Response, err error)
 
 type HttpInterceptor func(method, uri string, ro *grequests.RequestOptions, call Caller) (*Response, error)
@@ -352,7 +358,8 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 		case []byte:
 			dataParams[k] = string(val)
 		default:
-			return nil, errors.New("unsupported type" + fmt.Sprintf("%T", val))
+			err := errors.New("unsupported type" + fmt.Sprintf("%T", val))
+			return ErrResponse(err), err
 		}
 	}
 
@@ -463,10 +470,6 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 		//"response_header": resp.Header,
 	}
 
-	if resp != nil {
-		logInfo["response_header"] = resp.Header
-	}
-
 	if ro.JSON != nil {
 		var requestBody string
 		switch ro.JSON.(type) {
@@ -490,6 +493,13 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 
 		return resp, err
 	}
+
+	if resp == nil {
+		log.WithFields(logInfo).Error()
+		return resp, err
+	}
+
+	logInfo["response_header"] = resp.Header
 
 	retStr, _ := resp.String()
 

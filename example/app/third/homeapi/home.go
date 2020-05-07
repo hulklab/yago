@@ -30,6 +30,7 @@ func Ins() *homeApi {
 		// 添加中间件
 		api.AddInterceptor(func(method, uri string, ro *grequests.RequestOptions, call basethird.Caller) (response *basethird.Response, e error) {
 			fmt.Println("before caller....", uri, method)
+			// 注意：在 call 之前 return 的话，将不会真正执行接口调用，也没有日志
 
 			resp, err := call(method, uri, ro)
 
@@ -53,7 +54,7 @@ func (a *homeApi) Hello(name string) {
 
 	req, err := a.Get("/home/hello", params)
 
-	fmt.Println("req:", req, "err: ", err)
+	fmt.Println("req:", req, "err:", err)
 	//if err != nil {
 	//	fmt.Println(err.Error())
 	//} else {
