@@ -110,15 +110,19 @@ func NewAppConfig(cfgPath string) *AppConfig {
 		panic(err)
 	}
 
-	cfg.SetDefault("app.app_name", "APP")
-	appName := cfg.GetString("app.app_name")
-	appName = strings.ReplaceAll(appName, "-", "_")
-	cfg.SetEnvPrefix(appName)
-	cfg.AutomaticEnv()
-	replacer := strings.NewReplacer(".", "_")
-	cfg.SetEnvKeyReplacer(replacer)
+	cfg.Init()
 
 	return cfg
+}
+
+func (c *AppConfig) Init() {
+	c.SetDefault("app.app_name", "APP")
+	appName := c.GetString("app.app_name")
+	appName = strings.ReplaceAll(appName, "-", "_")
+	c.SetEnvPrefix(appName)
+	c.AutomaticEnv()
+	replacer := strings.NewReplacer(".", "_")
+	c.SetEnvKeyReplacer(replacer)
 }
 
 func Hostname() string {
@@ -138,11 +142,35 @@ var cfgPath *string
 var cfgLock = new(sync.Mutex)
 
 func initConfig() {
+	noConf := flag.Lookup("c") == nil
+
 	cfgPath = flag.String("c", defaultCfgPath(), "config file path")
 	_ = flag.Bool("h", false, "help")
 	_ = flag.Bool("help", false, "help")
 	flag.Parse()
+
+	if noConf && isInTests() {
+		Config = &AppConfig{viper.New()}
+		Config.Init()
+
+		return
+	}
+
 	Config = NewAppConfig(*cfgPath)
+
+}
+
+func isInTests() bool {
+	for _, arg := range os.Args {
+		if strings.HasPrefix(arg, "-test.v=") {
+			return true
+		}
+
+		if strings.HasPrefix(arg, "-test.timeout=") {
+			return true
+		}
+	}
+	return false
 }
 
 func reloadConfig() error {
