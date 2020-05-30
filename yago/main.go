@@ -250,7 +250,7 @@ func genFileByTemplate(filename, template string) {
 
 	lname := fmt.Sprintf("%s%s", strings.ToLower(name[0:1]), name[1:])
 
-	r := strings.NewReplacer("{{PACKAGE}}", pkgName, "{{NAME}}", name, "{{LNAME}}", lname)
+	r := strings.NewReplacer("{{PACKAGE}}", pkgName, "{{NAME}}", name, "{{LNAME}}", lname, "{{ONAME}}", filename)
 	content := r.Replace(template)
 
 	filePath := filepath.Join(getCurDir(), filename+".go")
@@ -265,15 +265,15 @@ func genFileByTemplate(filename, template string) {
 var genCmd = &cobra.Command{
 	Use:   "gen",
 	Short: "auto generate file",
-	Long:  `auto generate http, rpc, task, cmd, service, model file`,
+	Long:  `auto generate http, rpc, task, cmd, service, model, api file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		a, err := cmd.Flags().GetString("http")
+		p, err := cmd.Flags().GetString("http")
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		if len(a) > 0 {
-			genFileByTemplate(a, HttpTemplate)
+		if len(p) > 0 {
+			genFileByTemplate(p, HttpTemplate)
 			return
 		}
 
@@ -324,6 +324,16 @@ var genCmd = &cobra.Command{
 
 		if len(m) > 0 {
 			genFileByTemplate(m, ModelTemplate)
+			return
+		}
+
+		a, err := cmd.Flags().GetString("api")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		if len(a) > 0 {
+			genFileByTemplate(a, ApiTemplate)
 			return
 		}
 	},
@@ -524,4 +534,5 @@ func init() {
 	genCmd.Flags().StringP("task", "t", "", "task file name")
 	genCmd.Flags().StringP("service", "s", "", "service file name")
 	genCmd.Flags().StringP("model", "m", "", "model file name")
+	genCmd.Flags().StringP("api", "a", "", "api file name, with no _api postfix")
 }

@@ -122,9 +122,19 @@ func NewApp() *App {
 			if app.HttpViewPath != "" {
 				app.httpEngine.LoadHTMLGlob(app.HttpViewPath)
 			}
-			app.HttpStaticPath = Config.GetString("app.http_static_path")
-			if app.HttpStaticPath != "" {
-				app.httpEngine.Static("/static", app.HttpStaticPath)
+
+			httpStaticPaths := Config.GetStringSlice("app.http_static_paths")
+			if len(httpStaticPaths) > 0 {
+				if len(httpStaticPaths)%2 != 0 {
+					log.Fatalln("http_static_paths must be in pairs, eg. [/route1,/path1,/route2,/path2]")
+				}
+
+				for i := 0; i < len(httpStaticPaths); i += 2 {
+					k := httpStaticPaths[i]
+					v := httpStaticPaths[i+1]
+					app.httpEngine.Static(k, v)
+				}
+
 			}
 		}
 
