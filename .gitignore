@@ -7,3 +7,7 @@ vendor
 nohup.out
 .vendor-new
 go.sum
+node_modules
+_book
+example/app.toml
+example/example

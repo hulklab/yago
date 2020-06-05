@@ -2,14 +2,16 @@ package rds
 
 import (
 	"errors"
-	"github.com/garyburd/redigo/redis"
-	"github.com/hulklab/yago"
 	"log"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
+	"github.com/hulklab/yago"
 )
 
 type Rds struct {
-	redis.Conn
+	//	redis.Conn
+	*redis.Pool
 }
 
 // 返回 redis 的一个连接
@@ -31,24 +33,44 @@ func Ins(id ...string) *Rds {
 
 	redisPool := v.(*redis.Pool)
 
-	rds := redisPool.Get()
-	return &Rds{Conn: rds}
+	//rds := redisPool.Get()
+	return &Rds{Pool: redisPool}
+}
+
+func (r *Rds) GetConn() redis.Conn {
+	return r.Pool.Get()
+}
+
+func (r *Rds) Do(commandName string, args ...interface{}) (reply interface{}, err error) {
+	rc := r.GetConn()
+	defer func(rc redis.Conn) {
+		err := rc.Close()
+		if err != nil {
+			log.Println("[Redis] close redis conn err: ", err.Error())
+		}
+	}(rc)
+	return rc.Do(commandName, args...)
 }
 
 func initRedisConnPool(name string) *redis.Pool {
-
 	config := yago.Config.GetStringMap(name)
 
 	addr := config["addr"].(string)
 
 	if addr == "" {
-		log.Fatalf("Fatal error: Redis addr is empty")
+		log.Fatalf("[Redis] Fatal error: Redis addr is empty")
 	}
 
 	var maxIdle = 5
 	mIdle, ok := config["max_idle"]
 	if ok {
 		maxIdle = int(mIdle.(int64))
+	}
+
+	var maxActive = 500
+	mActive, ok := config["max_active"]
+	if ok {
+		maxActive = int(mActive.(int64))
 	}
 
 	var idleTimeout = time.Duration(240) * time.Second
@@ -90,7 +112,7 @@ func initRedisConnPool(name string) *redis.Pool {
 	return &redis.Pool{
 		MaxIdle:     maxIdle,
 		IdleTimeout: idleTimeout,
-		//MaxActive:   maxActive,
+		MaxActive:   maxActive,
 		//Wait:        true,
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", addr, dialOptions...)
@@ -103,36 +125,35 @@ func initRedisConnPool(name string) *redis.Pool {
 	}
 }
 
-// @todo log
 func pingRedis(c redis.Conn, t time.Time) error {
 	_, err := c.Do("ping")
 	if err != nil {
-		log.Println("[ERROR] ping redis fail", err)
+		log.Println("[Redis] ping redis fail", err)
 	}
 	return err
 }
 
 type Subscriber struct {
-	topic     string
+	channel   []interface{}
 	conn      *redis.PubSubConn
 	closeChan chan bool
 }
 
-func (r *Rds) NewSubscriber(topic string) (*Subscriber, error) {
+func (r *Rds) NewSubscriber(channel ...interface{}) (*Subscriber, error) {
 	s := new(Subscriber)
 	s.closeChan = make(chan bool, 1)
-	s.topic = topic
-	prc := redis.PubSubConn{Conn: r}
-	err := prc.Subscribe(s.topic)
+	s.channel = channel
+	prc := redis.PubSubConn{Conn: r.GetConn()}
+	err := prc.Subscribe(s.channel...)
 	if err != nil {
-		log.Println("redis: ", err.Error())
+		log.Println("[Redis] subscribe err: ", err.Error())
 		return nil, err
 	}
 	s.conn = &prc
 	return s, nil
 }
 
-func (s *Subscriber) Subscribe(cb func([]byte)) error {
+func (s *Subscriber) Subscribe(cb func(channel string, data []byte)) error {
 	for {
 		select {
 		case <-s.closeChan:
@@ -140,7 +161,7 @@ func (s *Subscriber) Subscribe(cb func([]byte)) error {
 		default:
 			switch v := s.conn.Receive().(type) {
 			case redis.Message:
-				cb(v.Data)
+				cb(v.Channel, v.Data)
 			case redis.Subscription:
 				if v.Count == 0 {
 					s.closeChan <- true

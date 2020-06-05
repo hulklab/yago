@@ -281,7 +281,7 @@ func (r *Rds) HVals(key interface{}) (reply interface{}, err error) {
 
 func (r *Rds) HScan(key interface{}, cursor interface{}, opts ...interface{}) (reply interface{}, err error) {
 	args1 := mergeKeyAndArgs(cursor, opts...)
-	args := mergeKeyAndArgs(key, args1)
+	args := mergeKeyAndArgs(key, args1...)
 	return r.Do("HSCAN", args...)
 }
 
@@ -457,6 +457,10 @@ func (r *Rds) ZScan(key, cursor interface{}, opts ...interface{}) (reply interfa
 	args := mergeKeyAndArgs(key, args1...)
 
 	return r.Do("ZSCAN", args...)
+}
+
+func (r *Rds) Publish(channel, message interface{}) (reply interface{}, err error) {
+	return r.Do("PUBLISH", channel, message)
 }
 
 func mergeKeyAndArgs(key interface{}, args ...interface{}) []interface{} {

@@ -8,6 +8,7 @@ import (
 const (
 	TimeFormat         = "2006-01-02 15:04:05"
 	TimeFormatYYYYMMDD = "20060102"
+	TimeFormatUTC      = "2006-01-02T15:04:05Z"
 )
 
 // 用来格式化时间
@@ -26,8 +27,7 @@ var TimeFormatMap = map[string]string{
 }
 
 /**
- * 类似php的date()函数
- *
+ * Date("Y-m-d H:i:s",1588149134)
  * @param
  * @return
  *
@@ -37,22 +37,42 @@ func Date(format string, timestamp ...int64) string {
 	for k, v := range TimeFormatMap {
 		newFormat = strings.Replace(newFormat, k, v, 1)
 	}
+
 	var tm time.Time
 	if len(timestamp) > 0 {
 		tm = time.Unix(timestamp[0], 0)
 	} else {
 		tm = time.Now()
 	}
+
 	return tm.Format(newFormat)
 }
 
-func Strtotime(datetime string, format string) int64 {
+// StrToTime("2020-04-29 16:32:14",date.TimeFormat)
+// Return Local Location Time
+func StrToTime(datetime string, format string) time.Time {
 	newFormat := format
 	for k, v := range TimeFormatMap {
 		newFormat = strings.Replace(newFormat, k, v, 1)
 	}
-	local, _ := time.LoadLocation("Local")
-	theTime, _ := time.ParseInLocation(newFormat, datetime, local)
+
+	if newFormat == TimeFormat {
+		theTime, _ := time.ParseInLocation(newFormat, datetime, time.Local)
+		return theTime
+	}
+
+	// 优先判断是否为 UTC 时间
+	if utcT, err := time.Parse(time.RFC3339, datetime); err == nil {
+		return utcT.Local()
+	}
+
+	theTime, _ := time.ParseInLocation(newFormat, datetime, time.Local)
+	return theTime
+}
+
+// StrToTimestamp("2020-04-29 16:32:14",date.TimeFormat)
+func StrToTimestamp(datetime string, format string) int64 {
+	theTime := StrToTime(datetime, format)
 	return theTime.Unix()
 }
 

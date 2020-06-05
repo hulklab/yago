@@ -1,17 +1,20 @@
 package homehttp
 
 import (
-	"fmt"
-	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/base/basehttp"
-	"github.com/hulklab/yago/libs/validator"
 	"net/http"
 
+	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/base/basehttp"
+	"github.com/hulklab/yago/example/app/g"
 	"github.com/hulklab/yago/example/app/modules/home/homemodel"
 )
 
 type HomeHttp struct {
 	basehttp.BaseHttp
+}
+
+type HttpMetadata struct {
+	Label string `json:"label"`
 }
 
 func init() {
@@ -23,95 +26,75 @@ func init() {
 	yago.AddHttpRouter("/home/update", http.MethodPost, homeHttp.UpdateAction, homeHttp)
 	yago.AddHttpRouter("/home/list", http.MethodPost, homeHttp.ListAction, homeHttp)
 	yago.AddHttpRouter("/home/upload", http.MethodPost, homeHttp.UploadAction, homeHttp)
+	yago.AddHttpRouter("/home/metadata", http.MethodGet, homeHttp.MetadataAction, homeHttp, HttpMetadata{
+		Label: "自定义HTTP名称",
+	})
+	yago.SetHttpNoRouter(homeHttp.NoRouterAction)
 }
 
-func (h *HomeHttp) Labels() validator.Label {
-	return map[string]string{
-		"id":       "ID",
-		"name":     "姓名",
-		"page":     "页码",
-		"pagesize": "页内数量",
-	}
+func (h *HomeHttp) NoRouterAction(c *yago.Ctx) {
+	c.JSON(http.StatusNotFound, g.Hash{
+		"error": "404, page not exists",
+	})
 }
 
-func (h *HomeHttp) CheckNameExist(c *yago.Ctx, p string) (bool, error) {
-	val, _ := c.Get(p)
-	// check param p is exist
-	var exists bool
-
-	if val == "zhangsan" {
-		exists = true
-	}
-
-	if exists {
-		return false, fmt.Errorf("name %s is exists", val)
-	}
-	return true, nil
-
-}
-
-func (h *HomeHttp) Rules() []validator.Rule {
-	return []validator.Rule{
-		{
-			Params: []string{"name"},
-			Method: validator.Required,
-			On:     []string{"add"},
-		},
-		{
-			Params: []string{"name"},
-			Method: h.CheckNameExist,
-			On:     []string{"add"},
-		},
-		//{
-		//	Params: []string{"id"},
-		//	Method: validator.Required,
-		//	On:     []string{"delete", "detail", "update"},
-		//},
-		//{
-		//	Params: []string{"page"},
-		//	Method: validator.Int,
-		//	Min:    1,
-		//	On:     []string{"list"},
-		//},
-		//{
-		//	Params: []string{"pagesize"},
-		//	Method: validator.Int,
-		//	Max:    100,
-		//	On:     []string{"list"},
-		//},
-	}
-}
-
+// curl -X GET 'http://127.0.0.1:8080/home/hello?name=zhangsan'
 func (h *HomeHttp) HelloAction(c *yago.Ctx) {
-	name := c.RequestString("name")
+	var p struct {
+		Name string `json:"name" validate:"omitempty,max=20" form:"name" label:"姓名"`
+	}
 
-	c.SetData("hello " + name)
-
-	return
-}
-
-func (h *HomeHttp) AddAction(c *yago.Ctx) {
-	name := c.RequestString("name")
-
-	model := homemodel.NewHomeModel()
-	id, err := model.Add(name, nil)
-	if err.HasErr() {
+	err := c.ShouldBind(&p)
+	if err != nil {
 		c.SetError(err)
 		return
 	}
 
-	c.SetData(map[string]interface{}{"id": id})
-	return
+	data := "hello " + p.Name
+
+	c.SetData(data)
 }
 
+// curl 'http://127.0.0.1:8080/home/add' -H "Content-type:application/x-www-form-urlencoded" -XPOST -d "name=lisi&phone=13090001112"
+func (h *HomeHttp) AddAction(c *yago.Ctx) {
+	var p struct {
+		Name  string `json:"name" validate:"required,max=20" form:"name" label:"姓名"`
+		Phone string `json:"phone" validate:"required,phone" form:"phone" label:"手机号"`
+	}
+
+	err := c.ShouldBind(&p)
+	if err != nil {
+		c.SetError(err)
+		return
+	}
+
+	model := homemodel.NewHomeModel()
+	id, e := model.Add(p.Name, nil)
+	if e != nil {
+		c.SetError(e)
+		return
+	}
+
+	c.SetData(map[string]interface{}{"id": id})
+}
+
+var p struct {
+	Id int64 `json:"id" validate:"required" form:"id" label:"Id"`
+}
+
+// curl 'http://127.0.0.1:8080/home/delete' -H "Content-type:application/json" -XPOST -d '{"id":1}'
 func (h *HomeHttp) DeleteAction(c *yago.Ctx) {
 
-	uid, _ := c.RequestInt64("id")
+	err := c.ShouldBind(&p)
+	if err != nil {
+		c.SetError(err)
+		return
+	}
 
 	model := homemodel.NewHomeModel()
 
-	n, err := model.DeleteById(uid)
-	if err.HasErr() {
+	n, e := model.DeleteById(p.Id)
+	if e != nil {
 		c.SetError(err)
 		return
 	}
@@ -119,46 +102,71 @@ func (h *HomeHttp) DeleteAction(c *yago.Ctx) {
 	c.SetData(n)
 }
 
+// curl 'http://127.0.0.1:8080/home/detail?id=2' -H "Content-type:application/json" -XGET
 func (h *HomeHttp) DetailAction(c *yago.Ctx) {
-
-	uid, _ := c.RequestInt64("id")
+	err := c.ShouldBind(&p)
+	if err != nil {
+		c.SetError(err)
+		return
+	}
 
 	model := homemodel.NewHomeModel()
 
-	data := model.GetDetail(uid)
+	data := model.GetDetail(p.Id)
 
 	c.SetData(data)
 }
 
+// curl 'http://127.0.0.1:8080/home/update' -H "Content-type:application/json" -XPOST -d '{"id":2,"name":"zhangsan"}'
 func (h *HomeHttp) UpdateAction(c *yago.Ctx) {
-	uid, _ := c.RequestInt64("id")
+	var p struct {
+		Id   int64  `json:"id" validate:"required" form:"id" label:"Id"`
+		Name string `json:"name" validate:"required" form:"name" label:"姓名"`
+	}
 
-	name := c.RequestString("name")
+	err := c.ShouldBind(&p)
+	if err != nil {
+		c.SetError(err)
+		return
+	}
 
 	model := homemodel.NewHomeModel()
 
 	var options = make(map[string]interface{})
 
-	if name != "" {
-		options["name"] = name
+	if p.Name != "" {
+		options["name"] = p.Name
 	}
 
-	user, err := model.UpdateById(uid, options)
-	if err.HasErr() {
+	user, e := model.UpdateById(p.Id, options)
+	if e != nil {
 		c.SetError(err)
 		return
 	}
 	c.SetData(user)
 }
 
+// curl 'http://127.0.0.1:8080/home/list' -H "Content-type:application/json" -XPOST -d '{"pagesize":1}'
 func (h *HomeHttp) ListAction(c *yago.Ctx) {
+	type p struct {
+		Q        string `json:"q" validate:"omitempty" form:"q"`
+		Page     int    `json:"page" validate:"omitempty" form:"name" label:"当前页"`
+		Pagesize int    `json:"pagesize" validate:"omitempty" form:"pagesize" label:"页大小"`
+	}
 
-	q := c.RequestString("q")
-	page, _ := c.RequestInt("page", 1)
-	pageSize, _ := c.RequestInt("pagesize", 10)
+	pi := &p{
+		Page:     1,
+		Pagesize: 10,
+	}
+
+	err := c.ShouldBind(&pi)
+	if err != nil {
+		c.SetError(err)
+		return
+	}
 
 	model := homemodel.NewHomeModel()
-	total, users := model.GetList(q, page, pageSize)
+	total, users := model.GetList(pi.Q, pi.Page, pi.Pagesize)
 	c.SetData(map[string]interface{}{
 		"total": total,
 		"list":  users,
@@ -176,4 +184,20 @@ func (h *HomeHttp) UploadAction(c *yago.Ctx) {
 	}
 
 	c.SetData(file.Filename)
+}
+
+func (h *HomeHttp) MetadataAction(c *yago.Ctx) {
+	data := "get label from metadata:"
+
+	for _, router := range yago.HttpRouterMap {
+		if router.Url == "/home/metadata" {
+			v, ok := router.Metadata.(HttpMetadata)
+			if ok {
+				data = data + v.Label
+			}
+			break
+		}
+	}
+
+	c.SetData(data)
 }

@@ -4,6 +4,7 @@ package app.homepb;
 
 service Home {
     rpc Hello (HelloRequest) returns (HelloReply) {}
+    rpc HelloStream(HelloRequest) returns (stream HelloStreamReply) {}
 }
 
 message HelloRequest {
@@ -11,5 +12,9 @@ message HelloRequest {
 }
 
 message HelloReply {
+    string data = 1;
+}
+
+message HelloStreamReply {
     string data = 1;
 }

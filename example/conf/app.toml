@@ -34,6 +34,9 @@ http_stop_time_wait = 10
 # pprof route: /debug/pprof
 # http_pprof_on = false
 
+# 开启 http 业务请求日志
+# http_bizlog_on = true
+
 # http html 模版配置
 # http_view_render = true
 # http_view_path = "views/*"
@@ -58,6 +61,9 @@ task_enable = true
 # http服务关闭最大等待时长, 秒
 task_stop_time_wait = 10
 
+# 组件资源关闭最大等待时长, 秒
+com_stop_time_wait = 10
+
 ##########################################
 #  以下自定义配置区
 ##########################################
@@ -67,7 +73,7 @@ task_stop_time_wait = 10
 ##########################################
 
 [logger]
-# json | text, default text
+# json | text, default json
 formatter = "json"
 # 日志最低等级 Panic = 0, Fatal = 1, Error = 2, Warn = 3, Info = 4, Debug = 5, Trace = 6
 level = 5
@@ -90,7 +96,6 @@ user = "user"
 password = "password"
 port = "3306"
 database = "db"
-prefix =""
 timezone = "Asia/Shanghai"
 charset = "utf8"
 max_life_time = 8
@@ -111,18 +116,33 @@ mongodb_uri = "mongodb://user:password@127.0.0.1:27017/?connectTimeoutMS=5000&so
 database = "test"
 
 [kafka]
-cluster = "127.0.0.1:9092"
-topic = "demo"
-topic_cloud = "cloud"
+cluster = "127.0.0.1:39092"
+
+[etcd]
+endpoints    = ["127.0.0.1:2379"]
+dial_timeout = 2
+# username = ""
+# password = ""
+# max_call_recv_msgsize_byte = 0  # default 2 * 1024 * 1024
+# max_call_send_msgsize_byte = 0  # default math.MaxInt32
+# cert_file = "conf/ssl/etcd_cert.pem"
+# cert_key_file = "conf/ssl/etcd_cert_key.pem"
+# cert_ca_file = "conf/ssl/etcd_ca.pem"
 
 ##########################################
 # 以下是 api 区
 ##########################################
 
 [home_api]
-domain = "http://127.0.0.1:8080"
+address = "http://127.0.0.1:8080"
 hostname = "localhost"
-rpc_address = "127.0.0.1:50051"
+timeout = 10
+# ssl_on = true
+# cert_file = "./conf/server.pem"
+
+[home_rpc_api]
+address = "127.0.0.1:50051"
+hostname = "localhost"
 timeout = 10
 max_recv_msgsize_mb =  10
 max_send_msgsize_mb =  10

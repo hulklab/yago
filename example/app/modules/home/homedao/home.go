@@ -8,5 +8,5 @@ type HomeDao struct {
 }
 
 func (d *HomeDao) TableName() string {
-	return "table"
+	return "user"
 }

@@ -1,43 +1,69 @@
 package homeapi
 
 import (
-	"context"
 	"fmt"
-	"github.com/golang/protobuf/proto"
-	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/base/basethird"
-	"google.golang.org/grpc"
+	"log"
 
-	pb "github.com/hulklab/yago/example/app/third/homeapi/homepb"
+	"github.com/levigross/grequests"
+
+	"github.com/hulklab/yago"
+
+	"github.com/hulklab/yago/base/basethird"
 )
 
-type HomeApi struct {
+type homeApi struct {
 	basethird.HttpThird
-	basethird.RpcThird
 }
 
-// Usage: New().GetUserById()
-func New() *HomeApi {
+// Usage: Ins().GetUserById()
+func Ins() *homeApi {
+	name := "home_api"
+	v := yago.Component.Ins(name, func() interface{} {
+		api := new(homeApi)
 
-	api := new(HomeApi)
+		// http 配置
+		err := api.InitConfig(name)
+		if err != nil {
+			log.Fatal("init home api config error")
+		}
 
-	// http 配置
-	api.Domain = yago.Config.GetString("home_api.domain")
-	api.HttpThird.Hostname = yago.Config.GetString("home_api.hostname")
+		// 添加中间件
+		api.AddInterceptor(func(method, uri string, ro *grequests.RequestOptions, call basethird.Caller) (response *basethird.Response, e error) {
+			fmt.Println("before caller....", uri, method)
+			// 注意：在 call 之前 return 的话，将不会真正执行接口调用，也没有日志
 
-	// rpc 配置
-	api.Address = yago.Config.GetString("home_api.rpc_address")
-	api.SslOn = yago.Config.GetBool("home_api.ssl_on")
-	api.CertFile = yago.Config.GetString("home_api.cert_file")
-	api.RpcThird.Hostname = yago.Config.GetString("home_api.hostname")
-	api.Timeout = yago.Config.GetInt("home_api.timeout")
-	api.MaxRecvMsgsizeMb = yago.Config.GetInt("home_api.max_recv_msgsize_mb")
-	api.MaxSendMsgsizeMb = yago.Config.GetInt("home_api.max_send_msgsize_mb")
+			resp, err := call(method, uri, ro)
 
-	return api
+			fmt.Println("after caller....", resp.StatusCode)
+
+			return resp, err
+		})
+
+		return api
+	})
+	return v.(*homeApi)
 }
 
-func (a *HomeApi) GetUserById(id int64) string {
+func (a *homeApi) Hello(name string) {
+
+	params := map[string]interface{}{}
+
+	if name != "" {
+		params["name"] = name
+	}
+
+	req, err := a.Get("/home/hello", params)
+
+	fmt.Println("req:", req, "err:", err)
+	//if err != nil {
+	//	fmt.Println(err.Error())
+	//} else {
+	//	s, _ := req.String()
+	//	fmt.Println(s)
+	//}
+}
+
+func (a *homeApi) GetUserById(id int64) string {
 
 	params := map[string]interface{}{
 		"id": id,
@@ -52,7 +78,7 @@ func (a *HomeApi) GetUserById(id int64) string {
 	}
 }
 
-func (a *HomeApi) UploadFile(filepath string) string {
+func (a *homeApi) UploadFile(filepath string) string {
 
 	params := map[string]interface{}{
 		"file": basethird.PostFile(filepath),
@@ -64,31 +90,5 @@ func (a *HomeApi) UploadFile(filepath string) string {
 	} else {
 		s, _ := req.String()
 		return s
-	}
-}
-
-// eg. homeapi.New().RpcHello()
-func (a *HomeApi) RpcHello() {
-
-	var name = "zhangsan"
-
-	rep, err := a.Call(func(conn *grpc.ClientConn, ctx context.Context) (rep proto.Message, e error) {
-
-		c := pb.NewHomeClient(conn)
-
-		return c.Hello(ctx, &pb.HelloRequest{Name: name})
-
-	}, name)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	v, ok := rep.(*pb.HelloReply)
-	if ok {
-		fmt.Println("ok:", v.Data)
-	} else {
-		fmt.Println("not match", v)
 	}
 }

@@ -1,17 +1,12 @@
 package yago
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/gzip"
-	"github.com/gin-contrib/pprof"
-	"github.com/gin-gonic/gin"
-	"github.com/robfig/cron"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/reflection"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -20,7 +15,17 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"testing"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/pprof"
+	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/reflection"
 )
 
 type App struct {
@@ -58,6 +63,8 @@ type App struct {
 	HttpGzipLevel int
 	// http pprof
 	HttpPprof bool
+	// http biz log
+	HttpBizLogOn bool
 
 	// 开启task服务
 	TaskEnable bool
@@ -74,6 +81,9 @@ type App struct {
 	// rpc close chan
 	rpcCloseChan     chan int
 	rpcCloseDoneChan chan int
+
+	// com close chan
+	comCloseDoneChan chan int
 }
 
 var (
@@ -98,7 +108,11 @@ func NewApp() *App {
 		gin.SetMode(app.HttpRunMode)
 		app.httpEngine = gin.New()
 		// use logger
-		app.httpEngine.Use(gin.Logger())
+		if app.DebugMode == true {
+			app.httpEngine.Use(gin.Logger())
+		} else {
+			app.httpEngine.Use(gin.Recovery())
+		}
 		app.httpCloseChan = make(chan int, 1)
 		app.httpCloseDoneChan = make(chan int, 1)
 
@@ -169,6 +183,9 @@ func NewApp() *App {
 		}
 
 		app.HttpPprof = Config.GetBool("app.http_pprof_on")
+
+		Config.SetDefault("app.http_bizlog_on", true)
+		app.HttpBizLogOn = Config.GetBool("app.http_bizlog_on")
 	}
 
 	// init rpc
@@ -185,11 +202,16 @@ func NewApp() *App {
 		app.taskCloseDoneChan = make(chan int, 1)
 	}
 
+	app.comCloseDoneChan = make(chan int, 1)
+
 	return app
 }
 
 // 此 init 最先执行，配置文件此处初始化
 func init() {
+	// avoid go test error
+	testing.Init()
+
 	initConfig()
 
 	log.SetFlags(log.LstdFlags)
@@ -233,18 +255,16 @@ func (a *App) genPid() {
 		log.Fatalf("pidfile check err:%v\n", err)
 		return
 
-	} else {
-		newPid := os.Getpid()
-		_, err := pf.Write([]byte(fmt.Sprintf("%d", newPid)))
-		if err != nil {
-			log.Fatalf("write pid err:%v\n", err)
-			return
-		}
+	}
 
-		log.Println("app is running with pid:", newPid)
+	newPid := os.Getpid()
+	_, err = pf.Write([]byte(fmt.Sprintf("%d", newPid)))
+	if err != nil {
+		log.Fatalf("write pid err:%v\n", err)
 		return
 	}
-	return
+
+	log.Println("app is running with pid:", newPid)
 }
 
 func (a *App) loadHttpRouter() error {
@@ -278,38 +298,65 @@ func (a *App) loadHttpRouter() error {
 		pprof.Register(a.httpEngine)
 	}
 
-	// params
-	a.httpEngine.Use(func(c *gin.Context) {
-		req := c.Request
+	if a.HttpBizLogOn {
+		a.httpEngine.Use(func(c *gin.Context) {
+			req := c.Request
+			var paramKey = CtxParamsKey
+			c.Set(paramKey, "")
 
-		query := req.URL.Query()
+			switch c.ContentType() {
+			case gin.MIMEJSON:
+				bodyBytes, err := ioutil.ReadAll(req.Body)
+				if err != nil {
+					log.Println("read body:", err.Error())
+					return
+				}
 
-		for k, v := range query {
-			c.Set(k, v[0])
-		}
+				err = req.Body.Close() //  must close
+				if err != nil {
+					log.Println("close body:", err.Error())
+					return
+				}
+				req.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
-		switch c.ContentType() {
-		case "application/x-www-form-urlencoded":
-			err := req.ParseForm()
-			if err != nil {
-				log.Println("parse form", err.Error())
-				return
-			}
-			for k, v := range req.PostForm {
-				c.Set(k, v[0])
-			}
-		case "multipart/form-data":
-			err := req.ParseMultipartForm(a.httpEngine.MaxMultipartMemory)
-			if err != nil {
-				log.Println("parse multi form", err.Error())
-				return
-			} else if req.MultipartForm != nil {
-				for k, v := range req.MultipartForm.Value {
-					c.Set(k, v[0])
+				c.Set(paramKey, string(bodyBytes))
+			case gin.MIMEPOSTForm:
+				err := req.ParseForm()
+				if err != nil {
+					log.Println("parse form", err.Error())
+					return
+				}
+				bs, err := json.Marshal(req.PostForm)
+				if err != nil {
+					log.Println("json encode err:", err.Error())
+				}
+
+				c.Set(paramKey, string(bs))
+
+			case gin.MIMEMultipartPOSTForm:
+				err := req.ParseMultipartForm(a.httpEngine.MaxMultipartMemory)
+				if err != nil {
+					log.Println("parse multi form", err.Error())
+					return
+				} else if req.MultipartForm != nil {
+					bs, err := json.Marshal(req.PostForm)
+					if err != nil {
+						log.Println("json encode err:", err.Error())
+					}
+					c.Set(paramKey, string(bs))
 				}
 			}
-		}
-	})
+		})
+
+	}
+
+	// no route handler
+	if httpNoRouterHandler != nil {
+		a.httpEngine.NoRoute(func(c *gin.Context) {
+			ctx := NewCtx(c)
+			httpNoRouterHandler(ctx)
+		})
+	}
 
 	for _, r := range HttpRouterMap {
 		method := strings.ToUpper(r.Method)
@@ -317,20 +364,17 @@ func (a *App) loadHttpRouter() error {
 		controller := r.h
 		handler := func(c *gin.Context) {
 			ctx := NewCtx(c)
-			if e := controller.BeforeAction(ctx); e.HasErr() {
+			if e := controller.BeforeAction(ctx); e != nil {
 				ctx.SetError(e)
 			} else {
-				if err := ctx.Validate(); err != nil {
-					ctx.SetError(ErrParam, err.Error())
-				} else {
-					action(ctx)
-				}
+				action(ctx)
 			}
 
-			controller.AfterAction(ctx)
+			go controller.AfterAction(ctx.Copy())
 		}
 
-		log.Println("[HTTP]", r.Url, runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name())
+		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
+		log.Printf("[HTTP] %-6s %-25s --> %s\n", method, r.Url, strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
 		switch method {
 		case http.MethodGet:
 			a.httpEngine.GET(r.Url, handler)
@@ -419,11 +463,13 @@ func (a *App) runTask() {
 	wg := sync.WaitGroup{}
 	for _, router := range TaskRouterList {
 		action := router.Action
+		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
+		name = strings.NewReplacer("(", "", ")", "", "*", "").Replace(name)
 		if router.Spec == "@loop" {
 			go func() {
 				wg.Add(1)
 				action()
-				log.Println("[TASK]", "stop", runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name())
+				log.Printf("[TASK] %-32s --> %s\n", "stop", name)
 				wg.Done()
 			}()
 		} else {
@@ -436,7 +482,7 @@ func (a *App) runTask() {
 				continue
 			}
 		}
-		log.Println("[TASK]", router.Spec, runtime.FuncForPC(reflect.ValueOf(router.Action).Pointer()).Name())
+		log.Printf("[TASK] %-32s --> %s\n", router.Spec, name)
 	}
 
 	c.Start()
@@ -488,7 +534,7 @@ func (a *App) runRpc() {
 
 	for k, v := range a.rpcEngine.GetServiceInfo() {
 		for _, method := range v.Methods {
-			log.Println("[GRPC]", k, method.Name)
+			log.Printf("[TASK] %-32s --> %s\n", k, method.Name)
 		}
 	}
 
@@ -530,10 +576,23 @@ func (a *App) Close() {
 		log.Println("Rpc Server Stop OK")
 	}
 
-	// broad close chan
-	close(GlobalCloseChan)
+	go func() {
+		Component.Close()
+		a.comCloseDoneChan <- 1
+	}()
+
+	var comCloseTimeWait time.Duration
+	if Config.IsSet("app.com_close_time_wait") {
+		comCloseTimeWait = time.Duration(Config.GetInt64("app.com_stop_time_wait")) * time.Second
+	} else {
+		comCloseTimeWait = 10 * time.Second
+	}
+	select {
+	case <-a.comCloseDoneChan:
+		log.Println("Components Close OK")
+	case <-time.After(comCloseTimeWait):
+		log.Println("Components Close Timeout")
+	}
 }
 
 var TaskCloseChan = make(chan int)
-
-var GlobalCloseChan = make(chan int)

@@ -1,6 +1,8 @@
 package yago
 
 import (
+	"io"
+	"log"
 	"sync"
 )
 
@@ -16,10 +18,9 @@ func (c *components) Ins(key string, f func() interface{}) interface{} {
 		v, _ = c.m.LoadOrStore(key, val)
 	}
 	return v
-
 }
 
-func (c *components) Del(key string, cb ...func()) {
+func (c *components) Del(key interface{}, cb ...func()) {
 	c.m.Delete(key)
 
 	if len(cb) > 0 {
@@ -28,6 +29,27 @@ func (c *components) Del(key string, cb ...func()) {
 	}
 }
 
-var Component = new(components)
+func (c *components) clear() {
+	comKeys := make([]interface{}, 0)
+	c.m.Range(func(key, value interface{}) bool {
+		comKeys = append(comKeys, key)
+		return true
+	})
 
-// example @see coms/kafka
+	for _, key := range comKeys {
+		c.m.Delete(key)
+	}
+}
+
+func (c *components) Close() {
+	c.m.Range(func(key, value interface{}) bool {
+		if v, ok := value.(io.Closer); ok {
+			if err := v.Close(); err != nil {
+				log.Printf("Com %s close error: %s\n", key, err)
+			}
+		}
+		return true
+	})
+}
+
+var Component = new(components)

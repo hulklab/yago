@@ -2,17 +2,18 @@ package rds
 
 import (
 	"fmt"
-	"github.com/garyburd/redigo/redis"
 	"log"
+	"strconv"
 	"testing"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 // go test -v ./coms/rds -test.run TestString -args "-c=${PWD}/app.toml"
 
 func TestApi(t *testing.T) {
 	rc := Ins()
-	defer rc.Close()
 	// 测试 keys
 	b, err := redis.Bool(rc.Exists("zjl_test_001"))
 	if err != nil {
@@ -120,9 +121,8 @@ func TestApi(t *testing.T) {
 func TestString(t *testing.T) {
 
 	rc := Ins()
-
 	// 用完后返回连接池
-	defer rc.Close()
+	//defer rc.Close()
 
 	reply, err := rc.Do("set", "test_key", "zjl", "NX")
 	fmt.Printf("%T,%v,%T,%s\n", reply, reply, err, err)
@@ -148,7 +148,6 @@ func TestString(t *testing.T) {
 
 func TestExpire(t *testing.T) {
 	rc := Ins()
-	defer rc.Close()
 
 	key := "test_expire_key"
 
@@ -175,7 +174,7 @@ func TestExpire(t *testing.T) {
 // 测试列表
 func TestList(t *testing.T) {
 	rc := Ins()
-	defer rc.Close()
+	//defer rc.Close()
 
 	key := "test_list_key"
 
@@ -198,7 +197,7 @@ func TestList(t *testing.T) {
 // 测试 hash
 func TestMap(t *testing.T) {
 	rc := Ins()
-	defer rc.Close()
+	//defer rc.Close()
 
 	key := "test_map_key"
 
@@ -218,7 +217,7 @@ func TestMap(t *testing.T) {
 // 测试 set
 func TestSet(t *testing.T) {
 	rc := Ins()
-	defer rc.Close()
+	//defer rc.Close()
 
 	key := "test_set_key"
 
@@ -295,10 +294,49 @@ func TestSet(t *testing.T) {
 //	wg.Wait()
 //}
 
+func TestTrans(t *testing.T) {
+	c := Ins().GetConn()
+	c.Do("WATCH", "name")
+	c.Do("MULTI")
+	c.Do("SET", "name", "zhangsan")
+	r, err := c.Do("EXEC")
+	if err != nil {
+		t.Error(err.Error())
+		return
+	}
+	fmt.Println("r:", r)
+	name, _ := redis.String(Ins().Get("name"))
+	if name == "zhangsan" {
+		t.Log("test transaction ok")
+	} else {
+		t.Error("test transaction fail")
+	}
+
+	c2 := Ins().GetConn()
+	c2.Do("WATCH", "name")
+	c2.Do("MULTI")
+	c2.Do("SET", "name", "zhangsan")
+	Ins().Set("name", "lisi")
+	r2, err := c2.Do("EXEC")
+	if err != nil {
+		t.Error(err.Error())
+		return
+	}
+
+	fmt.Println("r2:", r2)
+	name, _ = redis.String(Ins().Get("name"))
+	if name == "lisi" {
+		t.Log("test rollback ok")
+	} else {
+		t.Error("test rollback fail")
+	}
+}
+
 func TestPubSub(t *testing.T) {
 	topic := "test_subscribe"
+	topic2 := "test_subscribe2"
 
-	subscriber, err := Ins().NewSubscriber(topic)
+	subscriber, err := Ins().NewSubscriber(topic, topic2)
 	if err != nil {
 		log.Println(err.Error())
 		return
@@ -306,14 +344,24 @@ func TestPubSub(t *testing.T) {
 
 	go func() {
 		r := Ins()
-		defer r.Close()
-		time.Sleep(time.Second)
-		r.Do("publish", topic, "hello")
+		//defer r.Close()
+		for i := 0; i < 4; i++ {
+			time.Sleep(time.Second)
+			if i%2 == 0 {
+				_, _ = r.Publish(topic, "hello"+strconv.Itoa(i))
+			} else {
+				_, _ = r.Publish(topic2, "hello"+strconv.Itoa(i))
+			}
+		}
 	}()
 
-	err = subscriber.Subscribe(func(bytes []byte) {
-		fmt.Println("msg:", string(bytes))
-		subscriber.Close()
+	i := 0
+	err = subscriber.Subscribe(func(topic string, bytes []byte) {
+		i++
+		fmt.Println("msg:", string(bytes), "topic:", topic)
+		if i == 4 {
+			subscriber.Close()
+		}
 	})
 
 	if err != nil {
