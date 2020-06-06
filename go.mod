@@ -22,6 +22,7 @@ require (
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
 	github.com/levigross/grequests v0.0.0-20190130132859-37c80f76a0da
+	github.com/mitchellh/mapstructure v1.1.2
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.4.2
