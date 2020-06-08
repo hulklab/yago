@@ -4,6 +4,7 @@ import (
 	"log"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/hulklab/yago/coms/locker/lock"
@@ -74,6 +75,14 @@ func WithLockTTL(ttl int64) RunLoopOption {
 }
 
 func (b BaseTask) RunLoopWithLock(handlerFunc func(), opts ...RunLoopOption) {
+	var localLocker sync.Mutex
+	wrapHandler := func() {
+		localLocker.Lock()
+		defer localLocker.Unlock()
+
+		handlerFunc()
+	}
+
 	arg := LoopArg{}
 	for _, opt := range opts {
 		opt(&arg)
@@ -133,7 +142,7 @@ HELL:
 
 	defer mu.Unlock()
 
-	handlerFunc()
+	wrapHandler()
 
 	for {
 		select {
@@ -144,7 +153,7 @@ HELL:
 			mu.Unlock()
 			goto HEAVEN
 		case <-time.After(arg.Interval):
-			handlerFunc()
+			wrapHandler()
 		}
 	}
 }
