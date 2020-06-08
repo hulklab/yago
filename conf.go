@@ -142,12 +142,13 @@ var cfgPath *string
 var cfgLock = new(sync.Mutex)
 
 func initConfig() {
-	cfgPath = flag.String("c", defaultCfgPath(), "config file path")
+	defaultCfgPath := defaultCfgPath()
+	cfgPath = flag.String("c", defaultCfgPath, "config file path")
 	_ = flag.Bool("h", false, "help")
 	_ = flag.Bool("help", false, "help")
 	flag.Parse()
 
-	noConf := flag.Lookup("c") == nil
+	noConf := *cfgPath == defaultCfgPath
 
 	if noConf && isInTests() {
 		Config = &AppConfig{viper.New()}
