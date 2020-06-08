@@ -130,12 +130,12 @@ dial_timeout = 2
 # cert_ca_file = "conf/ssl/etcd_ca.pem"
 
 [elastic]
-username = "pvmti_w"
-password = "5018c997418b6c8d8377934cd116fc54"
-urls = ["http://10.216.30.105:9089"]
-sniff_enable = false
-infolog_enable = false
-tracelog_enable = false
+urls = ["http://127.0.0.1:9200/", "http://127.0.0.1:9300"]
+#username = ""
+#password = ""
+#sniff_enable = false
+# 日志最低等级 Error = 2, Info = 4, Trace = 6
+level = 6
 
 ##########################################
 # 以下是 api 区
