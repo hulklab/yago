@@ -23,16 +23,16 @@ func init() {
 	homeHttp := new(HomeHttp)
 
 	// simple route, not recommend
-	yago.AddHttpRouter("/home/hello", http.MethodGet, homeHttp.HelloAction)
-	yago.AddHttpRouter("/home/add", http.MethodPost, homeHttp.AddAction)
-	yago.AddHttpRouter("/home/delete", http.MethodPost, homeHttp.DeleteAction)
-	yago.AddHttpRouter("/home/detail", http.MethodGet, homeHttp.DetailAction)
-	yago.AddHttpRouter("/home/update", http.MethodPost, homeHttp.UpdateAction)
-	yago.AddHttpRouter("/home/list", http.MethodPost, homeHttp.ListAction)
-	yago.AddHttpRouter("/home/upload", http.MethodPost, homeHttp.UploadAction)
-	yago.AddHttpRouter("/home/hello/:name", http.MethodGet, homeHttp.Hello2Action)
-	yago.AddHttpRouter("/home/cookie", http.MethodGet, homeHttp.CookieAction)
-	yago.AddHttpRouter("/home/metadata", http.MethodGet, homeHttp.MetadataAction, HttpMetadata{
+	yago.AddHttpRouter("/home/hello", http.MethodGet, homeHttp.HelloAction, homeHttp)
+	yago.AddHttpRouter("/home/add", http.MethodPost, homeHttp.AddAction, homeHttp)
+	yago.AddHttpRouter("/home/delete", http.MethodPost, homeHttp.DeleteAction, homeHttp)
+	yago.AddHttpRouter("/home/detail", http.MethodGet, homeHttp.DetailAction, homeHttp)
+	yago.AddHttpRouter("/home/update", http.MethodPost, homeHttp.UpdateAction, homeHttp)
+	yago.AddHttpRouter("/home/list", http.MethodPost, homeHttp.ListAction, homeHttp)
+	yago.AddHttpRouter("/home/upload", http.MethodPost, homeHttp.UploadAction, homeHttp)
+	yago.AddHttpRouter("/home/hello/:name", http.MethodGet, homeHttp.Hello2Action, homeHttp)
+	yago.AddHttpRouter("/home/cookie", http.MethodGet, homeHttp.CookieAction, homeHttp)
+	yago.AddHttpRouter("/home/metadata", http.MethodGet, homeHttp.MetadataAction, homeHttp, HttpMetadata{
 		Label: "自定义HTTP名称",
 	})
 
@@ -40,14 +40,14 @@ func init() {
 	userGroup := yago.NewHttpGroupRouter("/home/user")
 	userGroup.Use(homeHttp.checkName)
 	{
-		userGroup.Post("/:name", homeHttp.UserSetAction)
-		userGroup.Get("/:name", homeHttp.UserGetAction)
-		userGroup.Put("/:name", homeHttp.UserUpdateAction)
-		userGroup.Delete("/:name", homeHttp.UserDeleteAction)
+		userGroup.Post("/:name", homeHttp.UserSetAction, homeHttp)
+		userGroup.Get("/:name", homeHttp.UserGetAction, homeHttp)
+		userGroup.Put("/:name", homeHttp.UserUpdateAction, homeHttp)
+		userGroup.Delete("/:name", homeHttp.UserDeleteAction, homeHttp)
 
 		consumeSubGroup := userGroup.SubGroup("/consume")
 		consumeSubGroup.Use(homeHttp.consume)
-		consumeSubGroup.Patch("/sleep", homeHttp.ConsumeSleepAction)
+		consumeSubGroup.Patch("/sleep", homeHttp.ConsumeSleepAction, homeHttp)
 	}
 
 	yago.SetHttpNoRouter(homeHttp.NoRouterAction)

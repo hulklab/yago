@@ -271,9 +271,16 @@ func (a *App) registerHttpRouter(g *HttpGroupRouter) {
 	for _, r := range g.HttpRouterList {
 		method := strings.ToUpper(r.Method)
 		action := r.Action
+		controller := r.h
 		handler := func(c *gin.Context) {
 			ctx := newCtx(c)
-			action(ctx)
+			if e := controller.BeforeAction(ctx); e != nil {
+				ctx.SetError(e)
+			} else {
+				action(ctx)
+			}
+
+			go controller.AfterAction(ctx.Copy())
 		}
 
 		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()

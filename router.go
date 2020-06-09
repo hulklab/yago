@@ -14,6 +14,7 @@ import (
 type HttpHandlerFunc func(c *Ctx)
 
 type HttpRouter struct {
+	h        HttpInterface
 	Group    *HttpGroupRouter
 	Path     string
 	Method   string
@@ -21,15 +22,20 @@ type HttpRouter struct {
 	Metadata interface{}
 }
 
+type HttpInterface interface {
+	BeforeAction(c *Ctx) error
+	AfterAction(c *Ctx)
+}
+
 var (
 	httpGroupRouterMap  = make(map[string]*HttpGroupRouter)
 	httpNoRouterHandler HttpHandlerFunc
 )
 
-func AddHttpRouter(url, method string, action HttpHandlerFunc, md ...interface{}) {
+func AddHttpRouter(url, method string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
 	group := NewHttpGroupRouter("/")
 
-	group.addHttpRouter(url, method, action, md...)
+	group.addHttpRouter(url, method, action, h, md...)
 }
 
 func getSubGroupHttpRouters(g *HttpGroupRouter) []*HttpRouter {
@@ -118,9 +124,9 @@ func (g *HttpGroupRouter) Use(middleware ...HttpHandlerFunc) {
 	g.Middleware = middleware
 }
 
-func (g *HttpGroupRouter) addHttpRouter(url, method string, action HttpHandlerFunc, md ...interface{}) {
-
+func (g *HttpGroupRouter) addHttpRouter(url, method string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
 	g.HttpRouterList = append(g.HttpRouterList, &HttpRouter{
+		h:        h,
 		Path:     url,
 		Method:   method,
 		Action:   action,
@@ -129,32 +135,32 @@ func (g *HttpGroupRouter) addHttpRouter(url, method string, action HttpHandlerFu
 	})
 }
 
-func (g *HttpGroupRouter) Get(url string, action HttpHandlerFunc, md ...interface{}) {
-	g.addHttpRouter(url, http.MethodGet, action, md...)
+func (g *HttpGroupRouter) Get(url string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodGet, action, h, md...)
 }
 
-func (g *HttpGroupRouter) Post(url string, action HttpHandlerFunc, md ...interface{}) {
-	g.addHttpRouter(url, http.MethodPost, action, md...)
+func (g *HttpGroupRouter) Post(url string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodPost, action, h, md...)
 }
 
-func (g *HttpGroupRouter) Put(url string, action HttpHandlerFunc, md ...interface{}) {
-	g.addHttpRouter(url, http.MethodPut, action, md...)
+func (g *HttpGroupRouter) Put(url string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodPut, action, h, md...)
 }
 
-func (g *HttpGroupRouter) Delete(url string, action HttpHandlerFunc, md ...interface{}) {
-	g.addHttpRouter(url, http.MethodDelete, action, md...)
+func (g *HttpGroupRouter) Delete(url string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodDelete, action, h, md...)
 }
 
-func (g *HttpGroupRouter) Patch(url string, action HttpHandlerFunc, md ...interface{}) {
-	g.addHttpRouter(url, http.MethodPatch, action, md...)
+func (g *HttpGroupRouter) Patch(url string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodPatch, action, h, md...)
 }
 
-func (g *HttpGroupRouter) Head(url string, action HttpHandlerFunc, md ...interface{}) {
-	g.addHttpRouter(url, http.MethodHead, action, md...)
+func (g *HttpGroupRouter) Head(url string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodHead, action, h, md...)
 }
 
-func (g *HttpGroupRouter) Options(url string, action HttpHandlerFunc, md ...interface{}) {
-	g.addHttpRouter(url, http.MethodOptions, action, md...)
+func (g *HttpGroupRouter) Options(url string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodOptions, action, h, md...)
 }
 
 // task
