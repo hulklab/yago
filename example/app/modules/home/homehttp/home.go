@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/hulklab/yago/example/app/modules/home/homehttp/homemiddleware"
+
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basehttp"
 	"github.com/hulklab/yago/example/app/g"
@@ -38,16 +40,16 @@ func init() {
 
 	// routing groups are recommended
 	userGroup := yago.NewHttpGroupRouter("/home/user")
-	userGroup.Use(homeHttp.checkName)
+	userGroup.Use(homemiddleware.CheckUserName)
 	{
 		userGroup.Post("/:name", homeHttp.UserSetAction)
 		userGroup.Get("/:name", homeHttp.UserGetAction)
 		userGroup.Put("/:name", homeHttp.UserUpdateAction)
 		userGroup.Delete("/:name", homeHttp.UserDeleteAction)
 
-		consumeSubGroup := userGroup.SubGroup("/consume")
-		consumeSubGroup.Use(homeHttp.consume)
-		consumeSubGroup.Patch("/sleep", homeHttp.ConsumeSleepAction)
+		consumeSubGroup := userGroup.Group("/consume")
+		consumeSubGroup.Use(homemiddleware.ComputeConsume)
+		consumeSubGroup.Patch("/sleep/:name", homeHttp.ConsumeSleepAction)
 	}
 
 	yago.SetHttpNoRouter(homeHttp.NoRouterAction)
@@ -57,26 +59,6 @@ func (h *HomeHttp) NoRouterAction(c *yago.Ctx) {
 	c.JSON(http.StatusNotFound, g.Hash{
 		"error": "404, page not exists",
 	})
-}
-
-func (h *HomeHttp) checkName(c *yago.Ctx) {
-	name := c.Param("name")
-	if name == "devil" {
-		c.SetError(yago.NewErr("path param name can not be devil"))
-		c.Abort()
-	}
-}
-
-func (h *HomeHttp) consume(c *yago.Ctx) {
-	t := time.Now()
-
-	// before request
-	c.Next()
-
-	// after request
-	latency := time.Since(t)
-
-	c.SetData("I'm awake and I slept for " + latency.String())
 }
 
 // curl -X GET 'http://127.0.0.1:8080/home/hello?name=zhangsan'

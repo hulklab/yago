@@ -12,13 +12,12 @@ import (
 
 type Ctx struct {
 	*gin.Context
-	resp *ResponseBody
-	err  error
 }
 
 const (
-	CtxParamsKey = "__PARAMS__"
-	ctxYagoKey   = "__YagoCtx__"
+	ctxYagoKey  = "__YagoCtx__"
+	ResponseKey = "__Resp__"
+	ErrorKey    = "__Error__"
 )
 
 type ResponseBody struct {
@@ -70,39 +69,44 @@ func (c *Ctx) GetFileContent(key string) ([]byte, error) {
 }
 
 func (c *Ctx) SetData(data interface{}) {
-	c.resp = &ResponseBody{
+	resp := &ResponseBody{
 		ErrNo:  ok.Code(),
 		ErrMsg: ok.Error(),
 		Data:   data,
 	}
+	c.Set(ResponseKey, resp)
 
-	c.JSON(http.StatusOK, c.resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 func (c *Ctx) setError(err Err) {
-	c.resp = &ResponseBody{
+	resp := &ResponseBody{
 		ErrNo:  err.Code(),
 		ErrMsg: err.Error(),
 		Data:   map[string]interface{}{},
 	}
 
-	c.JSON(http.StatusOK, c.resp)
+	c.Set(ErrorKey, resp)
+
+	c.JSON(http.StatusOK, resp)
 }
 
 func (c *Ctx) GetError() error {
-	return c.err
+	err, exist := c.Get(ErrorKey)
+	if !exist {
+		return nil
+	}
+	return err.(error)
 }
 
 func (c *Ctx) SetError(err interface{}) {
 
 	switch v := err.(type) {
 	case Err:
-		c.err = v
 		c.setError(v)
 	case validatorv10.ValidationErrors:
 		for _, fieldErr := range v {
 			e := ErrParam.String() + fieldErr.Translate(GetTranslator())
-			c.err = Err(e)
 			c.setError(Err(e))
 			return
 		}
@@ -115,9 +119,7 @@ func (c *Ctx) SetError(err interface{}) {
 		} else {
 			c.setError(NewErr(v.Error()))
 		}
-		c.err = v
 	default:
-		c.err = ErrUnknown
 		c.setError(ErrUnknown)
 	}
 }
@@ -142,11 +144,16 @@ func (c *Ctx) SetDataOrErr(data interface{}, err interface{}) {
 }
 
 func (c *Ctx) GetResponse() (*ResponseBody, bool) {
-	if c.resp == nil {
-		return c.resp, false
+	resp, exist := c.Get(ResponseKey)
+	if !exist {
+		return nil, false
 	}
 
-	return c.resp, true
+	if v, ok := resp.(*ResponseBody); !ok {
+		return nil, false
+	} else {
+		return v, true
+	}
 }
 
 func (c *Ctx) Copy() *Ctx {

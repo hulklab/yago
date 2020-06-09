@@ -1,12 +1,9 @@
 package yago
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -63,8 +60,6 @@ type App struct {
 	HttpGzipLevel int
 	// http pprof
 	HttpPprof bool
-	// http biz log
-	HttpBizLogOn bool
 
 	// 开启task服务
 	TaskEnable bool
@@ -183,9 +178,6 @@ func NewApp() *App {
 		}
 
 		app.HttpPprof = Config.GetBool("app.http_pprof_on")
-
-		Config.SetDefault("app.http_bizlog_on", true)
-		app.HttpBizLogOn = Config.GetBool("app.http_bizlog_on")
 	}
 
 	// init rpc
@@ -310,13 +302,14 @@ func (a *App) registerHttpGroupRouter(group map[string]*HttpGroupRouter) {
 
 		if len(g.Middleware) > 0 {
 			for _, m := range g.Middleware {
+				handler := m
 				g.GinGroup.Use(func(c *gin.Context) {
 					ctx, err := getCtxFromGin(c)
 					if err != nil {
 						log.Println(err)
 						return
 					}
-					m(ctx)
+					handler(ctx)
 				})
 			}
 		}
@@ -358,62 +351,24 @@ func (a *App) loadHttpRouter() error {
 		pprof.Register(a.httpEngine)
 	}
 
-	if a.HttpBizLogOn {
-		a.httpEngine.Use(func(c *gin.Context) {
-			req := c.Request
-			var paramKey = CtxParamsKey
-			c.Set(paramKey, "")
-
-			switch c.ContentType() {
-			case gin.MIMEJSON:
-				bodyBytes, err := ioutil.ReadAll(req.Body)
-				if err != nil {
-					log.Println("read body:", err.Error())
-					return
-				}
-
-				err = req.Body.Close() //  must close
-				if err != nil {
-					log.Println("close body:", err.Error())
-					return
-				}
-				req.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-
-				c.Set(paramKey, string(bodyBytes))
-			case gin.MIMEPOSTForm:
-				err := req.ParseForm()
-				if err != nil {
-					log.Println("parse form", err.Error())
-					return
-				}
-				bs, err := json.Marshal(req.PostForm)
-				if err != nil {
-					log.Println("json encode err:", err.Error())
-				}
-
-				c.Set(paramKey, string(bs))
-
-			case gin.MIMEMultipartPOSTForm:
-				err := req.ParseMultipartForm(a.httpEngine.MaxMultipartMemory)
-				if err != nil {
-					log.Println("parse multi form", err.Error())
-					return
-				} else if req.MultipartForm != nil {
-					bs, err := json.Marshal(req.PostForm)
-					if err != nil {
-						log.Println("json encode err:", err.Error())
-					}
-					c.Set(paramKey, string(bs))
-				}
-			}
-		})
-	}
-
 	// no route handler
 	if httpNoRouterHandler != nil {
 		a.httpEngine.NoRoute(func(c *gin.Context) {
 			ctx := newCtx(c)
 			httpNoRouterHandler(ctx)
+		})
+	}
+
+	// register global middleware
+	for _, m := range *GetHttpGlobalMiddleware() {
+		handler := m
+		a.httpEngine.Use(func(c *gin.Context) {
+			ctx, err := getCtxFromGin(c)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			handler(ctx)
 		})
 	}
 

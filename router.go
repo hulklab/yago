@@ -21,9 +21,20 @@ type HttpRouter struct {
 	Metadata interface{}
 }
 
+type HttpGlobalMiddleware []HttpHandlerFunc
+
+func GetHttpGlobalMiddleware() *HttpGlobalMiddleware {
+	return &httpGlobalMiddleware
+}
+
+func (r *HttpGlobalMiddleware) Use(middleware ...HttpHandlerFunc) {
+	*r = append(*r, middleware...)
+}
+
 var (
-	httpGroupRouterMap  = make(map[string]*HttpGroupRouter)
-	httpNoRouterHandler HttpHandlerFunc
+	httpGlobalMiddleware HttpGlobalMiddleware
+	httpGroupRouterMap   = make(map[string]*HttpGroupRouter)
+	httpNoRouterHandler  HttpHandlerFunc
 )
 
 func AddHttpRouter(url, method string, action HttpHandlerFunc, md ...interface{}) {
@@ -94,7 +105,7 @@ func NewHttpGroupRouter(prefix string) *HttpGroupRouter {
 	return httpGroupRouterMap[prefix]
 }
 
-func (g *HttpGroupRouter) SubGroup(prefix string) *HttpGroupRouter {
+func (g *HttpGroupRouter) Group(prefix string) *HttpGroupRouter {
 	if len(prefix) == 0 {
 		log.Panic("http sub group router name can not be empty")
 	}
@@ -115,7 +126,7 @@ func (g *HttpGroupRouter) SubGroup(prefix string) *HttpGroupRouter {
 }
 
 func (g *HttpGroupRouter) Use(middleware ...HttpHandlerFunc) {
-	g.Middleware = middleware
+	g.Middleware = append(g.Middleware, middleware...)
 }
 
 func (g *HttpGroupRouter) addHttpRouter(url, method string, action HttpHandlerFunc, md ...interface{}) {
@@ -155,6 +166,10 @@ func (g *HttpGroupRouter) Head(url string, action HttpHandlerFunc, md ...interfa
 
 func (g *HttpGroupRouter) Options(url string, action HttpHandlerFunc, md ...interface{}) {
 	g.addHttpRouter(url, http.MethodOptions, action, md...)
+}
+
+func (g *HttpGroupRouter) Any(url string, action HttpHandlerFunc, md ...interface{}) {
+	g.addHttpRouter(url, "Any", action, md...)
 }
 
 // task
