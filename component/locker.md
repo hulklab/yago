@@ -1,8 +1,7 @@
 # Locker 组件
-Locker 组件实现了分布式锁，我们没有直接集成到 yago 里面，而是放在 `github.com/hulklab/yago-coms` 仓库里，
-yago-coms 中的组件都是独立的 go.mod，你可以使用 `go get github.com/hulklab/yago-coms/locker` 单独加载此组件
+Locker 组件实现了分布式锁。
 
-locker 组件采专用 driver 的机制，目前支持的 driver 有 redis, etcd。
+locker 组件采用 driver 的机制，目前支持的 driver 有 redis, etcd。
 
 每个 driver 都需要实现下面 ILocker 接口的两个方法：
 
@@ -113,5 +112,44 @@ defer lo.Unlock()
 说明一下，locker 组件默认只注册了 redis，etcd-locker 需要业务方在使用时加载注册一下
 ```go
 import _ "github.com/hulklab/yago-coms/locker/etcd"
+
+```
+
+### 在 task 中使用永久锁
+为了方便多节点部署的情况下，始终保障 task 任务只在一个节点运行，我们在 basetask 里面封装了一个 RunLoopWithLock 的方法。
+
+```go
+// 直接使用
+func (t *YourTask) DoAction() {
+    t.RunLoopWithLock(func(){
+        // put your code here
+    })
+
+}
+
+// 自定义 lock-key
+func (t *YourTask) DoAction() {
+    t.RunLoopWithLock(func(){
+        // put your code here
+    },basetask.WithLockKey("mylock"))
+
+}
+
+// 默认使用配置文件中的 locker 配置段，如果需要自定义
+func (t *YourTask) DoAction() {
+    t.RunLoopWithLock(func(){
+        // put your code here
+    },basetask.WithLockConf("lock_conf_name"))
+
+}
+
+// 默认循环体之间是没有时间间隔的，如果需要添加
+func (t *YourTask) DoAction() {
+    t.RunLoopWithLock(func(){
+        // put your code here
+    },basetask.WithInterval(1*time.Second))
+
+}
+
 
 ```
