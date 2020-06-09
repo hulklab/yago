@@ -1,7 +1,9 @@
 package homehttp
 
 import (
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basehttp"
@@ -19,16 +21,35 @@ type HttpMetadata struct {
 
 func init() {
 	homeHttp := new(HomeHttp)
-	yago.AddHttpRouter("/home/hello", http.MethodGet, homeHttp.HelloAction, homeHttp)
-	yago.AddHttpRouter("/home/add", http.MethodPost, homeHttp.AddAction, homeHttp)
-	yago.AddHttpRouter("/home/delete", http.MethodPost, homeHttp.DeleteAction, homeHttp)
-	yago.AddHttpRouter("/home/detail", http.MethodGet, homeHttp.DetailAction, homeHttp)
-	yago.AddHttpRouter("/home/update", http.MethodPost, homeHttp.UpdateAction, homeHttp)
-	yago.AddHttpRouter("/home/list", http.MethodPost, homeHttp.ListAction, homeHttp)
-	yago.AddHttpRouter("/home/upload", http.MethodPost, homeHttp.UploadAction, homeHttp)
-	yago.AddHttpRouter("/home/metadata", http.MethodGet, homeHttp.MetadataAction, homeHttp, HttpMetadata{
+
+	// simple route, not recommend
+	yago.AddHttpRouter("/home/hello", http.MethodGet, homeHttp.HelloAction)
+	yago.AddHttpRouter("/home/add", http.MethodPost, homeHttp.AddAction)
+	yago.AddHttpRouter("/home/delete", http.MethodPost, homeHttp.DeleteAction)
+	yago.AddHttpRouter("/home/detail", http.MethodGet, homeHttp.DetailAction)
+	yago.AddHttpRouter("/home/update", http.MethodPost, homeHttp.UpdateAction)
+	yago.AddHttpRouter("/home/list", http.MethodPost, homeHttp.ListAction)
+	yago.AddHttpRouter("/home/upload", http.MethodPost, homeHttp.UploadAction)
+	yago.AddHttpRouter("/home/hello/:name", http.MethodGet, homeHttp.Hello2Action)
+	yago.AddHttpRouter("/home/cookie", http.MethodGet, homeHttp.CookieAction)
+	yago.AddHttpRouter("/home/metadata", http.MethodGet, homeHttp.MetadataAction, HttpMetadata{
 		Label: "自定义HTTP名称",
 	})
+
+	// routing groups are recommended
+	userGroup := yago.NewHttpGroupRouter("/home/user")
+	userGroup.Use(homeHttp.checkName)
+	{
+		userGroup.Post("/:name", homeHttp.UserSetAction)
+		userGroup.Get("/:name", homeHttp.UserGetAction)
+		userGroup.Put("/:name", homeHttp.UserUpdateAction)
+		userGroup.Delete("/:name", homeHttp.UserDeleteAction)
+
+		consumeSubGroup := userGroup.SubGroup("/consume")
+		consumeSubGroup.Use(homeHttp.consume)
+		consumeSubGroup.Patch("/sleep", homeHttp.ConsumeSleepAction)
+	}
+
 	yago.SetHttpNoRouter(homeHttp.NoRouterAction)
 }
 
@@ -36,6 +57,26 @@ func (h *HomeHttp) NoRouterAction(c *yago.Ctx) {
 	c.JSON(http.StatusNotFound, g.Hash{
 		"error": "404, page not exists",
 	})
+}
+
+func (h *HomeHttp) checkName(c *yago.Ctx) {
+	name := c.Param("name")
+	if name == "devil" {
+		c.SetError(yago.NewErr("path param name can not be devil"))
+		c.Abort()
+	}
+}
+
+func (h *HomeHttp) consume(c *yago.Ctx) {
+	t := time.Now()
+
+	// before request
+	c.Next()
+
+	// after request
+	latency := time.Since(t)
+
+	c.SetData("I'm awake and I slept for " + latency.String())
 }
 
 // curl -X GET 'http://127.0.0.1:8080/home/hello?name=zhangsan'
@@ -186,14 +227,60 @@ func (h *HomeHttp) UploadAction(c *yago.Ctx) {
 	c.SetData(file.Filename)
 }
 
+func (h *HomeHttp) Hello2Action(c *yago.Ctx) {
+	name := c.Param("name")
+
+	c.SetData("hello " + name)
+}
+
+func (h *HomeHttp) UserSetAction(c *yago.Ctx) {
+	name := c.Param("name")
+
+	c.SetData("set " + name)
+}
+
+func (h *HomeHttp) UserGetAction(c *yago.Ctx) {
+	name := c.Param("name")
+
+	c.SetData("get " + name)
+}
+
+func (h *HomeHttp) UserUpdateAction(c *yago.Ctx) {
+	name := c.Param("name")
+
+	c.SetData("update " + name)
+}
+
+func (h *HomeHttp) UserDeleteAction(c *yago.Ctx) {
+	name := c.Param("name")
+
+	c.SetData("delete " + name)
+}
+
+func (h *HomeHttp) CookieAction(c *yago.Ctx) {
+	cookie, err := c.Cookie("user")
+
+	if err != nil {
+		c.SetError(err)
+		return
+	}
+
+	c.SetData("hello " + cookie)
+}
+
+func (h *HomeHttp) ConsumeSleepAction(c *yago.Ctx) {
+	c.SetData("I'm sleeping zzz.....")
+	time.Sleep(time.Second * time.Duration(rand.Intn(5)))
+}
+
 func (h *HomeHttp) MetadataAction(c *yago.Ctx) {
 	data := "get label from metadata:"
 
-	for _, router := range yago.HttpRouterMap {
-		if router.Url == "/home/metadata" {
-			v, ok := router.Metadata.(HttpMetadata)
+	for _, router := range yago.GetHttpRouters() {
+		if router.Url() == "/home/metadata" {
+			v, ok := router.Metadata.([]interface{})
 			if ok {
-				data = data + v.Label
+				data = data + v[0].(HttpMetadata).Label
 			}
 			break
 		}

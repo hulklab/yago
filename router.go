@@ -2,9 +2,11 @@ package yago
 
 import (
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 )
 
@@ -12,42 +14,147 @@ import (
 type HttpHandlerFunc func(c *Ctx)
 
 type HttpRouter struct {
-	Url      string
+	Group    *HttpGroupRouter
+	Path     string
 	Method   string
 	Action   HttpHandlerFunc
-	h        HttpInterface
 	Metadata interface{}
 }
 
-var HttpRouterMap = make(map[string]*HttpRouter)
-var httpNoRouterHandler HttpHandlerFunc
+var (
+	httpGroupRouterMap  = make(map[string]*HttpGroupRouter)
+	httpNoRouterHandler HttpHandlerFunc
+)
 
-type HttpInterface interface {
-	BeforeAction(c *Ctx) error
-	AfterAction(c *Ctx)
+func AddHttpRouter(url, method string, action HttpHandlerFunc, md ...interface{}) {
+	group := NewHttpGroupRouter("/")
+
+	group.addHttpRouter(url, method, action, md...)
 }
 
-func AddHttpRouter(url, method string, action HttpHandlerFunc, h HttpInterface, md ...interface{}) {
-	if _, ok := HttpRouterMap[url]; ok {
-		log.Panicf("http router duplicate : %s", url)
+func getSubGroupHttpRouters(g *HttpGroupRouter) []*HttpRouter {
+	var subRouterList []*HttpRouter
+	subRouterList = append(subRouterList, g.HttpRouterList...)
+	if len(g.Children) > 0 {
+		for _, sub := range g.Children {
+			subRouterList = append(subRouterList, getSubGroupHttpRouters(sub)...)
+		}
 	}
+	return subRouterList
+}
 
-	router := &HttpRouter{
-		Url:    url,
-		Method: method,
-		Action: action,
-		h:      h,
+func GetHttpRouters() []*HttpRouter {
+	var routerList []*HttpRouter
+	for _, v := range httpGroupRouterMap {
+		if len(v.HttpRouterList) > 0 {
+			routerList = append(routerList, getSubGroupHttpRouters(v)...)
+		}
 	}
+	return routerList
+}
 
-	if len(md) > 0 {
-		router.Metadata = md[0]
+func (h *HttpRouter) Url() string {
+	url := h.Path
+	p := h.Group
+	for p != nil {
+		if p.Prefix != "/" {
+			url = p.Prefix + url
+		}
+		p = p.Parent
 	}
-
-	HttpRouterMap[url] = router
+	return url
 }
 
 func SetHttpNoRouter(action HttpHandlerFunc) {
 	httpNoRouterHandler = action
+}
+
+type HttpGroupRouter struct {
+	Prefix         string
+	GinGroup       *gin.RouterGroup
+	Middleware     []HttpHandlerFunc
+	HttpRouterList []*HttpRouter
+	Parent         *HttpGroupRouter
+	Children       map[string]*HttpGroupRouter
+}
+
+func NewHttpGroupRouter(prefix string) *HttpGroupRouter {
+	if len(prefix) == 0 {
+		log.Panic("http group router name can not be empty")
+	}
+
+	if group, ok := httpGroupRouterMap[prefix]; ok {
+		return group
+	}
+
+	httpGroupRouterMap[prefix] = &HttpGroupRouter{
+		Prefix: prefix,
+	}
+
+	return httpGroupRouterMap[prefix]
+}
+
+func (g *HttpGroupRouter) SubGroup(prefix string) *HttpGroupRouter {
+	if len(prefix) == 0 {
+		log.Panic("http sub group router name can not be empty")
+	}
+
+	if _, ok := g.Children[prefix]; ok {
+		log.Panicf("http sub group router duplicate : %s", prefix)
+	}
+
+	group := &HttpGroupRouter{
+		Prefix: prefix,
+		Parent: g,
+	}
+
+	g.Children = make(map[string]*HttpGroupRouter)
+	g.Children[prefix] = group
+
+	return group
+}
+
+func (g *HttpGroupRouter) Use(middleware ...HttpHandlerFunc) {
+	g.Middleware = middleware
+}
+
+func (g *HttpGroupRouter) addHttpRouter(url, method string, action HttpHandlerFunc, md ...interface{}) {
+
+	g.HttpRouterList = append(g.HttpRouterList, &HttpRouter{
+		Path:     url,
+		Method:   method,
+		Action:   action,
+		Metadata: md,
+		Group:    g,
+	})
+}
+
+func (g *HttpGroupRouter) Get(url string, action HttpHandlerFunc, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodGet, action, md...)
+}
+
+func (g *HttpGroupRouter) Post(url string, action HttpHandlerFunc, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodPost, action, md...)
+}
+
+func (g *HttpGroupRouter) Put(url string, action HttpHandlerFunc, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodPut, action, md...)
+}
+
+func (g *HttpGroupRouter) Delete(url string, action HttpHandlerFunc, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodDelete, action, md...)
+}
+
+func (g *HttpGroupRouter) Patch(url string, action HttpHandlerFunc, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodPatch, action, md...)
+}
+
+func (g *HttpGroupRouter) Head(url string, action HttpHandlerFunc, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodHead, action, md...)
+}
+
+func (g *HttpGroupRouter) Options(url string, action HttpHandlerFunc, md ...interface{}) {
+	g.addHttpRouter(url, http.MethodOptions, action, md...)
 }
 
 // task

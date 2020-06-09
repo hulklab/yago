@@ -242,12 +242,12 @@ func (a *App) Run() {
 }
 
 func (a *App) genPid() {
-	pidfile, ok := getPidFile()
+	pidFile, ok := getPidFile()
 	if !ok {
 		return
 	}
 
-	pf, err := os.Create(pidfile)
+	pf, err := os.Create(pidFile)
 
 	defer pf.Close()
 
@@ -267,8 +267,68 @@ func (a *App) genPid() {
 	log.Println("app is running with pid:", newPid)
 }
 
+func (a *App) registerHttpRouter(g *HttpGroupRouter) {
+	for _, r := range g.HttpRouterList {
+		method := strings.ToUpper(r.Method)
+		action := r.Action
+		handler := func(c *gin.Context) {
+			ctx := newCtx(c)
+			action(ctx)
+		}
+
+		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
+		log.Printf("[HTTP] %-6s %-25s --> %s\n", method, r.Url(), strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
+
+		switch method {
+		case http.MethodGet:
+			g.GinGroup.GET(r.Path, handler)
+		case http.MethodPost:
+			g.GinGroup.POST(r.Path, handler)
+		case http.MethodDelete:
+			g.GinGroup.DELETE(r.Path, handler)
+		case http.MethodPut:
+			g.GinGroup.PUT(r.Path, handler)
+		case http.MethodOptions:
+			g.GinGroup.OPTIONS(r.Path, handler)
+		case http.MethodPatch:
+			g.GinGroup.PATCH(r.Path, handler)
+		case http.MethodHead:
+			g.GinGroup.HEAD(r.Path, handler)
+		default:
+			g.GinGroup.Any(r.Path, handler)
+		}
+	}
+}
+
+func (a *App) registerHttpGroupRouter(group map[string]*HttpGroupRouter) {
+	for _, g := range group {
+		if g.Parent == nil {
+			g.GinGroup = a.httpEngine.Group(g.Prefix)
+		} else {
+			g.GinGroup = g.Parent.GinGroup.Group(g.Prefix)
+		}
+
+		if len(g.Middleware) > 0 {
+			for _, m := range g.Middleware {
+				g.GinGroup.Use(func(c *gin.Context) {
+					ctx, err := getCtxFromGin(c)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					m(ctx)
+				})
+			}
+		}
+
+		a.registerHttpRouter(g)
+
+		a.registerHttpGroupRouter(g.Children)
+	}
+}
+
 func (a *App) loadHttpRouter() error {
-	if len(HttpRouterMap) == 0 {
+	if len(httpGroupRouterMap) == 0 {
 		return errHttpRouteEmpty
 	}
 
@@ -347,53 +407,18 @@ func (a *App) loadHttpRouter() error {
 				}
 			}
 		})
-
 	}
 
 	// no route handler
 	if httpNoRouterHandler != nil {
 		a.httpEngine.NoRoute(func(c *gin.Context) {
-			ctx := NewCtx(c)
+			ctx := newCtx(c)
 			httpNoRouterHandler(ctx)
 		})
 	}
 
-	for _, r := range HttpRouterMap {
-		method := strings.ToUpper(r.Method)
-		action := r.Action
-		controller := r.h
-		handler := func(c *gin.Context) {
-			ctx := NewCtx(c)
-			if e := controller.BeforeAction(ctx); e != nil {
-				ctx.SetError(e)
-			} else {
-				action(ctx)
-			}
+	a.registerHttpGroupRouter(httpGroupRouterMap)
 
-			go controller.AfterAction(ctx.Copy())
-		}
-
-		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
-		log.Printf("[HTTP] %-6s %-25s --> %s\n", method, r.Url, strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
-		switch method {
-		case http.MethodGet:
-			a.httpEngine.GET(r.Url, handler)
-		case http.MethodPost:
-			a.httpEngine.POST(r.Url, handler)
-		case http.MethodDelete:
-			a.httpEngine.DELETE(r.Url, handler)
-		case http.MethodPut:
-			a.httpEngine.PUT(r.Url, handler)
-		case http.MethodOptions:
-			a.httpEngine.OPTIONS(r.Url, handler)
-		case http.MethodPatch:
-			a.httpEngine.PATCH(r.Url, handler)
-		case http.MethodHead:
-			a.httpEngine.HEAD(r.Url, handler)
-		default:
-			a.httpEngine.Any(r.Url, handler)
-		}
-	}
 	return nil
 }
 

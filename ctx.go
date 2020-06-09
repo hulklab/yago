@@ -2,6 +2,7 @@ package yago
 
 import (
 	"errors"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 
@@ -15,7 +16,10 @@ type Ctx struct {
 	err  error
 }
 
-const CtxParamsKey = "__PARAMS__"
+const (
+	CtxParamsKey = "__PARAMS__"
+	ctxYagoKey   = "__YagoCtx__"
+)
 
 type ResponseBody struct {
 	ErrNo  int         `json:"errno"`
@@ -23,10 +27,28 @@ type ResponseBody struct {
 	Data   interface{} `json:"data"`
 }
 
-func NewCtx(c *gin.Context) *Ctx {
-	return &Ctx{
+func newCtx(c *gin.Context) *Ctx {
+	ctx := &Ctx{
 		Context: c,
 	}
+
+	c.Set(ctxYagoKey, ctx)
+	return ctx
+}
+
+func getCtxFromGin(c *gin.Context) (*Ctx, error) {
+	v, ok := c.Get(ctxYagoKey)
+	if !ok {
+		ctx := newCtx(c)
+		return ctx, nil
+	}
+
+	ctx, ok := v.(*Ctx)
+	if !ok {
+		return nil, fmt.Errorf("get yago ctx err, yago ctx type error")
+	}
+
+	return ctx, nil
 }
 
 func (c *Ctx) GetFileContent(key string) ([]byte, error) {
