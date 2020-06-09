@@ -18,6 +18,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mitchellh/mapstructure"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/pprof"
@@ -91,6 +93,11 @@ var (
 	errTaskRouteEmpty = errors.New("task router is empty")
 )
 
+type httpStaticPath struct {
+	Route string `json:"route"`
+	Path  string `json:"path"`
+}
+
 func NewApp() *App {
 	// new app
 	app := new(App)
@@ -122,9 +129,18 @@ func NewApp() *App {
 			if app.HttpViewPath != "" {
 				app.httpEngine.LoadHTMLGlob(app.HttpViewPath)
 			}
-			app.HttpStaticPath = Config.GetString("app.http_static_path")
-			if app.HttpStaticPath != "" {
-				app.httpEngine.Static("/static", app.HttpStaticPath)
+
+			if Config.IsSet("app.http_static_paths") {
+				hsp := Config.Get("app.http_static_paths")
+				httpStaticPaths := make([]httpStaticPath, 0)
+				err := mapstructure.Decode(hsp, &httpStaticPaths)
+				if err != nil {
+					log.Fatalln("parse http static paths err:", err.Error())
+				}
+
+				for _, staticPath := range httpStaticPaths {
+					app.httpEngine.Static(staticPath.Route, staticPath.Path)
+				}
 			}
 		}
 
