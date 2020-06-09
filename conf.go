@@ -20,7 +20,7 @@ type AppConfig struct {
 
 func (c *AppConfig) ReadFileConfig(cfgPath string) error {
 	err := c.ReadInConfig() // Find and read the config file
-	if err != nil {         // Handle errors reading the config file
+	if err != nil { // Handle errors reading the config file
 		return fmt.Errorf("Fatal error config file: %s \n, \"--help\" gives usage information", err)
 	}
 
@@ -142,12 +142,13 @@ var cfgPath *string
 var cfgLock = new(sync.Mutex)
 
 func initConfig() {
-	noConf := flag.Lookup("c") == nil
-
-	cfgPath = flag.String("c", defaultCfgPath(), "config file path")
+	defaultCfgPath := defaultCfgPath()
+	cfgPath = flag.String("c", defaultCfgPath, "config file path")
 	_ = flag.Bool("h", false, "help")
 	_ = flag.Bool("help", false, "help")
 	flag.Parse()
+
+	noConf := *cfgPath == defaultCfgPath
 
 	if noConf && isInTests() {
 		Config = &AppConfig{viper.New()}
