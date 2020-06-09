@@ -72,7 +72,7 @@ func Ins(id ...string) *Elastic {
 
 		client, err := elastic.NewClient(options...)
 		if err != nil {
-			// 如果报错 no Elasticsearch node available  可能是用户名密码不正确，或者sniff_enable没有置为false
+			// 如果报错 no Elasticsearch node available 可能是用户名密码不正确，或者 sniff_enable 没有置为 false。
 			log.Fatalf("Fatal error url: %s", err)
 		}
 		return &Elastic{
