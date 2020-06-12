@@ -67,27 +67,29 @@ func BizLog(c *yago.Ctx) {
 
 	c.Next()
 
-	resp, ok := c.GetResponse()
-	if !ok {
-		return
-	}
+	go func(c *yago.Ctx) {
+		resp, ok := c.GetResponse()
+		if !ok {
+			return
+		}
 
-	params := c.GetString(ctxParamsKey)
+		params := c.GetString(ctxParamsKey)
 
-	if resp.ErrNo != 0 {
-		logger.Ins().Category("http.biz.error").WithFields(logrus.Fields{
-			"url":     c.Request.URL.String(),
-			"params":  params,
-			"header":  c.Request.Header,
-			"user_ip": c.ClientIP(),
-		}).Error(c.GetError())
-	} else {
-		logger.Ins().Category("http.biz.info").WithFields(logrus.Fields{
-			"url":     c.Request.URL.String(),
-			"params":  params,
-			"header":  c.Request.Header,
-			"user_ip": c.ClientIP(),
-			"resp":    resp,
-		}).Debug()
-	}
+		if resp.ErrNo != 0 {
+			logger.Ins().Category("http.biz.error").WithFields(logrus.Fields{
+				"url":     c.Request.URL.String(),
+				"params":  params,
+				"header":  c.Request.Header,
+				"user_ip": c.ClientIP(),
+			}).Error(c.GetError())
+		} else {
+			logger.Ins().Category("http.biz.info").WithFields(logrus.Fields{
+				"url":     c.Request.URL.String(),
+				"params":  params,
+				"header":  c.Request.Header,
+				"user_ip": c.ClientIP(),
+				"resp":    resp,
+			}).Debug()
+		}
+	}(c.Copy())
 }
