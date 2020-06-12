@@ -12,23 +12,23 @@ type INode interface {
 	// node seq
 	GetSeq() int64
 	// set node children
-	SetChildren(n INodes)
+	SetChildren(n Nodes)
 }
 
-type INodes []INode
+type Nodes []INode
 
-func (nodes INodes) Len() int {
+func (nodes Nodes) Len() int {
 	return len(nodes)
 }
-func (nodes INodes) Swap(i, j int) {
+func (nodes Nodes) Swap(i, j int) {
 	nodes[i], nodes[j] = nodes[j], nodes[i]
 }
-func (nodes INodes) Less(i, j int) bool {
+func (nodes Nodes) Less(i, j int) bool {
 	return nodes[i].GetSeq() < nodes[j].GetSeq()
 }
 
-func GenTree(root INode, list INodes) {
-	var children INodes
+func GenTree(root INode, list Nodes) {
+	var children Nodes
 	for _, v := range list {
 		if v.GetParentId() == root.GetId() {
 			GenTree(v, list)

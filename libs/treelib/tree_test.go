@@ -25,13 +25,13 @@ func (n ExampleNode) GetSeq() int64 {
 	return n.Id
 }
 
-func (n *ExampleNode) SetChildren(list INodes) {
+func (n *ExampleNode) SetChildren(list Nodes) {
 	n.Children = append(n.Children, list...)
 }
 
 func TestGenTree(t *testing.T) {
-	var list INodes
-	list = INodes{
+	var list Nodes
+	list = Nodes{
 		&ExampleNode{
 			Id:       1,
 			Name:     "一级节点",
