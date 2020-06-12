@@ -23,8 +23,8 @@ type HttpRouter struct {
 
 type HttpGlobalMiddleware []HttpHandlerFunc
 
-func GetHttpGlobalMiddleware() *HttpGlobalMiddleware {
-	return &httpGlobalMiddleware
+func HttpUse(middleware ...HttpHandlerFunc) {
+	httpGlobalMiddleware.Use(middleware...)
 }
 
 func (r *HttpGlobalMiddleware) Use(middleware ...HttpHandlerFunc) {
