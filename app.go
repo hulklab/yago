@@ -360,7 +360,7 @@ func (a *App) loadHttpRouter() error {
 	}
 
 	// register global middleware
-	for _, m := range *GetHttpGlobalMiddleware() {
+	for _, m := range httpGlobalMiddleware {
 		handler := m
 		a.httpEngine.Use(func(c *gin.Context) {
 			ctx, err := getCtxFromGin(c)
