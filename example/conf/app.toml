@@ -34,9 +34,6 @@ http_stop_time_wait = 10
 # pprof route: /debug/pprof
 # http_pprof_on = false
 
-# 开启 http 业务请求日志
-# http_bizlog_on = true
-
 # http html 模版配置
 # http_view_render = true
 # http_view_path = "views/*"
