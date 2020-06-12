@@ -34,13 +34,10 @@ http_stop_time_wait = 10
 # pprof route: /debug/pprof
 # http_pprof_on = false
 
-# 开启 http 业务请求日志
-# http_bizlog_on = true
-
 # http html 模版配置
 # http_view_render = true
 # http_view_path = "views/*"
-# http_static_path = "static/js"
+# http_static_paths = [{route="/static",path="static/js"}]
 
 # 是否开启rpc服务
 rpc_enable = true
@@ -128,6 +125,14 @@ dial_timeout = 2
 # cert_file = "conf/ssl/etcd_cert.pem"
 # cert_key_file = "conf/ssl/etcd_cert_key.pem"
 # cert_ca_file = "conf/ssl/etcd_ca.pem"
+
+[elastic]
+urls = ["http://127.0.0.1:9200/", "http://127.0.0.1:9300"]
+# username = ""
+# password = ""
+# sniff_enable = false
+# 日志最低等级 Error = 2, Info = 4, Trace = 6
+level = 6
 
 ##########################################
 # 以下是 api 区

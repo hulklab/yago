@@ -118,3 +118,48 @@ func New{{NAME}}Service() *{{LNAME}}Service {
 }
 
 `
+
+var ApiTemplate = `package {{PACKAGE}}
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/base/basethird"
+	"github.com/levigross/grequests"
+)
+
+type {{LNAME}}Api struct {
+	basethird.HttpThird
+}
+
+func Ins() *{{LNAME}}Api{
+	name := "{{ONAME}}_api"
+	v := yago.Component.Ins(name, func() interface{} {
+		api := new({{LNAME}}Api)
+
+		err := api.InitConfig(name)
+		if err != nil {
+			log.Fatal("init {{ONAME}} api config error:", err.Error())
+		}
+		return api
+	})
+	return v.(*{{LNAME}}Api)
+}
+
+func (a *{{LNAME}}Api) Hello() {
+
+	ro := &grequests.RequestOptions{
+		JSON: map[string]interface{}{},
+	}
+
+	resp, err := a.Post("/hello", nil, ro)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(resp.String())
+	}
+
+}
+`

@@ -1,12 +1,9 @@
 package yago
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -17,6 +14,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/mitchellh/mapstructure"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
@@ -63,8 +62,6 @@ type App struct {
 	HttpGzipLevel int
 	// http pprof
 	HttpPprof bool
-	// http biz log
-	HttpBizLogOn bool
 
 	// 开启task服务
 	TaskEnable bool
@@ -90,6 +87,11 @@ var (
 	errHttpRouteEmpty = errors.New("http router is empty")
 	errTaskRouteEmpty = errors.New("task router is empty")
 )
+
+type httpStaticPath struct {
+	Route string `json:"route"`
+	Path  string `json:"path"`
+}
 
 func NewApp() *App {
 	// new app
@@ -122,9 +124,18 @@ func NewApp() *App {
 			if app.HttpViewPath != "" {
 				app.httpEngine.LoadHTMLGlob(app.HttpViewPath)
 			}
-			app.HttpStaticPath = Config.GetString("app.http_static_path")
-			if app.HttpStaticPath != "" {
-				app.httpEngine.Static("/static", app.HttpStaticPath)
+
+			if Config.IsSet("app.http_static_paths") {
+				hsp := Config.Get("app.http_static_paths")
+				httpStaticPaths := make([]httpStaticPath, 0)
+				err := mapstructure.Decode(hsp, &httpStaticPaths)
+				if err != nil {
+					log.Fatalln("parse http static paths err:", err.Error())
+				}
+
+				for _, staticPath := range httpStaticPaths {
+					app.httpEngine.Static(staticPath.Route, staticPath.Path)
+				}
 			}
 		}
 
@@ -183,9 +194,6 @@ func NewApp() *App {
 		}
 
 		app.HttpPprof = Config.GetBool("app.http_pprof_on")
-
-		Config.SetDefault("app.http_bizlog_on", true)
-		app.HttpBizLogOn = Config.GetBool("app.http_bizlog_on")
 	}
 
 	// init rpc
@@ -242,12 +250,12 @@ func (a *App) Run() {
 }
 
 func (a *App) genPid() {
-	pidfile, ok := getPidFile()
+	pidFile, ok := getPidFile()
 	if !ok {
 		return
 	}
 
-	pf, err := os.Create(pidfile)
+	pf, err := os.Create(pidFile)
 
 	defer pf.Close()
 
@@ -267,8 +275,69 @@ func (a *App) genPid() {
 	log.Println("app is running with pid:", newPid)
 }
 
+func (a *App) registerHttpRouter(g *HttpGroupRouter) {
+	for _, r := range g.HttpRouterList {
+		method := strings.ToUpper(r.Method)
+		action := r.Action
+		handler := func(c *gin.Context) {
+			ctx := newCtx(c)
+			action(ctx)
+		}
+
+		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
+		log.Printf("[HTTP] %-6s %-25s --> %s\n", method, r.Url(), strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
+
+		switch method {
+		case http.MethodGet:
+			g.GinGroup.GET(r.Path, handler)
+		case http.MethodPost:
+			g.GinGroup.POST(r.Path, handler)
+		case http.MethodDelete:
+			g.GinGroup.DELETE(r.Path, handler)
+		case http.MethodPut:
+			g.GinGroup.PUT(r.Path, handler)
+		case http.MethodOptions:
+			g.GinGroup.OPTIONS(r.Path, handler)
+		case http.MethodPatch:
+			g.GinGroup.PATCH(r.Path, handler)
+		case http.MethodHead:
+			g.GinGroup.HEAD(r.Path, handler)
+		default:
+			g.GinGroup.Any(r.Path, handler)
+		}
+	}
+}
+
+func (a *App) registerHttpGroupRouter(group map[string]*HttpGroupRouter) {
+	for _, g := range group {
+		if g.Parent == nil {
+			g.GinGroup = a.httpEngine.Group(g.Prefix)
+		} else {
+			g.GinGroup = g.Parent.GinGroup.Group(g.Prefix)
+		}
+
+		if len(g.Middleware) > 0 {
+			for _, m := range g.Middleware {
+				handler := m
+				g.GinGroup.Use(func(c *gin.Context) {
+					ctx, err := getCtxFromGin(c)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					handler(ctx)
+				})
+			}
+		}
+
+		a.registerHttpRouter(g)
+
+		a.registerHttpGroupRouter(g.Children)
+	}
+}
+
 func (a *App) loadHttpRouter() error {
-	if len(HttpRouterMap) == 0 {
+	if len(httpGroupRouterMap) == 0 {
 		return errHttpRouteEmpty
 	}
 
@@ -298,102 +367,29 @@ func (a *App) loadHttpRouter() error {
 		pprof.Register(a.httpEngine)
 	}
 
-	if a.HttpBizLogOn {
-		a.httpEngine.Use(func(c *gin.Context) {
-			req := c.Request
-			var paramKey = CtxParamsKey
-			c.Set(paramKey, "")
-
-			switch c.ContentType() {
-			case gin.MIMEJSON:
-				bodyBytes, err := ioutil.ReadAll(req.Body)
-				if err != nil {
-					log.Println("read body:", err.Error())
-					return
-				}
-
-				err = req.Body.Close() //  must close
-				if err != nil {
-					log.Println("close body:", err.Error())
-					return
-				}
-				req.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-
-				c.Set(paramKey, string(bodyBytes))
-			case gin.MIMEPOSTForm:
-				err := req.ParseForm()
-				if err != nil {
-					log.Println("parse form", err.Error())
-					return
-				}
-				bs, err := json.Marshal(req.PostForm)
-				if err != nil {
-					log.Println("json encode err:", err.Error())
-				}
-
-				c.Set(paramKey, string(bs))
-
-			case gin.MIMEMultipartPOSTForm:
-				err := req.ParseMultipartForm(a.httpEngine.MaxMultipartMemory)
-				if err != nil {
-					log.Println("parse multi form", err.Error())
-					return
-				} else if req.MultipartForm != nil {
-					bs, err := json.Marshal(req.PostForm)
-					if err != nil {
-						log.Println("json encode err:", err.Error())
-					}
-					c.Set(paramKey, string(bs))
-				}
-			}
-		})
-
-	}
-
 	// no route handler
 	if httpNoRouterHandler != nil {
 		a.httpEngine.NoRoute(func(c *gin.Context) {
-			ctx := NewCtx(c)
+			ctx := newCtx(c)
 			httpNoRouterHandler(ctx)
 		})
 	}
 
-	for _, r := range HttpRouterMap {
-		method := strings.ToUpper(r.Method)
-		action := r.Action
-		controller := r.h
-		handler := func(c *gin.Context) {
-			ctx := NewCtx(c)
-			if e := controller.BeforeAction(ctx); e != nil {
-				ctx.SetError(e)
-			} else {
-				action(ctx)
+	// register global middleware
+	for _, m := range httpGlobalMiddleware {
+		handler := m
+		a.httpEngine.Use(func(c *gin.Context) {
+			ctx, err := getCtxFromGin(c)
+			if err != nil {
+				log.Println(err)
+				return
 			}
-
-			go controller.AfterAction(ctx.Copy())
-		}
-
-		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
-		log.Printf("[HTTP] %-6s %-25s --> %s\n", method, r.Url, strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
-		switch method {
-		case http.MethodGet:
-			a.httpEngine.GET(r.Url, handler)
-		case http.MethodPost:
-			a.httpEngine.POST(r.Url, handler)
-		case http.MethodDelete:
-			a.httpEngine.DELETE(r.Url, handler)
-		case http.MethodPut:
-			a.httpEngine.PUT(r.Url, handler)
-		case http.MethodOptions:
-			a.httpEngine.OPTIONS(r.Url, handler)
-		case http.MethodPatch:
-			a.httpEngine.PATCH(r.Url, handler)
-		case http.MethodHead:
-			a.httpEngine.HEAD(r.Url, handler)
-		default:
-			a.httpEngine.Any(r.Url, handler)
-		}
+			handler(ctx)
+		})
 	}
+
+	a.registerHttpGroupRouter(httpGroupRouterMap)
+
 	return nil
 }
 
