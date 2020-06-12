@@ -80,7 +80,11 @@ func TestGenTree(t *testing.T) {
 		ParentId: -1,
 	}
 
-	GenTree(root, list)
+	err := GenTree(root, list)
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
 	jsonTree, _ := json.MarshalIndent(root, "", "  ")
 

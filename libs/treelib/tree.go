@@ -1,6 +1,8 @@
 package treelib
 
 import (
+	"errors"
+	"reflect"
 	"sort"
 )
 
@@ -27,11 +29,30 @@ func (nodes Nodes) Less(i, j int) bool {
 	return nodes[i].GetSeq() < nodes[j].GetSeq()
 }
 
-func GenTree(root INode, list Nodes) {
+func ptrVerify(p interface{}) error {
+	value := reflect.ValueOf(p)
+	if value.Kind() != reflect.Ptr {
+		return errors.New("needs a pointer to a node")
+	} else if value.Elem().Kind() == reflect.Ptr {
+		return errors.New("a pointer to a pointer is not allowed")
+	}
+	return nil
+}
+
+func GenTree(root INode, list Nodes) error {
+	if err := ptrVerify(root); err != nil {
+		return err
+	}
+
 	var children Nodes
 	for _, v := range list {
+		if err := ptrVerify(v); err != nil {
+			return err
+		}
 		if v.GetParentId() == root.GetId() {
-			GenTree(v, list)
+			if err := GenTree(v, list); err != nil {
+				return err
+			}
 			children = append(children, v)
 		}
 	}
@@ -39,4 +60,6 @@ func GenTree(root INode, list Nodes) {
 	sort.Sort(children)
 
 	root.SetChildren(children)
+
+	return nil
 }
