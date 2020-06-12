@@ -1,4 +1,4 @@
-package basemiddleware
+package middleware
 
 import (
 	"bytes"
