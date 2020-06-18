@@ -10,16 +10,23 @@ import (
 func TestPromise(t *testing.T) {
 	promise := New(3)
 
-	for i := 0; i < 5; i++ {
-		if i == 1 {
-			promise.Add(func() error {
-				// do some things , but occur err
-				return errors.New("some errors occur")
-			})
-			continue
-		}
-
+	for i := 0; i < 3; i++ {
 		promise.Add(func() error {
+			fmt.Println("do some things")
+			// do some things
+			time.Sleep(time.Second * 1)
+			return nil
+		})
+	}
+
+	promise.Add(func() error {
+		// do some things , but occur err
+		return errors.New("some errors occur")
+	})
+
+	for i := 0; i < 1000; i++ {
+		promise.Add(func() error {
+			fmt.Println("do some things")
 			// do some things
 			time.Sleep(time.Second * 1)
 			return nil

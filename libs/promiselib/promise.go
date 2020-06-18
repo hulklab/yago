@@ -1,6 +1,8 @@
 package promiselib
 
-import "context"
+import (
+	"context"
+)
 
 type promise struct {
 	ctx      context.Context
@@ -19,6 +21,7 @@ func New(concurrencyNum int) *promise {
 
 // add goruntine
 func (w *promise) Add(f func() error) {
+
 	w.usedSize ++
 
 	go func() {
@@ -26,17 +29,23 @@ func (w *promise) Add(f func() error) {
 		case <-w.ctx.Done():
 			return
 		default:
-			w.error <- f()
+			err := f()
+
+			w.error <- err // report status
+			if err != nil {
+				w.cancel()
+			}
+
+			return
 		}
 	}()
 }
 
+//
 // wait for result
 func (w *promise) Wait() error {
 	for i := 0; i < w.usedSize; i ++ {
 		if err := <-w.error; err != nil {
-			w.cancel()
-
 			return err
 		}
 	}
