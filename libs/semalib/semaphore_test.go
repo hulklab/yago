@@ -48,7 +48,7 @@ func TestTrySemaphore(t *testing.T) {
 }
 
 func TestErrRetrunSemaphore(t *testing.T) {
-	sema := New(1)
+	sema := New(3)
 
 	for i := 0; i < 3; i++ {
 		sema.Add(func() error {
@@ -63,7 +63,7 @@ func TestErrRetrunSemaphore(t *testing.T) {
 	sema.Add(func() error {
 		// do some things
 		fmt.Println("some error occur")
-
+		time.Sleep(time.Millisecond * 200)
 		return errors.New("occur error")
 	})
 

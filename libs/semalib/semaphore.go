@@ -50,9 +50,9 @@ func (s *semaphore) Release() {
 // add goruntine
 // trigger error returns early for concurrency
 func (s *semaphore) Add(f func() error) {
-	s.wg.Add(1)
+	s.Acquire()
 	go func() {
-		defer s.wg.Done()
+		defer s.Release()
 
 		select {
 		case <-s.ctx.Done():
