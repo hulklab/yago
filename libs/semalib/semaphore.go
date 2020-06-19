@@ -11,11 +11,9 @@ type semaphore struct {
 	bufSize int
 	channel chan struct{}
 	wg      *sync.WaitGroup
-
 	error   unsafe.Pointer
-	lock sync.Mutex
-	ctx    context.Context
-	cancel context.CancelFunc
+	ctx     context.Context
+	cancel  context.CancelFunc
 }
 
 func New(concurrencyNum int) *semaphore {
