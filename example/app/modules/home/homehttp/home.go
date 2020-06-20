@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/hulklab/yago/example/app/modules/home/homedao"
+
+	"github.com/hulklab/yago/base/basemodel"
+
 	"github.com/hulklab/yago/example/app/modules/home/homehttp/homemiddleware"
 
 	"github.com/hulklab/yago"
@@ -31,6 +35,7 @@ func init() {
 	yago.AddHttpRouter("/home/detail", http.MethodGet, homeHttp.DetailAction)
 	yago.AddHttpRouter("/home/update", http.MethodPost, homeHttp.UpdateAction)
 	yago.AddHttpRouter("/home/list", http.MethodPost, homeHttp.ListAction)
+	yago.AddHttpRouter("/home/base-list", http.MethodPost, homeHttp.BaseListAction)
 	yago.AddHttpRouter("/home/upload", http.MethodPost, homeHttp.UploadAction)
 	yago.AddHttpRouter("/home/hello/:name", http.MethodGet, homeHttp.Hello2Action)
 	yago.AddHttpRouter("/home/cookie", http.MethodGet, homeHttp.CookieAction)
@@ -190,6 +195,54 @@ func (h *HomeHttp) ListAction(c *yago.Ctx) {
 
 	model := homemodel.NewHomeModel()
 	total, users := model.GetList(pi.Q, pi.Page, pi.Pagesize)
+	c.SetData(map[string]interface{}{
+		"total": total,
+		"list":  users,
+	})
+}
+
+// curl 'http://127.0.0.1:8080/home/base-list' -H "Content-type:application/json" -XPOST -d '{"page":1}'
+func (h *HomeHttp) BaseListAction(c *yago.Ctx) {
+	type p struct {
+		Page    int               `json:"page" validate:"min=1"`
+		Size    int               `json:"size" validate:"oneof=10 20 50 100"`
+		Q       string            `json:"q" validate:"-"`
+		Filters basemodel.Filters `json:"filters" validate:"-"`
+		Orders  basemodel.Orders  `json:"orders" validate:"-"`
+	}
+
+	pi := p{
+		Page: 1,
+		Size: 10,
+	}
+
+	err := c.ShouldBindJSON(&pi)
+	if err != nil {
+		c.SetError(err)
+		return
+	}
+
+	var users []*homedao.UserDao
+
+	model := homemodel.NewHomeModel()
+
+	total, err := model.PageList(&basemodel.PageQuery{
+		Page: pi.Page,
+		Size: pi.Size,
+		Q: basemodel.Q{
+			pi.Q: {
+				"username",
+			},
+		},
+		Orders:  pi.Orders,
+		Filters: pi.Filters,
+	}, &users)
+
+	if err != nil {
+		c.SetError(err)
+		return
+	}
+
 	c.SetData(map[string]interface{}{
 		"total": total,
 		"list":  users,

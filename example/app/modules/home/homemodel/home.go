@@ -2,6 +2,7 @@ package homemodel
 
 import (
 	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/base/basemodel"
 	"github.com/hulklab/yago/coms/orm"
 	"github.com/hulklab/yago/example/app/g"
 	"github.com/hulklab/yago/libs/date"
@@ -10,10 +11,21 @@ import (
 )
 
 type HomeModel struct {
+	basemodel.BaseModel
 }
 
 func NewHomeModel() *HomeModel {
-	return &HomeModel{}
+	return &HomeModel{
+		basemodel.BaseModel{
+			DefaultPage: 1,
+			DefaultSize: 20,
+			DefaultOrders: []basemodel.Order{
+				{
+					"created_at": -1,
+				},
+			},
+		},
+	}
 }
 
 func (m *HomeModel) Add(name string, options map[string]interface{}) (int64, error) {
