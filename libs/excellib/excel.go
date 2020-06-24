@@ -1,6 +1,7 @@
 package excellib
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -9,90 +10,101 @@ import (
 	"github.com/hulklab/cast"
 )
 
+const sheetName = "Sheet1"
+
 type E struct {
 	Key   string      `json:"key"`
 	Value interface{} `json:"value"`
 }
 
-// g.D{{"foo","bar","hello","world"}}
+// D{{"foo","bar","hello","world"}}
 type D []E
 
-type Arg struct {
+type List = []interface{}
+type Hash = map[string]interface{}
+
+type ImportReq struct {
+	Filename       string
+	Reader         io.Reader
+	DivideFirstRow bool
 	SheetName      string
-	DivideFirstRow bool // 分离第一行
-	AutoAlign      bool // 自动对齐
 }
 
-type Option func(arg *Arg)
-
-func WithSheetName(name string) Option {
-	return func(arg *Arg) {
-		arg.SheetName = name
+func (r *ImportReq) GetSheetName() string {
+	if r.SheetName == "" {
+		return sheetName
 	}
+
+	return r.SheetName
 }
 
-func WithDivideFirstRow(b bool) Option {
-	return func(arg *Arg) {
-		arg.DivideFirstRow = b
-	}
+type ImportResp struct {
+	Rows    [][]string
+	Headers []string
 }
 
-func WithAutoAlign() Option {
-	return func(arg *Arg) {
-		arg.AutoAlign = true
-	}
+type ExportReq struct {
+	Rows      []List
+	Headers   []string
+	SheetName string
+	AutoAlign bool
 }
 
-func extractArg(opts ...Option) Arg {
-	sheetName := "Sheet1"
-
-	arg := Arg{
-		SheetName: sheetName,
+func (r *ExportReq) GetSheetName() string {
+	if r.SheetName == "" {
+		return sheetName
 	}
 
-	for _, opt := range opts {
-		opt(&arg)
-	}
-
-	return arg
+	return r.SheetName
 }
 
-func ImportFile(filename string, divideFirst bool, opts ...Option) ([][]string, []string, error) {
+type ExportAssocReq struct {
+	Rows      []Hash
+	Headers   D
+	SheetName string
+	AutoAlign bool
+}
 
-	f, err := excelize.OpenFile(filename)
+func ImportFile(req *ImportReq) (resp *ImportResp, err error) {
+	if len(req.Filename) == 0 {
+		return nil, errors.New("filename is required")
+	}
+
+	f, err := excelize.OpenFile(req.Filename)
 	if err != nil {
-		return nil, nil, err
+		return
 	}
-	opts = append(opts, WithDivideFirstRow(divideFirst))
-	return importExcel(f, opts...)
+	return importExcel(f, req)
 }
 
-func ImportReader(r io.Reader, divideFirst bool, opts ...Option) ([][]string, []string, error) {
-	f, err := excelize.OpenReader(r)
+func ImportReader(req *ImportReq) (resp *ImportResp, err error) {
+	if req.Reader == nil {
+		return nil, errors.New("reader is required")
+	}
+
+	f, err := excelize.OpenReader(req.Reader)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	opts = append(opts, WithDivideFirstRow(divideFirst))
-	return importExcel(f, opts...)
+	return importExcel(f, req)
 }
 
-func importExcel(f *excelize.File, opts ...Option) ([][]string, []string, error) {
-	arg := extractArg(opts...)
-
+func importExcel(f *excelize.File, req *ImportReq) (resp *ImportResp, err error) {
 	contents := make([][]string, 0)
 	headers := make([]string, 0)
+	resp = &ImportResp{}
 
-	rows, err := f.GetRows(arg.SheetName)
+	rows, err := f.GetRows(req.GetSheetName())
 
 	if err != nil {
-		return contents, nil, err
+		return nil, err
 	}
 
 	if len(rows) == 0 {
-		return contents, headers, nil
+		return resp, nil
 	}
 
-	if arg.DivideFirstRow {
+	if req.DivideFirstRow {
 		headers = rows[0]
 		// 矫整列数据
 		for i := len(headers) - 1; i >= 0; i-- {
@@ -108,7 +120,7 @@ func importExcel(f *excelize.File, opts ...Option) ([][]string, []string, error)
 	max := 0
 	for i, row := range rows {
 		// 如果有标题，以标题的长度为准
-		if i == 0 && arg.DivideFirstRow {
+		if i == 0 && req.DivideFirstRow {
 			max = len(headers)
 			break
 		}
@@ -120,7 +132,7 @@ func importExcel(f *excelize.File, opts ...Option) ([][]string, []string, error)
 	}
 
 	for i, row := range rows {
-		if i == 0 && arg.DivideFirstRow {
+		if i == 0 && req.DivideFirstRow {
 			continue
 		}
 
@@ -151,15 +163,18 @@ func importExcel(f *excelize.File, opts ...Option) ([][]string, []string, error)
 		contents = append(contents, row)
 	}
 
-	return contents, headers, nil
+	resp.Headers = headers
+	resp.Rows = contents
+
+	return resp, nil
 }
 
 // rows [{id:xx,name:xx,username},{}] headers [{id:"ID"},{name,姓名}]
-func ExportAssoc(rows []map[string]interface{}, headers D, opts ...Option) (*excelize.File, error) {
+func ExportAssoc(req *ExportAssocReq) (*excelize.File, error) {
 	headerList := make([]string, 0)
 
 	// 先处理表头
-	for _, kv := range headers {
+	for _, kv := range req.Headers {
 
 		v := cast.ToString(kv.Value)
 
@@ -169,11 +184,11 @@ func ExportAssoc(rows []map[string]interface{}, headers D, opts ...Option) (*exc
 	rowList := make([][]interface{}, 0)
 
 	// 再处理内容
-	for _, row := range rows {
+	for _, row := range req.Rows {
 
-		rowData := []interface{}{}
+		rowData := List{}
 
-		for _, kv := range headers {
+		for _, kv := range req.Headers {
 			val, ok := row[kv.Key]
 			if !ok {
 				val = ""
@@ -185,36 +200,39 @@ func ExportAssoc(rows []map[string]interface{}, headers D, opts ...Option) (*exc
 		rowList = append(rowList, rowData)
 	}
 
-	return Export(rowList, headerList, opts...)
+	return Export(&ExportReq{
+		Rows:      rowList,
+		Headers:   headerList,
+		SheetName: req.SheetName,
+		AutoAlign: req.AutoAlign,
+	})
 
 }
 
-// rows [[id_value,name_value,username_value]] headers  [ID,姓名]
-func Export(rows [][]interface{}, headers []string, opts ...Option) (*excelize.File, error) {
-	arg := extractArg(opts...)
+func Export(req *ExportReq) (*excelize.File, error) {
 
 	handle := excelize.NewFile()
 
-	err := handle.SetSheetRow(arg.SheetName, "A1", &headers)
+	err := handle.SetSheetRow(req.GetSheetName(), "A1", &req.Headers)
 	if err != nil {
 		return nil, err
 	}
 
-	if arg.AutoAlign {
+	if req.AutoAlign {
 		var rate = 1.2
 
 		// 获取每一列的最大宽度
-		for i := 0; i < len(headers); i++ {
+		for i := 0; i < len(req.Headers); i++ {
 
 			colName, err := excelize.ColumnNumberToName(i + 1)
 			if err != nil {
 				return nil, err
 			}
 
-			maxCnt := searchCount(headers[i])
+			maxCnt := searchCount(req.Headers[i])
 
-			for j, row := range rows {
-				if len(row) < len(headers) {
+			for j, row := range req.Rows {
+				if len(row) < len(req.Headers) {
 					return nil, fmt.Errorf("第 %d 行数据少于 header 个数", j+1)
 				}
 
@@ -238,16 +256,16 @@ func Export(rows [][]interface{}, headers []string, opts ...Option) (*excelize.F
 
 			//fmt.Println("col:",colName,"width:",fitColWidth)
 
-			_ = handle.SetColWidth(arg.SheetName, colName, colName, fitColWidth)
+			_ = handle.SetColWidth(req.GetSheetName(), colName, colName, fitColWidth)
 		}
 
 	}
 
 	// 再处理内容
-	for i, row := range rows {
+	for i, row := range req.Rows {
 		axis := fmt.Sprintf("A%d", i+2)
 
-		err := handle.SetSheetRow(arg.SheetName, axis, &row)
+		err := handle.SetSheetRow(req.GetSheetName(), axis, &row)
 		if err != nil {
 			return nil, err
 		}
@@ -256,7 +274,7 @@ func Export(rows [][]interface{}, headers []string, opts ...Option) (*excelize.F
 	return handle, nil
 }
 
-// Excel所有出现的值进行匹配给出对应宽度值
+// Excel 所有出现的值进行匹配给出对应宽度值
 func searchCount(src string) int {
 	letters := "abcdefghijklmnopqrstuvwxyz"
 	letters = letters + strings.ToUpper(letters)

@@ -23,7 +23,12 @@ func testExportAssoc(t *testing.T) {
 		{"name": "李四", "age": 20},
 	}
 
-	excelFile, err := ExportAssoc(rows, D{{Key: "name", Value: "姓名"}, {Key: "age", Value: "年龄"}}, WithAutoAlign())
+	excelFile, err := ExportAssoc(&ExportAssocReq{
+		Rows:      rows,
+		Headers:   D{{Key: "name", Value: "姓名"}, {Key: "age", Value: "年龄"}},
+		AutoAlign: true,
+	})
+
 	if err != nil {
 		t.Errorf("export assoc err:%s", err.Error())
 		return
@@ -43,7 +48,12 @@ func testExportRows(t *testing.T) {
 		{"田七", 19},
 	}
 
-	excelFile, err := Export(rows, []string{"姓名", "年龄"})
+	excelFile, err := Export(&ExportReq{
+		Rows:      rows,
+		Headers:   []string{"姓名", "年龄"},
+		AutoAlign: true,
+	})
+
 	if err != nil {
 		t.Errorf("export err:%s", err.Error())
 		return
@@ -57,14 +67,17 @@ func testExportRows(t *testing.T) {
 
 func testImport(t *testing.T) {
 
-	rows, headers, err := ImportFile("user.xlsx", true)
+	resp, err := ImportFile(&ImportReq{
+		Filename:       "user.xlsx",
+		DivideFirstRow: true,
+	})
 
 	if err != nil {
 		t.Errorf("import err:%s", err.Error())
 		return
 	}
 
-	t.Logf("headers: %+v\n", headers)
+	t.Logf("headers: %+v\n", resp.Headers)
 
-	t.Logf("rows:%+v\n", rows)
+	t.Logf("rows:%+v\n", resp.Rows)
 }
