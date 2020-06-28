@@ -196,7 +196,7 @@ func (m *BaseModel) PageList(query *PageQuery, items interface{}) (int64, error)
 		return 0, errors.New("default size can not be 0")
 	}
 
-	session := orm.Ins().NewSession()
+	session := m.GetSession()
 
 	buildFilters(session, query.Filters)
 
