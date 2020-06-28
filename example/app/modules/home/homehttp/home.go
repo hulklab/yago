@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-xorm/xorm"
+
+	"github.com/hulklab/yago/coms/orm"
+
 	"github.com/hulklab/yago/example/app/modules/home/homedao"
 
 	"github.com/hulklab/yago/base/basemodel"
@@ -96,14 +100,20 @@ func (h *HomeHttp) AddAction(c *yago.Ctx) {
 		return
 	}
 
-	model := homemodel.NewHomeModel()
-	id, e := model.Add(p.Name, nil)
-	if e != nil {
-		c.SetError(e)
-		return
-	}
+	err = orm.Ins().Transactional(func(session *xorm.Session) error {
+		_, err := homemodel.NewUserModel(basemodel.WithSession(session)).Add(p.Name, p.Phone)
+		if err != nil {
+			return err
+		}
+		_, err = homemodel.NewHomeModel(basemodel.WithSession(session)).Add(p.Name, nil)
+		if err != nil {
+			return err
+		}
 
-	c.SetData(map[string]interface{}{"id": id})
+		return nil
+	})
+
+	c.SetDataOrErr("OK", err)
 }
 
 var p struct {
@@ -243,7 +253,7 @@ func (h *HomeHttp) BaseListAction(c *yago.Ctx) {
 		return
 	}
 
-	c.SetData(map[string]interface{}{
+	c.SetData(g.Hash{
 		"total": total,
 		"list":  users,
 	})

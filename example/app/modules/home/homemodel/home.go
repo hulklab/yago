@@ -14,18 +14,20 @@ type HomeModel struct {
 	basemodel.BaseModel
 }
 
-func NewHomeModel() *HomeModel {
-	return &HomeModel{
-		basemodel.BaseModel{
-			DefaultPage: 1,
-			DefaultSize: 20,
-			DefaultOrders: []basemodel.Order{
-				{
-					"created_at": -1,
-				},
-			},
-		},
-	}
+func NewHomeModel(opts ...basemodel.Option) *HomeModel {
+	model := &HomeModel{}
+
+	opts = append(
+		opts,
+		basemodel.WithDefaultPageSize(1, 20),
+		basemodel.WithDefaultOrder(
+			basemodel.Order{"created_at": -1},
+		),
+	)
+
+	model.Init(opts...)
+
+	return model
 }
 
 func (m *HomeModel) Add(name string, options map[string]interface{}) (int64, error) {
@@ -33,7 +35,7 @@ func (m *HomeModel) Add(name string, options map[string]interface{}) (int64, err
 	// 判断 name 是否已存在
 	exist := &homedao.HomeDao{Name: name}
 
-	_, _ = orm.Ins().Get(exist)
+	_, _ = m.GetSession().Get(exist)
 
 	if exist.Id != 0 {
 		return 0, yago.NewErr("用户名 " + name + " 已存在")
@@ -41,14 +43,16 @@ func (m *HomeModel) Add(name string, options map[string]interface{}) (int64, err
 
 	// 添加用户
 	user := &homedao.HomeDao{
-		Name:  name,
-		Ctime: date.Now(),
+		Name:      name,
+		CreatedAt: date.Now(),
 	}
 
-	_, err := orm.Ins().Insert(user)
+	_, err := m.GetSession().Insert(user)
+	if err != nil {
+		return 0, yago.WrapErr(yago.ErrSystem, err)
+	}
 
-	return user.Id, yago.WrapErr(yago.ErrSystem, err)
-
+	return user.Id, nil
 }
 
 func (m *HomeModel) UpdateById(id int64, options map[string]interface{}) (*homedao.HomeDao, error) {

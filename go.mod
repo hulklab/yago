@@ -24,7 +24,6 @@ require (
 	github.com/levigross/grequests v0.0.0-20190130132859-37c80f76a0da
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/natefinch/lumberjack v2.0.0+incompatible
-	github.com/olivere/elastic v6.2.32+incompatible
 	github.com/olivere/elastic/v7 v7.0.16
 	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.4.2

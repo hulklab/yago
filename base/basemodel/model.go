@@ -8,10 +8,51 @@ import (
 	"xorm.io/builder"
 )
 
+type Options struct {
+	session       *xorm.Session
+	defaultPage   int
+	defaultSize   int
+	defaultOrders []Order
+}
+
 type BaseModel struct {
-	DefaultPage   int
-	DefaultSize   int
-	DefaultOrders []Order
+	options *Options
+}
+
+func (m *BaseModel) GetSession() *xorm.Session {
+	if m.options.session == nil {
+		return orm.Ins().NewSession()
+	}
+	return m.options.session
+}
+
+type Option func(o *Options)
+
+func (m *BaseModel) Init(opts ...Option) {
+	var opt Options
+	for _, option := range opts {
+		option(&opt)
+	}
+	m.options = &opt
+}
+
+func WithSession(session *xorm.Session) Option {
+	return func(o *Options) {
+		o.session = session
+	}
+}
+
+func WithDefaultPageSize(page, size int) Option {
+	return func(o *Options) {
+		o.defaultPage = page
+		o.defaultSize = size
+	}
+}
+
+func WithDefaultOrder(orders ...Order) Option {
+	return func(o *Options) {
+		o.defaultOrders = orders
+	}
 }
 
 // Funnel screening condition
@@ -109,46 +150,49 @@ func buildOrders(session *xorm.Session, orders Orders) {
 	}
 }
 
-// List without page
-func (m *BaseModel) List(query *Query, items interface{}) (int64, error) {
-	if len(m.DefaultOrders) == 0 {
-		return 0, errors.New("default orders can not be nil")
-	}
-
-	session := orm.Ins().NewSession()
-
-	buildFilters(session, query.Filters)
-
-	buildQ(session, query.Q)
-
-	if len(query.Orders) > 0 {
-		buildOrders(session, query.Orders)
-	} else {
-		buildOrders(session, m.DefaultOrders)
-	}
-
-	if query.ExtraQuery != nil {
-		query.ExtraQuery(session)
-	}
-
-	total, err := session.FindAndCount(items)
-
-	if err != nil {
-		return 0, err
-	}
-
-	return total, nil
-}
+//// List without page
+//func (m *BaseModel) List(query *Query, items interface{}) (int64, error) {
+//	if len(m.DefaultOrders) == 0 {
+//		return 0, errors.New("default orders can not be nil")
+//	}
+//
+//	session := orm.Ins().NewSession()
+//
+//	buildFilters(session, query.Filters)
+//
+//	buildQ(session, query.Q)
+//
+//	if len(query.Orders) > 0 {
+//		buildOrders(session, query.Orders)
+//	} else {
+//		buildOrders(session, m.DefaultOrders)
+//	}
+//
+//	if query.ExtraQuery != nil {
+//		query.ExtraQuery(session)
+//	}
+//
+//	total, err := session.FindAndCount(items)
+//
+//	if err != nil {
+//		return 0, err
+//	}
+//
+//	return total, nil
+//}
 
 // List with page
 func (m *BaseModel) PageList(query *PageQuery, items interface{}) (int64, error) {
-	if len(m.DefaultOrders) == 0 {
+	if m.options == nil {
+		return 0, errors.New("model.init function needs to be executed in new model")
+	}
+	if len(m.options.defaultOrders) == 0 {
 		return 0, errors.New("default orders can not be nil")
 	}
-	if m.DefaultPage == 0 {
+	if m.options.defaultPage == 0 {
 		return 0, errors.New("default page can not be 0")
 	}
-	if m.DefaultSize == 0 {
+	if m.options.defaultSize == 0 {
 		return 0, errors.New("default size can not be 0")
 	}
 
@@ -161,7 +205,7 @@ func (m *BaseModel) PageList(query *PageQuery, items interface{}) (int64, error)
 	if len(query.Orders) > 0 {
 		buildOrders(session, query.Orders)
 	} else {
-		buildOrders(session, m.DefaultOrders)
+		buildOrders(session, m.options.defaultOrders)
 	}
 
 	if query.ExtraQuery != nil {
@@ -169,11 +213,11 @@ func (m *BaseModel) PageList(query *PageQuery, items interface{}) (int64, error)
 	}
 
 	if query.Page <= 0 {
-		query.Page = m.DefaultPage
+		query.Page = m.options.defaultPage
 	}
 
 	if query.Size <= 0 {
-		query.Size = m.DefaultSize
+		query.Size = m.options.defaultSize
 	}
 
 	session.Limit(query.Size, (query.Page-1)*query.Size)

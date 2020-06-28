@@ -33,8 +33,10 @@ func (orm *Orm) Transactional(f func(session *xorm.Session) error) (err error) {
 	defer func() {
 		if p := recover(); p != nil {
 			err1 := session.Rollback()
-			log.Println("err occur in db transaction:", err1.Error())
-			panic(p)
+			if err1 != nil {
+				log.Println("err occur in db transaction:", err1.Error())
+				panic(p)
+			}
 		} else if err != nil {
 			if err2 := session.Rollback(); err2 != nil {
 				err = fmt.Errorf("execute %s, rollback err: %s", err.Error(), err2.Error())
