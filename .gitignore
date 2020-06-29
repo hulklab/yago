@@ -10,4 +10,5 @@ go.sum
 node_modules
 _book
 example/app.toml
+example/conf/app.local.toml
 example/example
