@@ -150,37 +150,6 @@ func buildOrders(session *xorm.Session, orders Orders) {
 	}
 }
 
-//// List without page
-//func (m *BaseModel) List(query *Query, items interface{}) (int64, error) {
-//	if len(m.DefaultOrders) == 0 {
-//		return 0, errors.New("default orders can not be nil")
-//	}
-//
-//	session := orm.Ins().NewSession()
-//
-//	buildFilters(session, query.Filters)
-//
-//	buildQ(session, query.Q)
-//
-//	if len(query.Orders) > 0 {
-//		buildOrders(session, query.Orders)
-//	} else {
-//		buildOrders(session, m.DefaultOrders)
-//	}
-//
-//	if query.ExtraQuery != nil {
-//		query.ExtraQuery(session)
-//	}
-//
-//	total, err := session.FindAndCount(items)
-//
-//	if err != nil {
-//		return 0, err
-//	}
-//
-//	return total, nil
-//}
-
 // List with page
 func (m *BaseModel) PageList(query *PageQuery, items interface{}) (int64, error) {
 	if m.options == nil {
