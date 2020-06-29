@@ -2,7 +2,7 @@ package preinit
 
 import (
 	"github.com/hulklab/yago/coms/orm"
-	"github.com/hulklab/yago/example/app/lib/trace"
+	"github.com/hulklab/yago/example/app/libs/trace"
 	xormLog "xorm.io/xorm/log"
 )
 
