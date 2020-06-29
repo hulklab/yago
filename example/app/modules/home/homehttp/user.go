@@ -107,7 +107,7 @@ func (h *UserHttp) AddAction(c *yago.Ctx) {
 		}
 		// other model (create update delete) method in the same transaction ......
 		return nil
-	})
+	}, orm.WithContext(c))
 
 	c.SetDataOrErr("OK", err)
 }

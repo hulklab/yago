@@ -1,6 +1,7 @@
 package basemodel
 
 import (
+	"context"
 	"errors"
 
 	"github.com/hulklab/yago/coms/orm"
@@ -10,6 +11,7 @@ import (
 
 type Options struct {
 	session       *xorm.Session
+	ctx           context.Context
 	defaultPage   int
 	defaultSize   int
 	defaultOrders []Order
@@ -21,8 +23,18 @@ type BaseModel struct {
 
 func (m *BaseModel) GetSession() *xorm.Session {
 	if m.options.session == nil {
-		return orm.Ins().NewSession()
+		ctx := context.Background()
+		if m.options.ctx != nil {
+			ctx = m.options.ctx
+		}
+
+		return orm.Ins().Context(ctx)
 	}
+
+	if m.options.ctx != nil {
+		return m.options.session.Context(m.options.ctx)
+	}
+
 	return m.options.session
 }
 
@@ -39,6 +51,12 @@ func (m *BaseModel) Init(opts ...Option) {
 func WithSession(session *xorm.Session) Option {
 	return func(o *Options) {
 		o.session = session
+	}
+}
+
+func WithCtx(ctx context.Context) Option {
+	return func(o *Options) {
+		o.ctx = ctx
 	}
 }
 
