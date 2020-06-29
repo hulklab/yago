@@ -3,6 +3,7 @@ module github.com/hulklab/yago
 go 1.13
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize/v2 v2.2.0
 	github.com/Shopify/sarama v1.19.0
 	github.com/bsm/sarama-cluster v2.1.15+incompatible
 	github.com/bwmarrin/snowflake v0.3.0
@@ -20,6 +21,7 @@ require (
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
+	github.com/hulklab/cast v1.9.0
 	github.com/levigross/grequests v0.0.0-20190130132859-37c80f76a0da
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/natefinch/lumberjack v2.0.0+incompatible
