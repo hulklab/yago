@@ -1,6 +1,6 @@
 module github.com/hulklab/yago
 
-go 1.12
+go 1.13
 
 require (
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.2.0
@@ -17,7 +17,6 @@ require (
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.0.1
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/go-xorm/xorm v0.7.6
 	github.com/golang/protobuf v1.3.2
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect
@@ -26,7 +25,6 @@ require (
 	github.com/levigross/grequests v0.0.0-20190130132859-37c80f76a0da
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/natefinch/lumberjack v2.0.0+incompatible
-	github.com/olivere/elastic v6.2.32+incompatible
 	github.com/olivere/elastic/v7 v7.0.16
 	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.4.2
@@ -36,8 +34,10 @@ require (
 	github.com/xdg/stringprep v1.0.0 // indirect
 	go.etcd.io/etcd v0.5.0-alpha.5.0.20191023171146-3cf2f69b5738
 	go.mongodb.org/mongo-driver v1.3.4
+	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5 // indirect
 	golang.org/x/net v0.0.0-20200506145744-7e3656a0809f
 	google.golang.org/grpc v1.23.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
-	xorm.io/core v0.7.0
+	xorm.io/builder v0.3.7
+	xorm.io/xorm v1.0.2
 )
