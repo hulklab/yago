@@ -5,14 +5,19 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
+
+	"github.com/hulklab/yago/coms/orm"
+
+	"github.com/hulklab/yago/example/app/modules/home/homedao"
+
+	"github.com/hulklab/yago/base/basemodel"
+
+	"github.com/hulklab/yago/example/app/modules/home/homehttp/homemiddleware"
+
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basehttp"
-	"github.com/hulklab/yago/base/basemodel"
-	"github.com/hulklab/yago/coms/orm"
 	"github.com/hulklab/yago/example/app/g"
-	"github.com/hulklab/yago/example/app/modules/home/homedao"
-	"github.com/hulklab/yago/example/app/modules/home/homehttp/homemiddleware"
 	"github.com/hulklab/yago/example/app/modules/home/homemodel"
 )
 

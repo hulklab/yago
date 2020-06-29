@@ -36,6 +36,7 @@ require (
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
 	google.golang.org/grpc v1.23.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
-	xorm.io/builder v0.3.5
+	xorm.io/builder v0.3.7
 	xorm.io/core v0.7.0
+	xorm.io/xorm v1.0.2
 )

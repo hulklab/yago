@@ -3,9 +3,9 @@ package basemodel
 import (
 	"errors"
 
-	"github.com/go-xorm/xorm"
 	"github.com/hulklab/yago/coms/orm"
 	"xorm.io/builder"
+	"xorm.io/xorm"
 )
 
 type Options struct {

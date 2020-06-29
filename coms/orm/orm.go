@@ -1,6 +1,7 @@
 package orm
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -9,12 +10,13 @@ import (
 	"strings"
 	"time"
 
+	"xorm.io/xorm"
+
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-xorm/xorm"
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
-	"xorm.io/core"
+	xormLog "xorm.io/xorm/log"
 )
 
 type Orm struct {
@@ -22,8 +24,13 @@ type Orm struct {
 }
 
 // 扩展了一个事务功能
-func (orm *Orm) Transactional(f func(session *xorm.Session) error) (err error) {
-	session := orm.NewSession()
+func (o *Orm) Transactional(f func(session *xorm.Session) error, opts ...OrmOption) (err error) {
+	session := o.NewSession()
+	ormArg := ExtractOption(opts...)
+	if ormArg.ctx != nil {
+		session = session.Context(ormArg.ctx)
+	}
+
 	defer session.Close()
 	err = session.Begin()
 	if err != nil {
@@ -52,6 +59,7 @@ func (orm *Orm) Transactional(f func(session *xorm.Session) error) (err error) {
 
 type OrmArg struct {
 	Session *xorm.Session
+	ctx     context.Context
 }
 
 type OrmOption func(arg *OrmArg)
@@ -59,6 +67,12 @@ type OrmOption func(arg *OrmArg)
 func WithSession(session *xorm.Session) OrmOption {
 	return func(arg *OrmArg) {
 		arg.Session = session
+	}
+}
+
+func WithContext(ctx context.Context) OrmOption {
+	return func(arg *OrmArg) {
+		arg.ctx = ctx
 	}
 }
 
@@ -73,7 +87,7 @@ func ExtractOption(opts ...OrmOption) OrmArg {
 // 添加或者修改的原子操作，但是要求 columns 里面必须包含唯一键，否则会一直执行添加操作
 // Upsert("table_name",g.Hash{"name":"zhangsan","uuid":"abcdef"})
 // Upsert("table_name",g.Hash{"name":"zhangsan","uuid":"abcdef"},orm.WithSession(session)) 事务中使用
-func (orm *Orm) Upsert(table interface{}, columns map[string]interface{}, opts ...OrmOption) (sql.Result, error) {
+func (o *Orm) Upsert(table interface{}, columns map[string]interface{}, opts ...OrmOption) (sql.Result, error) {
 	if table == nil {
 		return nil, errors.New("table is required in orm upsert")
 	}
@@ -93,7 +107,7 @@ func (orm *Orm) Upsert(table interface{}, columns map[string]interface{}, opts .
 		placeholders = append(placeholders, value)
 	}
 
-	tableName := orm.TableName(table)
+	tableName := o.TableName(table)
 	colStr := strings.Join(cols, ", ")
 	valuePlaceStr := strings.TrimLeft(strings.Repeat(", ?", len(cols)), ", ")
 	updateStr := strings.Join(cols, " = ?, ") + "= ?"
@@ -111,14 +125,22 @@ func (orm *Orm) Upsert(table interface{}, columns map[string]interface{}, opts .
 	}
 
 	var session *xorm.Session
-	if len(opts) > 0 {
-		ormArg := ExtractOption(opts...)
+	ormArg := ExtractOption(opts...)
+
+	if ormArg.Session != nil {
 		session = ormArg.Session
+
+		if ormArg.ctx != nil {
+			session = session.Context(ormArg.ctx)
+		}
 	}
 
 	if session == nil {
-		return orm.Exec(args...)
+		if ormArg.ctx != nil {
+			return o.Context(ormArg.ctx).Exec(args...)
+		}
 
+		return o.Exec(args...)
 	} else {
 		return session.Exec(args...)
 	}
@@ -192,7 +214,12 @@ func Ins(id ...string) *Orm {
 		// 设置日志
 		showLog, ok := conf["show_log"]
 		if ok {
-			orm.SetLogger(getLogger(showLog.(bool)))
+			if ctxLogger != nil {
+				orm.SetLogger(ctxLogger)
+				orm.ShowSQL(showLog.(bool))
+			} else {
+				orm.SetLogger(getLogger(showLog.(bool)))
+			}
 		}
 
 		return orm
@@ -213,16 +240,22 @@ func getLogger(show bool) *Logger {
 	return lg
 }
 
+var ctxLogger xormLog.ContextLogger
+
+func RegisterCtxLogger(ctxLog xormLog.ContextLogger) {
+	ctxLogger = ctxLog
+}
+
 type Logger struct {
 	*logrus.Entry
 	show bool
 }
 
-func (l *Logger) Level() core.LogLevel {
+func (l *Logger) Level() xormLog.LogLevel {
 	return 0
 }
 
-func (l *Logger) SetLevel(c core.LogLevel) {
+func (l *Logger) SetLevel(c xormLog.LogLevel) {
 }
 
 func (l *Logger) ShowSQL(show ...bool) {
