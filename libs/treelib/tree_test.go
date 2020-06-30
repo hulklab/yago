@@ -8,9 +8,10 @@ import (
 )
 
 type ExampleNode struct {
-	Id       int64   `json:"id"`
-	Name     string  `json:"name"`
-	ParentId int64   `json:"parent_id"`
+	Id       int64  `json:"id"`
+	Name     string `json:"name"`
+	ParentId int64  `json:"parent_id"`
+	Children INodes `json:"children"` //子树
 }
 
 func (n ExampleNode) GetId() int64 {
@@ -25,13 +26,13 @@ func (n ExampleNode) GetTitle() string {
 	return n.Name
 }
 
-func (n ExampleNode) GetData() interface{} {
-	return n
-}
-
 func (n ExampleNode) IsRoot() bool {
 	// 这里通过ParentId等于0 或者 ParentId等于自身Id表示顶层根节点
 	return n.ParentId == 0 || n.ParentId == n.Id
+}
+
+func (n *ExampleNode) SetChildren(nodes INodes) {
+	n.Children = append(n.Children, nodes...)
 }
 
 type ExampleNodes []*ExampleNode
@@ -89,15 +90,7 @@ func TestGenTree(t *testing.T) {
 	}
 
 	// 生成完全树
-	resp := GenerateTree(ExampleNodes.ConvertToINodeArray(list), nil)
+	resp := GenerateTree(ExampleNodes.ConvertToINodeArray(list))
 	bytes, _ := json.MarshalIndent(resp, "", "\t")
-	fmt.Println(string(pretty.Color(pretty.PrettyOptions(bytes, pretty.DefaultOptions), nil)))
-
-	// 模拟从数据库中查询出 '三级节点'
-	threeNode := []*ExampleNode{list[4]}
-	// 查询 '三级节点' 的所有父节点
-	respNodes := FindRelationNode(ExampleNodes.ConvertToINodeArray(threeNode), ExampleNodes.ConvertToINodeArray(list))
-	resp = GenerateTree(respNodes, nil)
-	bytes, _ = json.Marshal(resp)
 	fmt.Println(string(pretty.Color(pretty.PrettyOptions(bytes, pretty.DefaultOptions), nil)))
 }
