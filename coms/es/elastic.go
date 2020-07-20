@@ -30,7 +30,7 @@ func Ins(id ...string) *Elastic {
 
 		urls := yago.Config.GetStringSlice(name + ".urls")
 		if len(urls) < 1 {
-			log.Fatalln("Fatal error es urls not config")
+			log.Fatalln("Fatal error elastic urls not config")
 		}
 
 		options = append(options, elastic.SetURL(urls...))
