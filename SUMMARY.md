@@ -27,6 +27,7 @@
     * [Mongo 组件](component/mgo.md)
     * [Etcd 组件](component/etcd.md)
     * [Locker 组件](component/locker.md)
+    * [ElasticSearch 组件](component/es.md)
 * [类库](library/library.md)
     * [goroutine 限流](library/sema.md)
     * [日期](library/date.md)
