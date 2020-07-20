@@ -1,4 +1,4 @@
-package elastic
+package es
 
 import (
 	"github.com/hulklab/yago"
