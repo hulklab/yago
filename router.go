@@ -110,8 +110,8 @@ func (g *HttpGroupRouter) Group(prefix string) *HttpGroupRouter {
 		log.Panic("http sub group router name can not be empty")
 	}
 
-	if _, ok := g.Children[prefix]; ok {
-		log.Panicf("http sub group router duplicate : %s", prefix)
+	if group, ok := g.Children[prefix]; ok {
+		return group
 	}
 
 	group := &HttpGroupRouter{
@@ -119,7 +119,10 @@ func (g *HttpGroupRouter) Group(prefix string) *HttpGroupRouter {
 		Parent: g,
 	}
 
-	g.Children = make(map[string]*HttpGroupRouter)
+	if g.Children == nil {
+		g.Children = make(map[string]*HttpGroupRouter)
+	}
+
 	g.Children[prefix] = group
 
 	return group
