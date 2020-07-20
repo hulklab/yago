@@ -1,4 +1,4 @@
-package elastic
+package es
 
 import (
 	"context"
@@ -17,7 +17,7 @@ type Tweet struct {
 }
 
 // 获取所有的 index
-// go test -v ./coms/elastic -run TestCatIndex -args "-c=${PWD}/example/conf/app.toml"
+// go test -v ./coms/es -run TestCatIndex -args "-c=${PWD}/example/conf/app.toml"
 func TestCatIndex(t *testing.T) {
 	indices, err := Ins().CatIndices().Do(context.Background())
 
@@ -32,7 +32,7 @@ func TestCatIndex(t *testing.T) {
 }
 
 // 创建 index
-// go test -v ./coms/elastic -run TestCreateIndex -args "-c=${PWD}/example/conf/app.toml"
+// go test -v ./coms/es -run TestCreateIndex -args "-c=${PWD}/example/conf/app.toml"
 func TestCreateIndex(t *testing.T) {
 	exist, err := Ins().IndexExists("es_test").Do(context.Background())
 	if err != nil {
@@ -72,7 +72,7 @@ func TestCreateIndex(t *testing.T) {
 }
 
 // 删除 index
-// go test -v ./coms/elastic -run TestDeleteIndex -args "-c=${PWD}/example/conf/app.toml"
+// go test -v ./coms/es -run TestDeleteIndex -args "-c=${PWD}/example/conf/app.toml"
 func TestDeleteIndex(t *testing.T) {
 	exist, err := Ins().IndexExists("es_test").Do(context.Background())
 	if err != nil {
@@ -94,7 +94,7 @@ func TestDeleteIndex(t *testing.T) {
 }
 
 // 插入数据
-// go test -v ./coms/elastic -run TestInsert -args "-c=${PWD}/example/conf/app.toml"
+// go test -v ./coms/es -run TestInsert -args "-c=${PWD}/example/conf/app.toml"
 func TestInsert(t *testing.T) {
 	msg := Tweet{User: "bob", Message: "hello"}
 	// 不存在就创建，存在就更新
@@ -108,7 +108,7 @@ func TestInsert(t *testing.T) {
 }
 
 // 查询数据
-// go test -v ./coms/elastic -run TestTermQuery -args "-c=${PWD}/example/conf/app.toml"
+// go test -v ./coms/es -run TestTermQuery -args "-c=${PWD}/example/conf/app.toml"
 func TestTermQuery(t *testing.T) {
 	// 利用elastic/v7 的包构建 term 查询
 	termQuery := elastic.NewTermQuery("user", "bob")
@@ -144,7 +144,7 @@ func TestTermQuery(t *testing.T) {
 }
 
 // 根据 id 更新
-// go test -v ./coms/elastic -run TestUpdateById -args "-c=${PWD}/example/conf/app.toml"
+// go test -v ./coms/es -run TestUpdateById -args "-c=${PWD}/example/conf/app.toml"
 func TestUpdateById(t *testing.T) {
 	ret, err := Ins().Update().Index("es_test").Id("1").Doc(map[string]interface{}{"message": "haha"}).Do(context.Background())
 	if err != nil {
@@ -157,7 +157,7 @@ func TestUpdateById(t *testing.T) {
 }
 
 // 根据 id 删除数据
-// go test -v ./coms/elastic -run TestDeleteById -args "-c=${PWD}/example/conf/app.toml"
+// go test -v ./coms/es -run TestDeleteById -args "-c=${PWD}/example/conf/app.toml"
 func TestDeleteById(t *testing.T) {
 	ret, err := Ins().Delete().Index("es_test").Id("1").Do(context.Background())
 	if err != nil {
@@ -168,7 +168,7 @@ func TestDeleteById(t *testing.T) {
 }
 
 // 根据查询语句删除数据
-// go test -v ./coms/elastic -run TestDeleteByQuery -args "-c=${PWD}/example/conf/app.toml"
+// go test -v ./coms/es -run TestDeleteByQuery -args "-c=${PWD}/example/conf/app.toml"
 func TestDeleteByQuery(t *testing.T) {
 	termQuery := elastic.NewTermQuery("user", "bob")
 	ret, err := Ins().DeleteByQuery().Index("es_test").Query(termQuery).Do(context.Background())
