@@ -32,7 +32,7 @@ level = 6
 
 
 ```go
-    exist, err := elastic.Ins().IndexExists("es_test").Do(context.Background())
+    exist, err := es.Ins().IndexExists("es_test").Do(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +60,7 @@ level = 6
     }
 }`
 
-	ret, err := elastic.Ins().CreateIndex("es_test").BodyString(mapping).Do(context.Background())
+	ret, err := es.Ins().CreateIndex("es_test").BodyString(mapping).Do(context.Background())
 
 	if err != nil {
 		panic(err)
@@ -72,7 +72,7 @@ level = 6
 * 删除索引
 
 ```go
-	exist, err := elastic.Ins().IndexExists("es_test").Do(context.Background())
+	exist, err := es.Ins().IndexExists("es_test").Do(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +82,7 @@ level = 6
 		return
 	}
 
-	ret, err := elastic.Ins().DeleteIndex("es_test").Do(context.Background())
+	ret, err := es.Ins().DeleteIndex("es_test").Do(context.Background())
 
 	if err != nil {
 		panic(err)
@@ -96,7 +96,7 @@ level = 6
 ```go
 	msg := Tweet{User: "bob", Message: "hello"}
 	// 不存在就创建，存在就更新
-	ret, err := elastic.Ins().Index().Index("es_test").Id("1").BodyJson(msg).Do(context.Background())
+	ret, err := es.Ins().Index().Index("es_test").Id("1").BodyJson(msg).Do(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -107,11 +107,11 @@ level = 6
 
 * 查询数据
 
-```
+```go
 	// 利用elastic/v7 的包构建 term 查询
 	termQuery := elastic.NewTermQuery("user", "bob")
 
-	ret, err := elastic.Ins().Search().
+	ret, err := es.Ins().Search().
 		Index("es_test"). // use index
 		Query(termQuery). // termQuery
 		From(0).Size(10). // pagesize
@@ -143,8 +143,8 @@ level = 6
 
 * 根据 id 更新
 
-```
-	ret, err := elastic.Ins().Update().Index("es_test").Id("1").Doc(map[string]interface{}{"message": "haha"}).Do(context.Background())
+```go
+	ret, err := es.Ins().Update().Index("es_test").Id("1").Doc(map[string]interface{}{"message": "haha"}).Do(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -156,8 +156,8 @@ level = 6
 
 * 根据 id 删除数据
 
-```
-	ret, err := elastic.Ins().Delete().Index("es_test").Id("1").Do(context.Background())
+```go
+	ret, err := es.Ins().Delete().Index("es_test").Id("1").Do(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -167,9 +167,9 @@ level = 6
 
 * 根据查询语句删除数据
 
-```
+```go
 	termQuery := elastic.NewTermQuery("user", "bob")
-	ret, err := elastic.Ins().DeleteByQuery().Index("es_test").Query(termQuery).Do(context.Background())
+	ret, err := es.Ins().DeleteByQuery().Index("es_test").Query(termQuery).Do(context.Background())
 	if err != nil {
 		panic(err)
 	}
