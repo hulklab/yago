@@ -47,7 +47,7 @@ func TestTrySemaphore(t *testing.T) {
 	fmt.Println("---------- TestTrySemaphore done ----------")
 }
 
-func TestErrRetrunSemaphore(t *testing.T) {
+func TestErrReturnSemaphore(t *testing.T) {
 	sema := New(3)
 
 	for i := 0; i < 3; i++ {
