@@ -2,6 +2,7 @@ package yago
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"log"
@@ -408,6 +409,20 @@ func (a *App) runHttp() {
 
 	if a.HttpSslOn {
 		go func() {
+			tlsMap := map[string]uint16{
+				"TLSv1.0": tls.VersionTLS10,
+				"TLSv1.1": tls.VersionTLS11,
+				"TLSv1.2": tls.VersionTLS12,
+				"TLSv1.3": tls.VersionTLS13,
+			}
+
+			if Config.IsSet("app.http_tls_min_version") {
+				minVer := Config.GetString("app.http_tls_min_version")
+				if ver, ok := tlsMap[minVer]; ok {
+					srv.TLSConfig = &tls.Config{MinVersion: ver}
+				}
+			}
+
 			// service connections
 			if err := srv.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
 				log.Fatalf("listen: %s\n", err)
