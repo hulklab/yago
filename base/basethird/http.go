@@ -357,6 +357,8 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 			dataParams[k] = fmt.Sprintf("%v", val)
 		case []byte:
 			dataParams[k] = string(val)
+		case bool:
+			dataParams[k] = strconv.FormatBool(val)
 		default:
 			err := errors.New("unsupported type" + fmt.Sprintf("%T", val))
 			return ErrResponse(err), err
