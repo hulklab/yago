@@ -20,7 +20,7 @@ const CtxParamsKey = "__PARAMS__"
 type ResponseBody struct {
 	ErrNo  int         `json:"errno"`
 	ErrMsg string      `json:"errmsg"`
-	Data   interface{} `json:"data"`
+	Data   interface{} `json:"data,omitempty"`
 }
 
 func NewCtx(c *gin.Context) *Ctx {
@@ -61,7 +61,7 @@ func (c *Ctx) setError(err Err) {
 	c.resp = &ResponseBody{
 		ErrNo:  err.Code(),
 		ErrMsg: err.Error(),
-		Data:   map[string]interface{}{},
+		Data:   nil,
 	}
 
 	c.JSON(http.StatusOK, c.resp)
