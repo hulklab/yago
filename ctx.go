@@ -23,7 +23,7 @@ const (
 type ResponseBody struct {
 	ErrNo  int         `json:"errno"`
 	ErrMsg string      `json:"errmsg"`
-	Data   interface{} `json:"data"`
+	Data   interface{} `json:"data,omitempty"`
 }
 
 func newCtx(c *gin.Context) *Ctx {
@@ -83,7 +83,7 @@ func (c *Ctx) setError(err Err) {
 	resp := &ResponseBody{
 		ErrNo:  err.Code(),
 		ErrMsg: err.Error(),
-		Data:   map[string]interface{}{},
+		Data:   nil,
 	}
 
 	c.Set(ErrorKey, resp)
