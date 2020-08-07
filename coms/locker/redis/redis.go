@@ -191,13 +191,15 @@ func (r *redisLock) Unlock() {
 		r.done = nil
 	}
 
-	//if r.errors != nil {
-	//	fmt.Println("close err chan")
-	//	close(r.errors)
-	//	r.errors = nil
-	//}
+	rc := r.rIns().GetConn()
+	defer func(rc redis.Conn) {
+		err := rc.Close()
+		if err != nil {
+			log.Println("[Redis] close redis conn err: ", err.Error())
+		}
+	}(rc)
 
-	_, err := unlockScript.Do(r.rIns().GetConn(), r.key, r.token)
+	_, err := unlockScript.Do(rc, r.key, r.token)
 	log.Printf("[RedisLock] lock del %s,%v", r.key, err)
 }
 
