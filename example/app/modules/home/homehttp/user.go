@@ -307,9 +307,9 @@ func (h *UserHttp) MetadataAction(c *yago.Ctx) {
 
 	for _, router := range yago.GetHttpRouters() {
 		if router.Url() == "/user/metadata" {
-			v, ok := router.Metadata.([]interface{})
+			v, ok := router.Metadata[0].(HttpMetadata)
 			if ok {
-				data = data + v[0].(HttpMetadata).Label
+				data = data + v.Label
 			}
 			break
 		}

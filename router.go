@@ -18,7 +18,7 @@ type HttpRouter struct {
 	Path     string
 	Method   string
 	Action   HttpHandlerFunc
-	Metadata interface{}
+	Metadata []interface{}
 }
 
 type HttpGlobalMiddleware []HttpHandlerFunc
@@ -43,12 +43,12 @@ func AddHttpRouter(url, method string, action HttpHandlerFunc, md ...interface{}
 	group.addHttpRouter(url, method, action, md...)
 }
 
-func getSubGroupHttpRouters(g *HttpGroupRouter) []*HttpRouter {
+func getHttpRoutersWithSubGroup(g *HttpGroupRouter) []*HttpRouter {
 	var subRouterList []*HttpRouter
 	subRouterList = append(subRouterList, g.HttpRouterList...)
 	if len(g.Children) > 0 {
 		for _, sub := range g.Children {
-			subRouterList = append(subRouterList, getSubGroupHttpRouters(sub)...)
+			subRouterList = append(subRouterList, getHttpRoutersWithSubGroup(sub)...)
 		}
 	}
 	return subRouterList
@@ -57,9 +57,7 @@ func getSubGroupHttpRouters(g *HttpGroupRouter) []*HttpRouter {
 func GetHttpRouters() []*HttpRouter {
 	var routerList []*HttpRouter
 	for _, v := range httpGroupRouterMap {
-		if len(v.HttpRouterList) > 0 {
-			routerList = append(routerList, getSubGroupHttpRouters(v)...)
-		}
+		routerList = append(routerList, getHttpRoutersWithSubGroup(v)...)
 	}
 	return routerList
 }
