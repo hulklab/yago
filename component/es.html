@@ -806,7 +806,7 @@
 <ul>
 <li>&#x521B;&#x5EFA;&#x7D22;&#x5F15;</li>
 </ul>
-<pre class="language-"><code class="lang-go">    exist<span class="token punctuation">,</span> err <span class="token operator">:=</span> elastic<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">IndexExists</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<pre class="language-"><code class="lang-go">    exist<span class="token punctuation">,</span> err <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">IndexExists</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
     <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
     <span class="token punctuation">}</span>
@@ -834,7 +834,7 @@
     }
 }`</span>
 
-    ret<span class="token punctuation">,</span> err <span class="token operator">:=</span> elastic<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">CreateIndex</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">BodyString</span><span class="token punctuation">(</span>mapping<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    ret<span class="token punctuation">,</span> err <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">CreateIndex</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">BodyString</span><span class="token punctuation">(</span>mapping<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 
     <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
@@ -845,7 +845,7 @@
 <ul>
 <li>&#x5220;&#x9664;&#x7D22;&#x5F15;</li>
 </ul>
-<pre class="language-"><code class="lang-go">    exist<span class="token punctuation">,</span> err <span class="token operator">:=</span> elastic<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">IndexExists</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<pre class="language-"><code class="lang-go">    exist<span class="token punctuation">,</span> err <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">IndexExists</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
     <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
     <span class="token punctuation">}</span>
@@ -855,7 +855,7 @@
         <span class="token keyword">return</span>
     <span class="token punctuation">}</span>
 
-    ret<span class="token punctuation">,</span> err <span class="token operator">:=</span> elastic<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">DeleteIndex</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    ret<span class="token punctuation">,</span> err <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">DeleteIndex</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 
     <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
@@ -868,7 +868,7 @@
 </ul>
 <pre class="language-"><code class="lang-go">    msg <span class="token operator">:=</span> Tweet<span class="token punctuation">{</span>User<span class="token punctuation">:</span> <span class="token string">&quot;bob&quot;</span><span class="token punctuation">,</span> Message<span class="token punctuation">:</span> <span class="token string">&quot;hello&quot;</span><span class="token punctuation">}</span>
     <span class="token comment">// &#x4E0D;&#x5B58;&#x5728;&#x5C31;&#x521B;&#x5EFA;&#xFF0C;&#x5B58;&#x5728;&#x5C31;&#x66F4;&#x65B0;</span>
-    ret<span class="token punctuation">,</span> err <span class="token operator">:=</span> elastic<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Index</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Index</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Id</span><span class="token punctuation">(</span><span class="token string">&quot;1&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">BodyJson</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    ret<span class="token punctuation">,</span> err <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Index</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Index</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Id</span><span class="token punctuation">(</span><span class="token string">&quot;1&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">BodyJson</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
     <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
     <span class="token punctuation">}</span>
@@ -879,68 +879,72 @@
 <ul>
 <li>&#x67E5;&#x8BE2;&#x6570;&#x636E;</li>
 </ul>
-<pre class="language-"><code>    // &#x5229;&#x7528;elastic/v7 &#x7684;&#x5305;&#x6784;&#x5EFA; term &#x67E5;&#x8BE2;
-    termQuery := elastic.NewTermQuery(&quot;user&quot;, &quot;bob&quot;)
+<pre class="language-"><code class="lang-go">    <span class="token comment">// &#x5229;&#x7528;elastic/v7 &#x7684;&#x5305;&#x6784;&#x5EFA; term &#x67E5;&#x8BE2;</span>
+    termQuery <span class="token operator">:=</span> elastic<span class="token punctuation">.</span><span class="token function">NewTermQuery</span><span class="token punctuation">(</span><span class="token string">&quot;user&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;bob&quot;</span><span class="token punctuation">)</span>
 
-    ret, err := elastic.Ins().Search().
-        Index(&quot;es_test&quot;). // use index
-        Query(termQuery). // termQuery
-        From(0).Size(10). // pagesize
-        Do(context.Background()) // execute
-    if err != nil {
-        fmt.Printf(&quot;term query err :%s&quot;, err)
-        return
-    }
+    ret<span class="token punctuation">,</span> err <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Search</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+        <span class="token function">Index</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span> <span class="token comment">// use index</span>
+        <span class="token function">Query</span><span class="token punctuation">(</span>termQuery<span class="token punctuation">)</span><span class="token punctuation">.</span> <span class="token comment">// termQuery</span>
+        <span class="token function">From</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Size</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">.</span> <span class="token comment">// pagesize</span>
+        <span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// execute</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">&quot;term query err :%s&quot;</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+    <span class="token punctuation">}</span>
 
-    // &#x8017;&#x65F6;
-    fmt.Printf(&quot;term query took %d milliseconds\n&quot;, ret.TookInMillis)
+    <span class="token comment">// &#x8017;&#x65F6;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">&quot;term query took %d milliseconds\n&quot;</span><span class="token punctuation">,</span> ret<span class="token punctuation">.</span>TookInMillis<span class="token punctuation">)</span>
 
-    // &#x603B;&#x6570;
-    fmt.Printf(&quot;found total of %d \n&quot;, ret.TotalHits())
+    <span class="token comment">// &#x603B;&#x6570;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">&quot;found total of %d \n&quot;</span><span class="token punctuation">,</span> ret<span class="token punctuation">.</span><span class="token function">TotalHits</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 
-    // list
-    if ret.TotalHits() &gt; 0 {
-        for _, hit := range ret.Hits.Hits {
-            s, err := hit.Source.MarshalJSON()
-            fmt.Println(hit.Type, hit.Id, string(s), err)
+    <span class="token comment">// list</span>
+    <span class="token keyword">if</span> ret<span class="token punctuation">.</span><span class="token function">TotalHits</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token number">0</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> hit <span class="token operator">:=</span> <span class="token keyword">range</span> ret<span class="token punctuation">.</span>Hits<span class="token punctuation">.</span>Hits <span class="token punctuation">{</span>
+            s<span class="token punctuation">,</span> err <span class="token operator">:=</span> hit<span class="token punctuation">.</span>Source<span class="token punctuation">.</span><span class="token function">MarshalJSON</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>hit<span class="token punctuation">.</span>Type<span class="token punctuation">,</span> hit<span class="token punctuation">.</span>Id<span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
 
-            var d Tweet
-            err = json.Unmarshal(hit.Source, &amp;d)
+            <span class="token keyword">var</span> d Tweet
+            err <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>hit<span class="token punctuation">.</span>Source<span class="token punctuation">,</span> <span class="token operator">&amp;</span>d<span class="token punctuation">)</span>
 
-            fmt.Printf(&quot;err %+v, %+v\n&quot;, err, d)
-        }
-    }
-</code></pre><ul>
+            fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">&quot;err %+v, %+v\n&quot;</span><span class="token punctuation">,</span> err<span class="token punctuation">,</span> d<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+</code></pre>
+<ul>
 <li>&#x6839;&#x636E; id &#x66F4;&#x65B0;</li>
 </ul>
-<pre class="language-"><code>    ret, err := elastic.Ins().Update().Index(&quot;es_test&quot;).Id(&quot;1&quot;).Doc(map[string]interface{}{&quot;message&quot;: &quot;haha&quot;}).Do(context.Background())
-    if err != nil {
-        panic(err)
-    }
+<pre class="language-"><code class="lang-go">    ret<span class="token punctuation">,</span> err <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Update</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Index</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Id</span><span class="token punctuation">(</span><span class="token string">&quot;1&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Doc</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">{</span><span class="token string">&quot;message&quot;</span><span class="token punctuation">:</span> <span class="token string">&quot;haha&quot;</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
 
-    fmt.Println(ret.Id)
-    fmt.Println(ret.Type)
-    fmt.Println(ret.Result)
-</code></pre><ul>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ret<span class="token punctuation">.</span>Id<span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ret<span class="token punctuation">.</span>Type<span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ret<span class="token punctuation">.</span>Result<span class="token punctuation">)</span>
+</code></pre>
+<ul>
 <li>&#x6839;&#x636E; id &#x5220;&#x9664;&#x6570;&#x636E;</li>
 </ul>
-<pre class="language-"><code>    ret, err := elastic.Ins().Delete().Index(&quot;es_test&quot;).Id(&quot;1&quot;).Do(context.Background())
-    if err != nil {
-        panic(err)
-    }
+<pre class="language-"><code class="lang-go">    ret<span class="token punctuation">,</span> err <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Delete</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Index</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Id</span><span class="token punctuation">(</span><span class="token string">&quot;1&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
 
-    fmt.Println(ret.Result)
-</code></pre><ul>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ret<span class="token punctuation">.</span>Result<span class="token punctuation">)</span>
+</code></pre>
+<ul>
 <li>&#x6839;&#x636E;&#x67E5;&#x8BE2;&#x8BED;&#x53E5;&#x5220;&#x9664;&#x6570;&#x636E;</li>
 </ul>
-<pre class="language-"><code>    termQuery := elastic.NewTermQuery(&quot;user&quot;, &quot;bob&quot;)
-    ret, err := elastic.Ins().DeleteByQuery().Index(&quot;es_test&quot;).Query(termQuery).Do(context.Background())
-    if err != nil {
-        panic(err)
-    }
+<pre class="language-"><code class="lang-go">    termQuery <span class="token operator">:=</span> elastic<span class="token punctuation">.</span><span class="token function">NewTermQuery</span><span class="token punctuation">(</span><span class="token string">&quot;user&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;bob&quot;</span><span class="token punctuation">)</span>
+    ret<span class="token punctuation">,</span> err <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">Ins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">DeleteByQuery</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Index</span><span class="token punctuation">(</span><span class="token string">&quot;es_test&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Query</span><span class="token punctuation">(</span>termQuery<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
 
-    fmt.Println(ret.Total)
-</code></pre><div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Elastic_&#x7EC4;&#x4EF6;">Elastic &#x7EC4;&#x4EF6;</a></p><li><a href="#&#x914D;&#x7F6E;_Elastic_&#x7EC4;&#x4EF6;">1. &#x914D;&#x7F6E; Elastic &#x7EC4;&#x4EF6;</a></li><li><a href="#&#x4F7F;&#x7528;_Elastic_&#x7EC4;&#x4EF6;">2. &#x4F7F;&#x7528; Elastic &#x7EC4;&#x4EF6;</a></li></ul></div><a href="#&#x914D;&#x7F6E;_Elastic_&#x7EC4;&#x4EF6;" id="goTop"><i class="fa fa-arrow-up"></i></a>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ret<span class="token punctuation">.</span>Total<span class="token punctuation">)</span>
+</code></pre>
+<div id="anchors-navbar"><i class="fa fa-anchor"></i><ul><p><a href="#Elastic_&#x7EC4;&#x4EF6;">Elastic &#x7EC4;&#x4EF6;</a></p><li><a href="#&#x914D;&#x7F6E;_Elastic_&#x7EC4;&#x4EF6;">1. &#x914D;&#x7F6E; Elastic &#x7EC4;&#x4EF6;</a></li><li><a href="#&#x4F7F;&#x7528;_Elastic_&#x7EC4;&#x4EF6;">2. &#x4F7F;&#x7528; Elastic &#x7EC4;&#x4EF6;</a></li></ul></div><a href="#&#x914D;&#x7F6E;_Elastic_&#x7EC4;&#x4EF6;" id="goTop"><i class="fa fa-arrow-up"></i></a>
                                 
                                 </section>
                             
@@ -983,7 +987,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"ElasticSearch 组件","level":"1.6.8","depth":2,"next":{"title":"类库","level":"1.7","depth":1,"path":"library/library.md","ref":"library/library.md","articles":[{"title":"goroutine 限流","level":"1.7.1","depth":2,"path":"library/sema.md","ref":"library/sema.md","articles":[]},{"title":"日期","level":"1.7.2","depth":2,"path":"library/date.md","ref":"library/date.md","articles":[]},{"title":"字符串","level":"1.7.3","depth":2,"path":"library/str.md","ref":"library/str.md","articles":[]},{"title":"数组切片","level":"1.7.4","depth":2,"path":"library/arr.md","ref":"library/arr.md","articles":[]},{"title":"数学","level":"1.7.5","depth":2,"path":"library/math.md","ref":"library/math.md","articles":[]},{"title":"验证器","level":"1.7.6","depth":2,"path":"library/validator.md","ref":"library/validator.md","articles":[]}]},"previous":{"title":"Locker 组件","level":"1.6.7","depth":2,"path":"component/locker.md","ref":"component/locker.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"component/es.md","mtime":"2020-07-17T15:16:59.322Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-07-17T15:18:10.539Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"ElasticSearch 组件","level":"1.6.8","depth":2,"next":{"title":"类库","level":"1.7","depth":1,"path":"library/library.md","ref":"library/library.md","articles":[{"title":"goroutine 限流","level":"1.7.1","depth":2,"path":"library/sema.md","ref":"library/sema.md","articles":[]},{"title":"日期","level":"1.7.2","depth":2,"path":"library/date.md","ref":"library/date.md","articles":[]},{"title":"字符串","level":"1.7.3","depth":2,"path":"library/str.md","ref":"library/str.md","articles":[]},{"title":"数组切片","level":"1.7.4","depth":2,"path":"library/arr.md","ref":"library/arr.md","articles":[]},{"title":"数学","level":"1.7.5","depth":2,"path":"library/math.md","ref":"library/math.md","articles":[]},{"title":"验证器","level":"1.7.6","depth":2,"path":"library/validator.md","ref":"library/validator.md","articles":[]}]},"previous":{"title":"Locker 组件","level":"1.6.7","depth":2,"path":"component/locker.md","ref":"component/locker.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"component/es.md","mtime":"2020-08-14T08:36:06.994Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-08-14T08:36:17.134Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
