@@ -1,9 +1,9 @@
 package homehttp
 
 import (
-	"math/rand"
 	"net/http"
-	"time"
+
+	"github.com/hulklab/cast"
 
 	"xorm.io/xorm"
 
@@ -56,8 +56,8 @@ func init() {
 		memberGroup.Put("/:name", userHttp.UserUpdateAction)
 		memberGroup.Delete("/:name", userHttp.UserDeleteAction)
 
-		consumeSubGroup := memberGroup.Group("/consume")
-		consumeSubGroup.Patch("/sleep/:name", homemiddleware.ComputeConsume, userHttp.ConsumeSleepAction)
+		consumeSubGroup := memberGroup.Group("/plus")
+		consumeSubGroup.Patch("/number/:number", homemiddleware.Compute, userHttp.PlusAction)
 	}
 
 	yago.SetHttpNoRouter(userHttp.NoRouterAction)
@@ -296,9 +296,11 @@ func (h *UserHttp) CookieAction(c *yago.Ctx) {
 	c.SetData("hello " + cookie)
 }
 
-func (h *UserHttp) ConsumeSleepAction(c *yago.Ctx) {
-	c.SetData("I'm sleeping zzz.....")
-	time.Sleep(time.Second * time.Duration(rand.Intn(5)))
+func (h *UserHttp) PlusAction(c *yago.Ctx) {
+	plusNumber := c.Param("number")
+	number := c.GetInt("number")
+	number = number + cast.ToInt(plusNumber)
+	c.Set("number", number)
 }
 
 func (h *UserHttp) MetadataAction(c *yago.Ctx) {

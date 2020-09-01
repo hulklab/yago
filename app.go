@@ -284,7 +284,7 @@ func (a *App) registerHttpRouter(g *HttpGroupRouter) {
 		for _, handler := range action {
 			do := handler
 			handlers = append(handlers, func(c *gin.Context) {
-				ctx := newCtx(c)
+				ctx, _ := getCtxFromGin(c)
 				do(ctx)
 			})
 		}

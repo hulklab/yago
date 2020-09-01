@@ -1,7 +1,7 @@
 package homemiddleware
 
 import (
-	"time"
+	"fmt"
 
 	"github.com/hulklab/yago"
 )
@@ -14,15 +14,15 @@ func CheckUserName(c *yago.Ctx) {
 	}
 }
 
-func ComputeConsume(c *yago.Ctx) {
-	t := time.Now()
+func Compute(c *yago.Ctx) {
 
 	// before request
+	c.Set("number", 1)
 
 	c.Next()
 
 	// after request
-	latency := time.Since(t)
+	number := c.GetInt("number")
 
-	c.SetData("I'm awake and I slept for " + latency.String())
+	c.SetData(fmt.Sprintf("the number is %d", number))
 }
