@@ -1,9 +1,9 @@
 package homehttp
 
 import (
-	"math/rand"
 	"net/http"
-	"time"
+
+	"github.com/hulklab/cast"
 
 	"xorm.io/xorm"
 
@@ -32,18 +32,18 @@ type HttpMetadata struct {
 func init() {
 	userHttp := new(UserHttp)
 
-	// simple route, not recommend
-	yago.AddHttpRouter("/user/hello", http.MethodGet, userHttp.HelloAction)
-	yago.AddHttpRouter("/user/add", http.MethodPost, userHttp.AddAction)
-	yago.AddHttpRouter("/user/delete", http.MethodPost, userHttp.DeleteAction)
-	yago.AddHttpRouter("/user/detail", http.MethodGet, userHttp.DetailAction)
-	yago.AddHttpRouter("/user/update", http.MethodPost, userHttp.UpdateAction)
-	yago.AddHttpRouter("/user/list", http.MethodPost, userHttp.ListAction)
-	yago.AddHttpRouter("/user/base-list", http.MethodPost, userHttp.BaseListAction)
-	yago.AddHttpRouter("/user/upload", http.MethodPost, userHttp.UploadAction)
-	yago.AddHttpRouter("/user/hello/:name", http.MethodGet, userHttp.Hello2Action)
-	yago.AddHttpRouter("/user/cookie", http.MethodGet, userHttp.CookieAction)
-	yago.AddHttpRouter("/user/metadata", http.MethodGet, userHttp.MetadataAction, HttpMetadata{
+	userGroup := yago.NewHttpGroupRouter("/user")
+	userGroup.Get("/hello", userHttp.HelloAction)
+	userGroup.Post("/add", userHttp.AddAction)
+	userGroup.Post("/delete", userHttp.DeleteAction)
+	userGroup.Get("/detail", userHttp.DetailAction)
+	userGroup.Post("/update", userHttp.UpdateAction)
+	userGroup.Post("/list", userHttp.ListAction)
+	userGroup.Post("/base-list", userHttp.BaseListAction)
+	userGroup.Post("/upload", userHttp.UploadAction)
+	userGroup.Get("/user/:name", userHttp.Hello2Action)
+	userGroup.Get("/cookie", userHttp.CookieAction)
+	userGroup.Get("/metadata", userHttp.MetadataAction).WithMetadata(HttpMetadata{
 		Label: "自定义HTTP名称",
 	})
 
@@ -56,9 +56,8 @@ func init() {
 		memberGroup.Put("/:name", userHttp.UserUpdateAction)
 		memberGroup.Delete("/:name", userHttp.UserDeleteAction)
 
-		consumeSubGroup := memberGroup.Group("/consume")
-		consumeSubGroup.Use(homemiddleware.ComputeConsume)
-		consumeSubGroup.Patch("/sleep/:name", userHttp.ConsumeSleepAction)
+		consumeSubGroup := memberGroup.Group("/plus")
+		consumeSubGroup.Patch("/number/:number", homemiddleware.Compute, userHttp.PlusAction)
 	}
 
 	yago.SetHttpNoRouter(userHttp.NoRouterAction)
@@ -297,9 +296,11 @@ func (h *UserHttp) CookieAction(c *yago.Ctx) {
 	c.SetData("hello " + cookie)
 }
 
-func (h *UserHttp) ConsumeSleepAction(c *yago.Ctx) {
-	c.SetData("I'm sleeping zzz.....")
-	time.Sleep(time.Second * time.Duration(rand.Intn(5)))
+func (h *UserHttp) PlusAction(c *yago.Ctx) {
+	plusNumber := c.Param("number")
+	number := c.GetInt("number")
+	number = number + cast.ToInt(plusNumber)
+	c.Set("number", number)
 }
 
 func (h *UserHttp) MetadataAction(c *yago.Ctx) {
@@ -307,7 +308,7 @@ func (h *UserHttp) MetadataAction(c *yago.Ctx) {
 
 	for _, router := range yago.GetHttpRouters() {
 		if router.Url() == "/user/metadata" {
-			v, ok := router.Metadata[0].(HttpMetadata)
+			v, ok := router.Metadata.(HttpMetadata)
 			if ok {
 				data = data + v.Label
 			}
