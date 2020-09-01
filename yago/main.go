@@ -66,7 +66,7 @@ func GenFile(src, dest, app string) (err error) {
 		if index < len(destSplitPathDirs)-1 {
 			destSplitPath = filepath.Join(destSplitPath, dir)
 			b, _ := pathExists(destSplitPath)
-			if b == false {
+			if !b {
 				err := os.Mkdir(destSplitPath, os.ModePerm)
 				if err != nil {
 					return err
@@ -401,8 +401,7 @@ var runCmd = &cobra.Command{
 				}
 
 				for _, f := range files {
-					watcher.Add(f)
-
+					_ = watcher.Add(f)
 				}
 
 				time.Sleep(30 * time.Second)

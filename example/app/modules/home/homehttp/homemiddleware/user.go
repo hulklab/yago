@@ -18,6 +18,7 @@ func ComputeConsume(c *yago.Ctx) {
 	t := time.Now()
 
 	// before request
+
 	c.Next()
 
 	// after request

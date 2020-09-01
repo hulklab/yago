@@ -102,7 +102,7 @@ func NewApp() *App {
 	// init http
 	app.HttpEnable = Config.GetBool("app.http_enable")
 	if app.HttpEnable {
-		if app.DebugMode == true {
+		if app.DebugMode {
 			app.HttpRunMode = gin.DebugMode
 		} else {
 			app.HttpRunMode = gin.ReleaseMode
@@ -110,7 +110,7 @@ func NewApp() *App {
 		gin.SetMode(app.HttpRunMode)
 		app.httpEngine = gin.New()
 		// use logger
-		if app.DebugMode == true {
+		if app.DebugMode {
 			app.httpEngine.Use(gin.Logger())
 		} else {
 			app.httpEngine.Use(gin.Recovery())
@@ -256,14 +256,13 @@ func (a *App) genPid() {
 	}
 
 	pf, err := os.Create(pidFile)
-
-	defer pf.Close()
-
 	if err != nil {
 		log.Fatalf("pidfile check err:%v\n", err)
 		return
 
 	}
+
+	defer pf.Close()
 
 	newPid := os.Getpid()
 	_, err = pf.Write([]byte(fmt.Sprintf("%d", newPid)))
@@ -279,9 +278,15 @@ func (a *App) registerHttpRouter(g *HttpGroupRouter) {
 	for _, r := range g.HttpRouterList {
 		method := strings.ToUpper(r.Method)
 		action := r.Action
-		handler := func(c *gin.Context) {
-			ctx := newCtx(c)
-			action(ctx)
+
+		var handlers []gin.HandlerFunc
+
+		for _, handler := range action {
+			do := handler
+			handlers = append(handlers, func(c *gin.Context) {
+				ctx := newCtx(c)
+				do(ctx)
+			})
 		}
 
 		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
@@ -289,21 +294,21 @@ func (a *App) registerHttpRouter(g *HttpGroupRouter) {
 
 		switch method {
 		case http.MethodGet:
-			g.GinGroup.GET(r.Path, handler)
+			g.GinGroup.GET(r.Path, handlers...)
 		case http.MethodPost:
-			g.GinGroup.POST(r.Path, handler)
+			g.GinGroup.POST(r.Path, handlers...)
 		case http.MethodDelete:
-			g.GinGroup.DELETE(r.Path, handler)
+			g.GinGroup.DELETE(r.Path, handlers...)
 		case http.MethodPut:
-			g.GinGroup.PUT(r.Path, handler)
+			g.GinGroup.PUT(r.Path, handlers...)
 		case http.MethodOptions:
-			g.GinGroup.OPTIONS(r.Path, handler)
+			g.GinGroup.OPTIONS(r.Path, handlers...)
 		case http.MethodPatch:
-			g.GinGroup.PATCH(r.Path, handler)
+			g.GinGroup.PATCH(r.Path, handlers...)
 		case http.MethodHead:
-			g.GinGroup.HEAD(r.Path, handler)
+			g.GinGroup.HEAD(r.Path, handlers...)
 		default:
-			g.GinGroup.Any(r.Path, handler)
+			g.GinGroup.Any(r.Path, handlers...)
 		}
 	}
 }
@@ -342,7 +347,7 @@ func (a *App) loadHttpRouter() error {
 	}
 
 	// cors
-	if a.HttpCorsAllowAllOrigins == true || len(a.HttpCorsAllowOrigins) != 0 {
+	if a.HttpCorsAllowAllOrigins || len(a.HttpCorsAllowOrigins) != 0 {
 		a.httpEngine.Use(cors.New(cors.Config{
 			AllowAllOrigins:        a.HttpCorsAllowAllOrigins,
 			AllowOrigins:           a.HttpCorsAllowOrigins,
@@ -423,18 +428,18 @@ func (a *App) runHttp() {
 		}()
 	}
 
-	select {
-	case <-a.httpCloseChan:
-		ctx, cancel := context.WithTimeout(
-			context.Background(),
-			time.Duration(Config.GetInt64("app.http_stop_time_wait"))*time.Second,
-		)
-		defer cancel()
-		if err := srv.Shutdown(ctx); err != nil {
-			// log
-		}
-		a.httpCloseDoneChan <- 1
+	<-a.httpCloseChan
+	ctx, cancel := context.WithTimeout(
+		context.Background(),
+		time.Duration(Config.GetInt64("app.http_stop_time_wait"))*time.Second,
+	)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		// log
+		log.Println(err)
 	}
+	a.httpCloseDoneChan <- 1
+
 }
 
 func (a *App) loadTaskRouter() error {
@@ -462,17 +467,17 @@ func (a *App) runTask() {
 		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
 		name = strings.NewReplacer("(", "", ")", "", "*", "").Replace(name)
 		if router.Spec == "@loop" {
+			wg.Add(1)
 			go func() {
-				wg.Add(1)
+				defer wg.Done()
 				action()
 				log.Printf("[TASK] %-32s --> %s\n", "stop", name)
-				wg.Done()
 			}()
 		} else {
 			err := c.AddFunc(router.Spec, func() {
 				wg.Add(1)
+				defer wg.Done()
 				action()
-				wg.Done()
 			})
 			if err != nil {
 				continue
@@ -483,16 +488,15 @@ func (a *App) runTask() {
 
 	c.Start()
 
-	select {
-	case <-a.taskCloseChan:
-		go func() {
-			c.Stop()
-			wg.Wait()
-			a.taskCloseDoneChan <- 1
-		}()
-		time.Sleep(time.Duration(Config.GetInt64("app.task_stop_time_wait")) * time.Second)
+	<-a.taskCloseChan
+	go func() {
+		c.Stop()
+		wg.Wait()
 		a.taskCloseDoneChan <- 1
-	}
+	}()
+	time.Sleep(time.Duration(Config.GetInt64("app.task_stop_time_wait")) * time.Second)
+	a.taskCloseDoneChan <- 1
+
 }
 
 var RpcServer *grpc.Server
@@ -505,13 +509,13 @@ func initGrpcServer() {
 		if certFile == "" || keyFile == "" {
 			log.Fatalln("rpc ssl cert file or key file is required when rpc ssl on")
 		}
-		creds, err := credentials.NewServerTLSFromFile(certFile, keyFile)
+		cred, err := credentials.NewServerTLSFromFile(certFile, keyFile)
 		if err != nil {
 			log.Fatalf("Failed to generate credentials %v", err)
 		}
 
 		// 实例化 grpc Server, 并开启 TSL 认证
-		RpcServer = grpc.NewServer(grpc.Creds(creds))
+		RpcServer = grpc.NewServer(grpc.Creds(cred))
 
 	} else {
 		RpcServer = grpc.NewServer()
@@ -546,11 +550,9 @@ func (a *App) runRpc() {
 		}
 	}()
 
-	select {
-	case <-a.rpcCloseChan:
-		a.rpcEngine.GracefulStop()
-		a.rpcCloseDoneChan <- 1
-	}
+	<-a.rpcCloseChan
+	a.rpcEngine.GracefulStop()
+	a.rpcCloseDoneChan <- 1
 }
 
 func (a *App) Close() {
