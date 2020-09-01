@@ -17,7 +17,7 @@ type HttpRouter struct {
 	Group    *HttpGroupRouter
 	Path     string
 	Method   string
-	Action   []HttpHandlerFunc
+	Actions  []HttpHandlerFunc
 	Metadata interface{}
 }
 
@@ -62,7 +62,7 @@ func (h *HttpRouter) Url() string {
 type HttpGroupRouter struct {
 	Prefix         string
 	GinGroup       *gin.RouterGroup
-	Middleware     []HttpHandlerFunc
+	Middlewares    []HttpHandlerFunc
 	HttpRouterList []*HttpRouter
 	Parent         *HttpGroupRouter
 	Children       map[string]*HttpGroupRouter
@@ -126,17 +126,17 @@ func GetHttpRouters() []*HttpRouter {
 	return routerList
 }
 
-func (g *HttpGroupRouter) Use(middleware ...HttpHandlerFunc) {
-	g.Middleware = append(g.Middleware, middleware...)
+func (g *HttpGroupRouter) Use(middlewares ...HttpHandlerFunc) {
+	g.Middlewares = append(g.Middlewares, middlewares...)
 }
 
-func (g *HttpGroupRouter) addHttpRouter(url, method string, action ...HttpHandlerFunc) *HttpRouter {
+func (g *HttpGroupRouter) addHttpRouter(url, method string, actions ...HttpHandlerFunc) *HttpRouter {
 
 	router := &HttpRouter{
-		Path:   url,
-		Method: method,
-		Group:  g,
-		Action: action,
+		Path:    url,
+		Method:  method,
+		Group:   g,
+		Actions: actions,
 	}
 
 	g.HttpRouterList = append(g.HttpRouterList, router)
@@ -144,36 +144,36 @@ func (g *HttpGroupRouter) addHttpRouter(url, method string, action ...HttpHandle
 	return router
 }
 
-func (g *HttpGroupRouter) Get(url string, action ...HttpHandlerFunc) *HttpRouter {
-	return g.addHttpRouter(url, http.MethodGet, action...)
+func (g *HttpGroupRouter) Get(url string, actions ...HttpHandlerFunc) *HttpRouter {
+	return g.addHttpRouter(url, http.MethodGet, actions...)
 }
 
-func (g *HttpGroupRouter) Post(url string, action ...HttpHandlerFunc) *HttpRouter {
-	return g.addHttpRouter(url, http.MethodPost, action...)
+func (g *HttpGroupRouter) Post(url string, actions ...HttpHandlerFunc) *HttpRouter {
+	return g.addHttpRouter(url, http.MethodPost, actions...)
 }
 
-func (g *HttpGroupRouter) Put(url string, action ...HttpHandlerFunc) *HttpRouter {
-	return g.addHttpRouter(url, http.MethodPut, action...)
+func (g *HttpGroupRouter) Put(url string, actions ...HttpHandlerFunc) *HttpRouter {
+	return g.addHttpRouter(url, http.MethodPut, actions...)
 }
 
-func (g *HttpGroupRouter) Delete(url string, action ...HttpHandlerFunc) *HttpRouter {
-	return g.addHttpRouter(url, http.MethodDelete, action...)
+func (g *HttpGroupRouter) Delete(url string, actions ...HttpHandlerFunc) *HttpRouter {
+	return g.addHttpRouter(url, http.MethodDelete, actions...)
 }
 
-func (g *HttpGroupRouter) Patch(url string, action ...HttpHandlerFunc) *HttpRouter {
-	return g.addHttpRouter(url, http.MethodPatch, action...)
+func (g *HttpGroupRouter) Patch(url string, actions ...HttpHandlerFunc) *HttpRouter {
+	return g.addHttpRouter(url, http.MethodPatch, actions...)
 }
 
-func (g *HttpGroupRouter) Head(url string, action ...HttpHandlerFunc) *HttpRouter {
-	return g.addHttpRouter(url, http.MethodHead, action...)
+func (g *HttpGroupRouter) Head(url string, actions ...HttpHandlerFunc) *HttpRouter {
+	return g.addHttpRouter(url, http.MethodHead, actions...)
 }
 
-func (g *HttpGroupRouter) Options(url string, action ...HttpHandlerFunc) *HttpRouter {
-	return g.addHttpRouter(url, http.MethodOptions, action...)
+func (g *HttpGroupRouter) Options(url string, actions ...HttpHandlerFunc) *HttpRouter {
+	return g.addHttpRouter(url, http.MethodOptions, actions...)
 }
 
-func (g *HttpGroupRouter) Any(url string, action ...HttpHandlerFunc) *HttpRouter {
-	return g.addHttpRouter(url, "Any", action...)
+func (g *HttpGroupRouter) Any(url string, actions ...HttpHandlerFunc) *HttpRouter {
+	return g.addHttpRouter(url, "Any", actions...)
 }
 
 // task

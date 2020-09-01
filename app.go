@@ -277,11 +277,11 @@ func (a *App) genPid() {
 func (a *App) registerHttpRouter(g *HttpGroupRouter) {
 	for _, r := range g.HttpRouterList {
 		method := strings.ToUpper(r.Method)
-		action := r.Action
+		actions := r.Actions
 
 		var handlers []gin.HandlerFunc
 
-		for _, handler := range action {
+		for _, handler := range actions {
 			do := handler
 			handlers = append(handlers, func(c *gin.Context) {
 				ctx, _ := getCtxFromGin(c)
@@ -289,7 +289,7 @@ func (a *App) registerHttpRouter(g *HttpGroupRouter) {
 			})
 		}
 
-		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
+		name := runtime.FuncForPC(reflect.ValueOf(actions[len(actions)-1]).Pointer()).Name()
 		log.Printf("[HTTP] %-6s %-25s --> %s\n", method, r.Url(), strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
 
 		switch method {
@@ -321,8 +321,8 @@ func (a *App) registerHttpGroupRouter(group map[string]*HttpGroupRouter) {
 			g.GinGroup = g.Parent.GinGroup.Group(g.Prefix)
 		}
 
-		if len(g.Middleware) > 0 {
-			for _, m := range g.Middleware {
+		if len(g.Middlewares) > 0 {
+			for _, m := range g.Middlewares {
 				handler := m
 				g.GinGroup.Use(func(c *gin.Context) {
 					ctx, err := getCtxFromGin(c)
