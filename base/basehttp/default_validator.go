@@ -1,7 +1,6 @@
 package basehttp
 
 import (
-	"errors"
 	"reflect"
 	"strings"
 	"sync"
@@ -29,9 +28,8 @@ func (v *defaultValidator) ValidateStruct(obj interface{}) error {
 		if err := v.validate.Struct(obj); err != nil {
 			return err
 		}
-	} else {
-		return errors.New("unsupported type: " + valueType.String())
 	}
+
 	return nil
 }
 
