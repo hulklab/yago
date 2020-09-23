@@ -68,7 +68,7 @@ type HttpGroupRouter struct {
 	Children       map[string]*HttpGroupRouter
 }
 
-func NewHttpGroupRouter(prefix string) *HttpGroupRouter {
+func NewHttpGroupRouter(prefix string, middleware ...HttpHandlerFunc) *HttpGroupRouter {
 	if len(prefix) == 0 {
 		log.Panic("http group router name can not be empty")
 	}
@@ -78,13 +78,14 @@ func NewHttpGroupRouter(prefix string) *HttpGroupRouter {
 	}
 
 	httpGroupRouterMap[prefix] = &HttpGroupRouter{
-		Prefix: prefix,
+		Prefix:      prefix,
+		Middlewares: middleware,
 	}
 
 	return httpGroupRouterMap[prefix]
 }
 
-func (g *HttpGroupRouter) Group(prefix string) *HttpGroupRouter {
+func (g *HttpGroupRouter) Group(prefix string, middleware ...HttpHandlerFunc) *HttpGroupRouter {
 	if len(prefix) == 0 {
 		log.Panic("http sub group router name can not be empty")
 	}
@@ -94,8 +95,9 @@ func (g *HttpGroupRouter) Group(prefix string) *HttpGroupRouter {
 	}
 
 	group := &HttpGroupRouter{
-		Prefix: prefix,
-		Parent: g,
+		Prefix:      prefix,
+		Parent:      g,
+		Middlewares: middleware,
 	}
 
 	if g.Children == nil {
