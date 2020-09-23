@@ -48,8 +48,7 @@ func init() {
 	})
 
 	// routing groups are recommended
-	memberGroup := yago.NewHttpGroupRouter("/user/member")
-	memberGroup.Use(homemiddleware.CheckUserName)
+	memberGroup := yago.NewHttpGroupRouter("/user/member", homemiddleware.CheckUserName)
 	{
 		memberGroup.Post("/:name", userHttp.UserSetAction)
 		memberGroup.Get("/:name", userHttp.UserGetAction)
