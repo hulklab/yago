@@ -73,7 +73,7 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="../component/component.html" />
+    <link rel="next" href="error.html" />
     
     
     <link rel="prev" href="model.html" />
@@ -408,6 +408,21 @@
                         <b>1.5.3.</b>
                     
                     数据访问对象
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4" data-path="error.html">
+            
+                <a href="error.html">
+            
+                    
+                        <b>1.5.4.</b>
+                    
+                    错误处理
             
                 </a>
             
@@ -786,17 +801,21 @@
                                 <h1 id="&#x6570;&#x636E;&#x8BBF;&#x95EE;&#x5BF9;&#x8C61;_Dao">&#x6570;&#x636E;&#x8BBF;&#x95EE;&#x5BF9;&#x8C61; Dao</h1>
 <p>Dao &#x7528;&#x6765;&#x5B58;&#x653E;&#x6570;&#x636E;&#x5E93;&#x8868;&#x7684;&#x6620;&#x5C04;&#x5173;&#x7CFB;&#x3002;&#x9664;&#x6B64;&#x4E4B;&#x5916;&#x8FD8;&#x53EF;&#x4EE5;&#x7528;&#x6765;&#x5C01;&#x88C5;&#x4E00;&#x4E9B;&#x590D;&#x6742;&#x7684;&#x6570;&#x636E;&#x5E93;&#x64CD;&#x4F5C;&#x65B9;&#x6CD5;&#x3002;</p>
 <p>mysql <code>table</code> &#x8868;&#x7684;&#x5B9A;&#x4E49;&#xFF0C;&#x5173;&#x4E8E; xorm &#x7684;&#x4F7F;&#x7528;&#x8BF7;&#x53C2;&#x8003; <a href="../component/orm.html">xorm &#x7EC4;&#x4EF6;</a></p>
-<pre class="language-"><code class="lang-go"><span class="token keyword">package</span> homedao
-
-<span class="token keyword">type</span> HomeDao <span class="token keyword">struct</span> <span class="token punctuation">{</span>
-    Id    <span class="token builtin">int64</span>  <span class="token string">`json:&quot;id&quot; xorm:&quot;autoincr pk&quot;`</span>
-    Name  <span class="token builtin">string</span> <span class="token string">`json:&quot;name&quot;`</span>
-    Ctime <span class="token builtin">string</span> <span class="token string">`json:&quot;ctime&quot; xorm:&quot;created&quot;`</span>
-    Utime <span class="token builtin">string</span> <span class="token string">`json:&quot;utime&quot; xorm:&quot;updated&quot;`</span>
+<pre class="language-"><code class="lang-go"><span class="token keyword">type</span> UserDao <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    Id         <span class="token builtin">int64</span>  <span class="token string">`json:&quot;user_id&quot; xorm:&quot;autoincr pk&quot;`</span>
+    Username   <span class="token builtin">string</span> <span class="token string">`json:&quot;username&quot;`</span>
+    UserType   <span class="token builtin">int</span>    <span class="token string">`json:&quot;user_type&quot;`</span>
+    Password   <span class="token builtin">string</span> <span class="token string">`json:&quot;-&quot;`</span>
+    Avatar     <span class="token builtin">string</span> <span class="token string">`json:&quot;avatar&quot;`</span>
+    Phone      <span class="token builtin">string</span> <span class="token string">`json:&quot;phone&quot;`</span>
+    PhoneState <span class="token builtin">int</span>    <span class="token string">`json:&quot;phone_state&quot;`</span>
+    UserState  <span class="token builtin">int</span>    <span class="token string">`json:&quot;user_state&quot;`</span>
+    CreatedAt  <span class="token builtin">string</span> <span class="token string">`json:&quot;created_at&quot; xorm:&quot;created&quot;`</span>
+    UpdatedAt  <span class="token builtin">string</span> <span class="token string">`json:&quot;updated_at&quot; xorm:&quot;updated&quot;`</span>
 <span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token punctuation">(</span>d <span class="token operator">*</span>HomeDao<span class="token punctuation">)</span> <span class="token function">TableName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token string">&quot;table&quot;</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>d <span class="token operator">*</span>UserDao<span class="token punctuation">)</span> <span class="token function">TableName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token string">&quot;user&quot;</span>
 <span class="token punctuation">}</span>
 </code></pre>
 
@@ -831,7 +850,7 @@
                 </a>
                 
                 
-                <a href="../component/component.html" class="navigation navigation-next " aria-label="Next page: 组件">
+                <a href="error.html" class="navigation navigation-next " aria-label="Next page: 错误处理">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -842,7 +861,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"数据访问对象","level":"1.5.3","depth":2,"next":{"title":"组件","level":"1.6","depth":1,"path":"component/component.md","ref":"component/component.md","articles":[{"title":"Logger 组件","level":"1.6.1","depth":2,"path":"component/logger.md","ref":"component/logger.md","articles":[]},{"title":"ORM 组件","level":"1.6.2","depth":2,"path":"component/orm.md","ref":"component/orm.md","articles":[]},{"title":"Redis 组件","level":"1.6.3","depth":2,"path":"component/rds.md","ref":"component/rds.md","articles":[]},{"title":"Kafka 组件","level":"1.6.4","depth":2,"path":"component/kafka.md","ref":"component/kafka.md","articles":[]},{"title":"Mongo 组件","level":"1.6.5","depth":2,"path":"component/mgo.md","ref":"component/mgo.md","articles":[]},{"title":"Etcd 组件","level":"1.6.6","depth":2,"path":"component/etcd.md","ref":"component/etcd.md","articles":[]},{"title":"Locker 组件","level":"1.6.7","depth":2,"path":"component/locker.md","ref":"component/locker.md","articles":[]},{"title":"ElasticSearch 组件","level":"1.6.8","depth":2,"path":"component/es.md","ref":"component/es.md","articles":[]}]},"previous":{"title":"模型","level":"1.5.2","depth":2,"path":"module/model.md","ref":"module/model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"module/dao.md","mtime":"2020-08-14T08:36:38.949Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-08-14T08:41:07.480Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"数据访问对象","level":"1.5.3","depth":2,"next":{"title":"错误处理","level":"1.5.4","depth":2,"path":"module/error.md","ref":"module/error.md","articles":[]},"previous":{"title":"模型","level":"1.5.2","depth":2,"path":"module/model.md","ref":"module/model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","expandable-chapters-interactive","theme-comscore","navigator","prism","prism-themes"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{"css":["prismjs/themes/prism-okaidia.css"]},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"expandable-chapters-interactive":{},"theme-comscore":{},"prism-themes":{},"navigator":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true}},"theme":"default","author":"hulklab","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"yago 中文文档","gitbook":">=3.2.0","description":"yago 中文文档"},"file":{"path":"module/dao.md","mtime":"2020-09-28T03:36:43.515Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-28T08:14:01.513Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
