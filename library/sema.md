@@ -17,3 +17,20 @@ for i := 0; i < 10; i++ {
 // 等待所有的 goroutine 任务执行结束
 sema.Wait()
 ```
+
+### 有错误时提前结束
+```go
+// 构造一个并发 3 个 goroutine 的 sema
+sema := semalib.New(3)
+for i := 0; i < 10; i++ {
+    sema.Add(func() error {
+        err := dosomething()
+        if err != nil {
+            return err
+        }   
+        return nil
+    })
+}
+// 等待所有的 goroutine 任务执行结束或者有错误时结束
+err := sema.Wait()
+```

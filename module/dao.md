@@ -8,7 +8,7 @@ mysql `table` 表的定义，关于 xorm 的使用请参考 [xorm 组件](../com
 package homedao
 
 type HomeDao struct {
-	Id    int64  `json:"id" xorm:"autoincr"`
+	Id    int64  `json:"id" xorm:"autoincr pk"`
 	Name  string `json:"name"`
 	Ctime string `json:"ctime" xorm:"created"`
 	Utime string `json:"utime" xorm:"updated"`

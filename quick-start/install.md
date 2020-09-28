@@ -1,6 +1,6 @@
 # 安装
 
-首先你需要安装 [Go](https://golang.org/) (**version 1.11+**), 然后执行 go get 安装 yago
+首先你需要安装 [Go](https://golang.org/) (**version 1.13+**), 然后执行 go get 安装 yago
 
 ```bash
  go get github.com/hulklab/yago/yago
@@ -9,11 +9,11 @@
 建议添加环境变量 GOPROXY=[https://goproxy.cn](https://github.com/goproxy/goproxy.cn/blob/master/README.zh-CN.md)，解决网络访问的问题
 
 ```bash
-export GOPROXY=https://goproxy.cn
+export GOPROXY=https://goproxy.cn,direct
 ```
 
 ## 依赖
-go >= 1.11(由于使用了 go mod 管理版本依赖)
+go >= 1.13(由于使用了 go mod 管理版本依赖)
 
 如果想在GOPATH下用mod, 请设置 GO111MODULE=on 则在 GOPATH/src 目录下使用 go get 时也默认采用 go mod
 

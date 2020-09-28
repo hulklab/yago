@@ -69,7 +69,8 @@ func (h *HomeHttp) AddAction(c *yago.Ctx) {
 
 	model := homemodel.NewHomeModel()
 	id, e := model.Add(p.Name, nil)
-	if e.HasErr() {
+    
+	if e != nil {
 		c.SetError(e)
 		return
 	}
@@ -119,7 +120,7 @@ func init() {
 func (h *HelloHttp) HelloAction(c *yago.Ctx) {
 	ws, err := h.upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		c.SetError(yago.ErrSystem, err.Error())
+		c.SetError(err)
 		return
 	}
 
