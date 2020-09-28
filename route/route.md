@@ -6,14 +6,35 @@
 
 ```go
 func init() {
-	homeHttp := new(HomeHttp)
-	yago.AddHttpRouter("/home/hello", http.MethodGet, homeHttp.HelloAction, homeHttp)
-	yago.AddHttpRouter("/home/add", http.MethodPost, homeHttp.AddAction, homeHttp)
-	yago.AddHttpRouter("/home/delete", http.MethodPost, homeHttp.DeleteAction, homeHttp)
-	yago.AddHttpRouter("/home/detail", http.MethodGet, homeHttp.DetailAction, homeHttp)
-	yago.AddHttpRouter("/home/update", http.MethodPost, homeHttp.UpdateAction, homeHttp)
-	yago.AddHttpRouter("/home/list", http.MethodPost, homeHttp.ListAction, homeHttp)
-	yago.AddHttpRouter("/home/upload", http.MethodPost, homeHttp.UploadAction, homeHttp)
+	userHttp := new(UserHttp)
+    
+    userGroup := yago.NewHttpGroupRouter("/user") // 创建路由分组
+    userGroup.Get("/hello", userHttp.HelloAction)
+    userGroup.Post("/add", userHttp.AddAction)
+    userGroup.Post("/delete", userHttp.DeleteAction)
+    userGroup.Get("/detail", userHttp.DetailAction)
+    userGroup.Post("/update", userHttp.UpdateAction)
+    userGroup.Post("/list", userHttp.ListAction)
+    userGroup.Post("/base-list", userHttp.BaseListAction)
+    userGroup.Post("/upload", userHttp.UploadAction)
+    userGroup.Get("/user/:name", userHttp.Hello2Action)
+    userGroup.Get("/cookie", userHttp.CookieAction)
+    userGroup.Get("/metadata", userHttp.MetadataAction).WithMetadata(HttpMetadata{
+        Label: "自定义HTTP名称",
+    }) // 注册 API metadata 信息
+
+    memberGroup := yago.NewHttpGroupRouter("/user/member", homemiddleware.CheckUserName) // 对路由分组使用中间件
+    {
+        memberGroup.Post("/:name", userHttp.UserSetAction)
+        memberGroup.Get("/:name", userHttp.UserGetAction)
+        memberGroup.Put("/:name", userHttp.UserUpdateAction)
+        memberGroup.Delete("/:name", userHttp.UserDeleteAction)
+
+        consumeSubGroup := memberGroup.Group("/plus")
+        consumeSubGroup.Patch("/number/:number", homemiddleware.Compute, userHttp.PlusAction) // 对单个 API 使用中间件
+    }
+
+    yago.SetHttpNoRouter(userHttp.NoRouterAction) // 注册 404 页面
 }
 ```
 

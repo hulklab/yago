@@ -5,18 +5,21 @@ Dao 用来存放数据库表的映射关系。除此之外还可以用来封装�
 mysql `table` 表的定义，关于 xorm 的使用请参考 [xorm 组件](../component/orm.md)
 
 ```go
-package homedao
-
-type HomeDao struct {
-	Id    int64  `json:"id" xorm:"autoincr pk"`
-	Name  string `json:"name"`
-	Ctime string `json:"ctime" xorm:"created"`
-	Utime string `json:"utime" xorm:"updated"`
+type UserDao struct {
+	Id         int64  `json:"user_id" xorm:"autoincr pk"`
+	Username   string `json:"username"`
+	UserType   int    `json:"user_type"`
+	Password   string `json:"-"`
+	Avatar     string `json:"avatar"`
+	Phone      string `json:"phone"`
+	PhoneState int    `json:"phone_state"`
+	UserState  int    `json:"user_state"`
+	CreatedAt  string `json:"created_at" xorm:"created"`
+	UpdatedAt  string `json:"updated_at" xorm:"updated"`
 }
 
-func (d *HomeDao) TableName() string {
-	return "table"
+func (d *UserDao) TableName() string {
+	return "user"
 }
-
 ```
 
