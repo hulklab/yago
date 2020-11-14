@@ -59,7 +59,7 @@ code[class*="language-"] {
 	color: #999;
 }
 
-.token.namespace {
+.namespace {
 	opacity: .7;
 }
 

@@ -85,7 +85,7 @@ code[class*="language-"]::selection, code[class*="language-"] ::selection {
 	opacity: .7;
 }
 
-.token.namespace {
+.namespace {
 	opacity: .7;
 }
 
