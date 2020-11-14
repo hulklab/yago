@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -80,13 +81,13 @@ func doTest() {
 		r1 := New()
 		err := r1.Lock(key, lock.WithTTL(5), lock.WithDisableKeepAlive())
 		if err != nil {
-			fmt.Println("get lock in fun1 err", err.Error())
+			log.Println("get lock in fun1 err", err.Error())
 			return
 		}
 		defer r1.Unlock()
-		fmt.Println("get lock in fun1")
+		log.Println("get lock in fun1")
 		for i := 0; i < 10; i++ {
-			fmt.Println("fun1:", i)
+			log.Println("fun1:", i)
 			time.Sleep(1 * time.Second)
 		}
 	}()
@@ -95,13 +96,13 @@ func doTest() {
 		r2 := New()
 		err := r2.Lock(key, lock.WithTTL(5), lock.WithDisableKeepAlive())
 		if err != nil {
-			fmt.Println("get lock in fun2 err", err.Error())
+			log.Println("get lock in fun2 err", err.Error())
 			return
 		}
 		defer r2.Unlock()
-		fmt.Println("get lock in fun2")
+		log.Println("get lock in fun2")
 		for i := 0; i < 10; i++ {
-			fmt.Println("fun2:", i)
+			log.Println("fun2:", i)
 			time.Sleep(1 * time.Second)
 		}
 	}()
@@ -111,11 +112,11 @@ func doTest() {
 	r3 := New()
 	err := r3.Lock(key, lock.WithTTL(10))
 	if err != nil {
-		fmt.Println("get lock in fun3 err:", err.Error())
+		log.Println("get lock in fun3 err:", err.Error())
 		return
 	}
 
-	fmt.Println("get lock in fun3")
+	log.Println("get lock in fun3")
 	r3.Unlock()
 
 }
@@ -173,7 +174,7 @@ func doTestWaitTime() {
 	err := r2.Lock(key, lock.WithWaitTime(time.Second*2))
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {
-			fmt.Println("wait time out and then return")
+			fmt.Println("wait time out and then return in func2")
 			return
 		}
 		fmt.Println("get wait time lock in fun2 err:", err.Error())

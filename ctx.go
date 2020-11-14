@@ -143,6 +143,12 @@ func (c *Ctx) SetDataOrErr(data interface{}, err interface{}) {
 	}
 }
 
+// Abort in the middleware with yago error or error
+func (c *Ctx) AbortWithE(err error) {
+	c.Abort()
+	c.SetError(err)
+}
+
 func (c *Ctx) GetResponse() (*ResponseBody, bool) {
 	resp, exist := c.Get(ResponseKey)
 	if !exist {

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/hulklab/yago/libs/str"
@@ -16,10 +17,9 @@ import (
 	"github.com/hulklab/yago/coms/rds"
 )
 
-const timeDelta = 0
+//const timeDelta = 0
 
 type redisLock struct {
-	//rIns    *rds.Rds
 	rInsId  string
 	retry   int
 	key     string
@@ -28,6 +28,7 @@ type redisLock struct {
 	ctx     context.Context
 	done    chan struct{}
 	errc    chan error
+	lockc   chan struct{}
 }
 
 func init() {
@@ -45,6 +46,7 @@ func init() {
 		}
 
 		val.errc = make(chan error)
+		val.lockc = make(chan struct{})
 		return val
 	})
 }
@@ -118,8 +120,13 @@ func (r *redisLock) Lock(key string, opts ...lock.SessionOption) error {
 
 	var err error
 
+	err = r.listen()
+	if err != nil {
+		return err
+	}
+
 	for i := 0; i < r.retry; i++ {
-		err = r.lock(ops.TTL)
+		err = r.tryLock(ops.TTL)
 		if err == nil {
 			break
 		}
@@ -138,42 +145,92 @@ func (r *redisLock) Lock(key string, opts ...lock.SessionOption) error {
 	return err
 }
 
-func (r *redisLock) lock(timeout int64) error {
-	i := 1
-	token := str.UniqueId()
+func (r *redisLock) topicKey() string {
+	return fmt.Sprintf("__yago_lock_topic_%s", r.key)
+}
+
+func (r *redisLock) listen() error {
+	sub, err := r.rIns().NewSubscriber(r.topicKey())
+	if err != nil {
+		return fmt.Errorf("[RedisLock] %s new listener err:%w", r.key, err)
+	}
+
+	go func() {
+		err := sub.Subscribe(func(topic string, bytes []byte) {
+			r.lockc <- struct{}{}
+		})
+
+		if err != nil {
+			log.Println("[RedisLock] redis listen err:", err.Error(), "key:", r.key)
+			r.errc <- fmt.Errorf("listen err %w", err)
+		}
+	}()
+
+	return nil
+}
+
+func (r *redisLock) tryLock(timeout int64) error {
+	ok, err := r.lock(timeout)
+	if err != nil {
+		return err
+	}
+
+	if ok {
+		return nil
+	}
 
 	for {
+		rn := rand.Int63n(timeout) + 1
+		//log.Println(r.key, rn)
+
 		select {
 		case <-r.ctx.Done():
 			return r.ctx.Err()
-		default:
-
-			status, err := redis.String(r.rIns().Do("SET", r.key, token, "EX", timeout, "NX"))
-			if err == redis.ErrNil {
-				// The lock was not successful, it already exists.
-				break
-			}
-
+		case <-r.lockc:
+			//log.Println("[RedisLock] redis get unlock topic:", r.topicKey())
+			ok, err := r.lock(timeout)
 			if err != nil {
 				return err
 			}
 
-			if status == "OK" {
-				r.token = token
-				//log.Println("ok:", time.Now())
+			if ok {
+				return nil
+			}
+		case <-time.After(time.Second * time.Duration(rn)):
+			//log.Printf("[RedisLock] try to get lock %s after time %d", r.key, rn)
+			ok, err := r.lock(timeout)
+			if err != nil {
+				return err
+			}
+
+			if ok {
 				return nil
 			}
 
-			// 超过 1 分钟归零
-			if i >= 60*1000*10 {
-				i = 1
-			}
-
-			time.Sleep(time.Duration(i*100) * time.Microsecond)
-
-			i++
 		}
 	}
+}
+
+func (r *redisLock) lock(timeout int64) (ok bool, err error) {
+	token := str.UniqueId()
+
+	status, err := redis.String(r.rIns().Do("SET", r.key, token, "EX", timeout, "NX"))
+	if err == redis.ErrNil {
+		// The lock was not successful, it already exists.
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	if status == "OK" {
+		r.token = token
+		//log.Println("ok:", time.Now())
+		return true, nil
+	}
+
+	return false, fmt.Errorf("set lock status err:%s", status)
 }
 
 var unlockScript = redis.NewScript(1, `
@@ -195,12 +252,24 @@ func (r *redisLock) Unlock() {
 	defer func(rc redis.Conn) {
 		err := rc.Close()
 		if err != nil {
-			log.Println("[Redis] close redis conn err: ", err.Error())
+			log.Println("[RedisLock] close redis conn err: ", err.Error())
 		}
 	}(rc)
 
-	_, err := unlockScript.Do(rc, r.key, r.token)
-	log.Printf("[RedisLock] lock del %s,%v", r.key, err)
+	reply, err := redis.Int(unlockScript.Do(rc, r.key, r.token))
+	log.Printf("[RedisLock] lock del %s,%v,%v", r.key, err, reply)
+
+	if err != nil {
+		return
+	}
+
+	if reply > 0 {
+		_, err = r.rIns().Publish(r.topicKey(), r.token)
+		if err != nil {
+			log.Printf("[RedisLock] lock %s release and broadcast err %v", r.key, err)
+		}
+	}
+
 }
 
 func (r *redisLock) ErrC() <-chan error {
