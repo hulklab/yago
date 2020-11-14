@@ -65,6 +65,6 @@ sh env.init.sh yourname
 ## 测试程序 http 服务是否启动成功
 
 ```bash
-curl "http://localhost:8080/home/hello?name=world"
+curl "http://localhost:8080/user/hello?name=world"
 {"errno":0,"errmsg":"","data":"hello world"}
 ```
