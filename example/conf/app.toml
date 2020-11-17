@@ -107,6 +107,10 @@ db = 0
 max_idle = 5
 idle_timeout = 30
 
+[locker]
+driver = "redis"
+driver_instance_id = "redis"
+
 [mongodb]
 # https://docs.mongodb.com/manual/reference/connection-string/
 mongodb_uri = "mongodb://user:password@127.0.0.1:27017/?connectTimeoutMS=5000&socketTimeoutMS=5000&maxPoolSize=100"
