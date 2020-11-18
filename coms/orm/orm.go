@@ -187,7 +187,10 @@ func Ins(id ...string) *Orm {
 			driver = "mysql"
 		}
 
-		val, _ := xorm.NewEngine(driver.(string), dsn)
+		val, err := xorm.NewEngine(driver.(string), dsn)
+		if err != nil {
+			log.Fatalf("[ORM] Fatal error: new orm engine err, %s", err.Error())
+		}
 
 		orm := &Orm{
 			val,
