@@ -29,6 +29,7 @@ type redisLock struct {
 	done    chan struct{}
 	errc    chan error
 	lockc   chan struct{}
+	sub *rds.Subscriber
 }
 
 func init() {
@@ -155,26 +156,16 @@ func (r *redisLock) listen() error {
 		return fmt.Errorf("[RedisLock] %s new listener err:%w", r.key, err)
 	}
 
+	r.sub = sub
 
 	go func() {
-		err := sub.Subscribe(func(topic string, bytes []byte) {
+		err := r.sub.Subscribe(func(topic string, bytes []byte) {
 			r.lockc <- struct{}{}
 		})
 
 		if err != nil {
 			log.Println("[RedisLock] redis listen err:", err.Error(), "key:", r.key)
 			r.errc <- fmt.Errorf("listen err %w", err)
-		}
-	}()
-
-	go func() {
-		for {
-			select {
-			case <-r.done:
-				log.Println("[RedisLock] listen done")
-				sub.Close()
-				return
-			}
 		}
 	}()
 
@@ -258,6 +249,10 @@ func (r *redisLock) Unlock() {
 	if r.done != nil {
 		close(r.done)
 		r.done = nil
+	}
+
+	if r.sub != nil {
+		r.sub.Close()
 	}
 
 	rc := r.rIns().GetConn()
