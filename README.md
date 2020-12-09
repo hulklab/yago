@@ -1,4 +1,4 @@
-# Yago Scaffold - Web开发脚手架
+# Yago - Web Scaffold
 
 ![avatar](http://p0.qhimg.com/t0162ed78090852688f.png) 
 
@@ -59,16 +59,7 @@ sh env.init.sh yourname
 * 修改环境变量 export {{配置文件中的app_name}}_APP_TASK_ENABLE=1, 1 表示开启，0 表示关闭，配置文件与环境变量同时存在时环境变量生效
 
 
-
-### Goland 配置 mod
-
-1. Preferences -> Go -> Go modules(vgo)
-
-![](http://p406.qhimgs4.com/t0100eba6c9f82cb921.png)
-
-2. 如果还有标红的提示，点击 Sync packages
-
-![](http://p406.qhimgs4.com/t019f0fcae328f7a0e0.png)
+更多内容请查看 [Yago 文档](https://hulklab.github.io/yago/)
 
 ## 感谢
 [gin](https://github.com/gin-gonic/gin)
