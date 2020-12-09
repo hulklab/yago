@@ -25,22 +25,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type HTTPCodeError int
-
-func (e HTTPCodeError) Code() int {
-	return int(e)
-}
-
-func (e HTTPCodeError) Error() string {
-	code := e.Code()
-	return fmt.Sprintf("%d: %s", code, http.StatusText(code))
-}
-
-// check if err is http code error
-func AsHTTPCodeError(err error) (b bool,e HTTPCodeError) {
-	 b = errors.As(err, &e)
-	 return
-}
 
 type PostFile string
 
@@ -533,7 +517,7 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 
 		log.WithFields(logInfo).Error()
 
-		return resp, HTTPCodeError(resp.StatusCode)
+		return resp, yago.HTTPCodeError(resp.StatusCode)
 	}
 
 	log.WithFields(logInfo).Info()
