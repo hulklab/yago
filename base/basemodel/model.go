@@ -123,7 +123,7 @@ type Query struct {
 //      0
 //    ]
 //  }
-//}
+// }
 type PageQuery struct {
 	Page       int
 	Size       int

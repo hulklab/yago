@@ -40,7 +40,7 @@ func GenDir(srcPath string, destPath, app string) error {
 			return err
 		}
 		if !f.IsDir() {
-			//path := strings.Replace(path, "\\", "/", -1)
+			// path := strings.Replace(path, "\\", "/", -1)
 			destNewPath := strings.Replace(path, srcPath, destPath, -1)
 			if err := GenFile(path, destNewPath, app); err != nil {
 				log.Println(fmt.Sprintf("create file %s error:", destNewPath), err.Error())
@@ -112,7 +112,7 @@ func pathExists(path string) (bool, error) {
 func getCurDir() string {
 	dir, _ := filepath.Abs(filepath.Dir("."))
 	return filepath.Clean(dir)
-	//return strings.Replace(dir, "\\", "/", -1)
+	// return strings.Replace(dir, "\\", "/", -1)
 }
 
 func getGoPath() string {
@@ -172,13 +172,13 @@ var newCmd = &cobra.Command{
 		}
 
 		for _, d := range dirs {
-			//dirPath := fmt.Sprintf("app/modules/%s/%s%s", module, module, d)
+			// dirPath := fmt.Sprintf("app/modules/%s/%s%s", module, module, d)
 			dirPath := filepath.Join("app", "modules", module, module+d)
 			if err := os.MkdirAll(dirPath, 0755); err != nil {
 				log.Println(fmt.Sprintf("create module dir %s error:", dirPath), err.Error())
 				return
 			}
-			//filePath := fmt.Sprintf("%s/%s.go", dirPath, module)
+			// filePath := fmt.Sprintf("%s/%s.go", dirPath, module)
 			filePath := filepath.Join(dirPath, module+".go")
 			fileBody := fmt.Sprintf("package %s%s", module, d)
 			if err := ioutil.WriteFile(filePath, []byte(fileBody), 0644); err != nil {
@@ -187,7 +187,7 @@ var newCmd = &cobra.Command{
 			}
 		}
 
-		//routePath := "app/route/route.go"
+		// routePath := "app/route/route.go"
 		routePath := filepath.Join("app", "route", "route.go")
 		routes := []string{"cmd", "http", "rpc", "task"}
 		for _, d := range routes {
@@ -388,7 +388,6 @@ var runCmd = &cobra.Command{
 				case err := <-watcher.Errors:
 					log.Fatalln("[FATAL] watch error:", err)
 				}
-
 			}
 		}()
 
@@ -462,12 +461,12 @@ func restartApp(appName string) {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		go cmd.Run()
-		//go func() {
-		//	err := cmd.Run()
-		//	if err != nil && err.Error() != "signal: killed" {
-		//		log.Fatalln("[FATAL] start app error:", err)
-		//	}
-		//}()
+		// go func() {
+		// 	err := cmd.Run()
+		// 	if err != nil && err.Error() != "signal: killed" {
+		// 		log.Fatalln("[FATAL] start app error:", err)
+		// 	}
+		// }()
 	}()
 }
 
@@ -490,7 +489,7 @@ func readDir(dir string, files *[]string) error {
 			return nil
 		}
 
-		//fmt.Println(path, f.Name())
+		// fmt.Println(path, f.Name())
 		*files = append(*files, path)
 		return nil
 	})
@@ -501,7 +500,6 @@ func readDir(dir string, files *[]string) error {
 var rootCmd = &cobra.Command{}
 
 func main() {
-
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(newCmd)
@@ -517,7 +515,6 @@ func main() {
 func init() {
 	// init cmd
 	initCmd.Flags().BoolP("mod", "", true, "use go mod ? only for dev user")
-	// init cmd
 	initCmd.Flags().StringP("app", "a", "", "app name")
 	_ = initCmd.MarkFlagRequired("app")
 

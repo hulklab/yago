@@ -7,11 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hulklab/yago/coms/locker/lock"
-
-	"github.com/hulklab/yago/coms/locker"
-
 	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/coms/locker"
+	"github.com/hulklab/yago/coms/locker/lock"
 )
 
 type BaseTask struct{}

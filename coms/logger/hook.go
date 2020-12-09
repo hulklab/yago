@@ -13,7 +13,6 @@ func (h *Hook) SetFields(kv logrus.Fields) {
 }
 
 func (h *Hook) Fire(entry *logrus.Entry) error {
-
 	for k, v := range h.fields {
 		entry.Data[k] = v
 	}

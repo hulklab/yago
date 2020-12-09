@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/olivere/elastic/v7"
 	"testing"
+
+	"github.com/olivere/elastic/v7"
 )
 
 // 参考地址 https://olivere.github.io/elastic/
@@ -114,9 +115,9 @@ func TestTermQuery(t *testing.T) {
 	termQuery := elastic.NewTermQuery("user", "bob")
 
 	ret, err := Ins().Search().
-		Index("es_test"). // use index
-		Query(termQuery). // termQuery
-		From(0).Size(10). // pagesize
+		Index("es_test").        // use index
+		Query(termQuery).        // termQuery
+		From(0).Size(10).        // pagesize
 		Do(context.Background()) // execute
 	if err != nil {
 		fmt.Printf("term query err :%s", err)

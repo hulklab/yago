@@ -33,7 +33,7 @@ func Ins(id ...string) *Rds {
 
 	redisPool := v.(*redis.Pool)
 
-	//rds := redisPool.Get()
+	// rds := redisPool.Get()
 	return &Rds{Pool: redisPool}
 }
 
@@ -113,7 +113,7 @@ func initRedisConnPool(name string) *redis.Pool {
 		MaxIdle:     maxIdle,
 		IdleTimeout: idleTimeout,
 		MaxActive:   maxActive,
-		//Wait:        true,
+		// Wait:        true,
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", addr, dialOptions...)
 			if err != nil {

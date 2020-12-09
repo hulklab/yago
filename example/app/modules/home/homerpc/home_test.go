@@ -2,10 +2,11 @@ package homerpc
 
 import (
 	"context"
-	"google.golang.org/grpc"
 	"log"
 	"testing"
 	"time"
+
+	"google.golang.org/grpc"
 
 	pb "github.com/hulklab/yago/example/app/modules/home/homerpc/homepb"
 )

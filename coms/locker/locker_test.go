@@ -26,7 +26,6 @@ func initRedis() {
 	yago.Config.Set("redis", g.Hash{
 		"addr": "127.0.0.1:6379",
 	})
-
 }
 
 func initEtcd() {
@@ -37,10 +36,10 @@ func initEtcd() {
 	yago.Config.Set("etcd", g.Hash{
 		"endpoints": []string{"127.0.0.1:2379"},
 	})
-
 }
+
 func TestRedisExpire(t *testing.T) {
-	//t.Skip()
+	// t.Skip()
 	initRedis()
 	doTest()
 }
@@ -51,7 +50,7 @@ func TestRedisForever(t *testing.T) {
 }
 
 func TestRedisWaitTime(t *testing.T) {
-	//t.Skip()
+	// t.Skip()
 	initRedis()
 	doTestWaitTime()
 }

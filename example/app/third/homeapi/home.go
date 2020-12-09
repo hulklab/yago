@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/levigross/grequests"
-
 	"github.com/hulklab/yago"
-
 	"github.com/hulklab/yago/base/basethird"
+	"github.com/levigross/grequests"
 )
 
 type homeApi struct {
@@ -45,7 +43,6 @@ func Ins() *homeApi {
 }
 
 func (a *homeApi) Hello(name string) {
-
 	params := map[string]interface{}{}
 
 	if name != "" {
@@ -55,16 +52,15 @@ func (a *homeApi) Hello(name string) {
 	req, err := a.Get("/home/hello", params)
 
 	fmt.Println("req:", req, "err:", err)
-	//if err != nil {
-	//	fmt.Println(err.Error())
-	//} else {
-	//	s, _ := req.String()
-	//	fmt.Println(s)
-	//}
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// } else {
+	// 	s, _ := req.String()
+	// 	fmt.Println(s)
+	// }
 }
 
 func (a *homeApi) GetUserById(id int64) string {
-
 	params := map[string]interface{}{
 		"id": id,
 	}
@@ -79,7 +75,6 @@ func (a *homeApi) GetUserById(id int64) string {
 }
 
 func (a *homeApi) UploadFile(filepath string) string {
-
 	params := map[string]interface{}{
 		"file": basethird.PostFile(filepath),
 	}

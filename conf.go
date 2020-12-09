@@ -9,9 +9,8 @@ import (
 	"sync"
 
 	"github.com/hulklab/yago/libs/arr"
-
 	"github.com/spf13/viper"
-	//_ "github.com/spf13/viper/remote"
+	// _ "github.com/spf13/viper/remote"
 )
 
 type AppConfig struct {
@@ -20,7 +19,7 @@ type AppConfig struct {
 
 func (c *AppConfig) ReadFileConfig(cfgPath string) error {
 	err := c.ReadInConfig() // Find and read the config file
-	if err != nil { // Handle errors reading the config file
+	if err != nil {         // Handle errors reading the config file
 		return fmt.Errorf("Fatal error config file: %s \n, \"--help\" gives usage information", err)
 	}
 
@@ -31,7 +30,7 @@ func (c *AppConfig) ReadFileConfig(cfgPath string) error {
 	}
 
 	if len(importFiles) >= 2 {
-		//log.Println("import configs:", importFiles)
+		// log.Println("import configs:", importFiles)
 		// the last one don't need merge
 		for i := len(importFiles) - 2; i >= 0; i-- {
 			importFile := importFiles[i]
@@ -97,12 +96,12 @@ func NewAppConfig(cfgPath string) *AppConfig {
 	cfg := &AppConfig{viper.New()}
 
 	// 设置远程配置
-	//err := cfg.AddRemoteProvider("etcd", "http://127.0.0.1:2379", "/yago/conf/app.toml")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//cfg.SetConfigType("toml")
-	//err = cfg.ReadRemoteConfig()
+	// err := cfg.AddRemoteProvider("etcd", "http://127.0.0.1:2379", "/yago/conf/app.toml")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// cfg.SetConfigType("toml")
+	// err = cfg.ReadRemoteConfig()
 
 	cfg.SetConfigFile(cfgPath)
 	err := cfg.ReadFileConfig(cfgPath)
@@ -158,7 +157,6 @@ func initConfig() {
 	}
 
 	Config = NewAppConfig(*cfgPath)
-
 }
 
 func isInTests() bool {

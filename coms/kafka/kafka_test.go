@@ -23,7 +23,6 @@ func TestSyncProducer_Produce(t *testing.T) {
 			t.Fatalf("sync produce error: %s", err)
 		}
 	}
-
 }
 
 // go test -v ./coms/kafka -run BenchmarkSyncProducer_Produce -bench=BenchmarkSyncProducer_Produce -args "-c=${PWD}/example/conf/app.toml"

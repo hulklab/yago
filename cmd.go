@@ -15,10 +15,10 @@ type Cmd struct {
 
 func NewCmd() *Cmd {
 	cmd := &Cmd{&cobra.Command{
-		//PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		//	conf, _ := cmd.Flags().GetString("c")
-		//	Config = NewAppConfig(conf)
-		//},
+		// PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// 	conf, _ := cmd.Flags().GetString("c")
+		// 	Config = NewAppConfig(conf)
+		// },
 		Run: func(cmd *cobra.Command, args []string) {
 			NewApp().Run()
 		},

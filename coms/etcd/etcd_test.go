@@ -3,12 +3,13 @@ package etcd
 import (
 	"context"
 	"fmt"
-	"go.etcd.io/etcd/clientv3"
 	"testing"
 	"time"
+
+	"go.etcd.io/etcd/clientv3"
 )
 
-// test put
+// go test -v ./coms/etcd -run TestPut -args "-c=${PWD}/example/conf/app.toml"
 func TestPut(t *testing.T) {
 	// put without requestTimeout
 	key1, value1 := "key1", "value1"
@@ -27,7 +28,7 @@ func TestPut(t *testing.T) {
 	}
 }
 
-// test get
+// go test -v ./coms/etcd -run TestGet -args "-c=${PWD}/example/conf/app.toml"
 func TestGet(t *testing.T) {
 	// get key
 	key := "key1"
@@ -60,7 +61,7 @@ func TestGet(t *testing.T) {
 	}
 }
 
-// test del
+// go test -v ./coms/etcd -run TestDel -args "-c=${PWD}/example/conf/app.toml"
 func TestDel(t *testing.T) {
 	key := "key1"
 	_, err := Ins().Delete(context.TODO(), key)
@@ -69,7 +70,7 @@ func TestDel(t *testing.T) {
 	}
 }
 
-// test watch
+// go test -v ./coms/etcd -run TestEtcdWatch -args "-c=${PWD}/example/conf/app.toml"
 func TestEtcdWatch(t *testing.T) {
 	etcd := Ins()
 

@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/hulklab/yago"
-
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
@@ -335,7 +334,7 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 	dataParams := make(map[string]string)
 
 	for k, v := range params {
-		//logParams[k] = v
+		// logParams[k] = v
 		switch val := v.(type) {
 		case PostFile: // 文件上传
 			uf, err := val.Value(k)
@@ -392,7 +391,6 @@ func (a *HttpThird) AddInterceptor(hi HttpInterceptor) {
 }
 
 func (a *HttpThird) getInterceptors() []HttpInterceptor {
-
 	a.onceInter.Do(func() {
 		// 注册日志插件(放到最后)
 		if !a.disableDefaultInterceptor {
@@ -456,7 +454,7 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 		}
 	}
 
-	//log.Printf("before invoker. method: %+v, request:%+v", method, req)
+	// log.Printf("before invoker. method: %+v, request:%+v", method, req)
 	begin := time.Now()
 
 	resp, err := call(method, uri, ro)
@@ -470,7 +468,7 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 		"params":         logParams,
 		"consume":        consume,
 		"request_header": ro.Headers,
-		//"response_header": resp.Header,
+		// "response_header": resp.Header,
 	}
 
 	if ro.JSON != nil {
@@ -526,7 +524,6 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 }
 
 func (a *HttpThird) Post(api string, params map[string]interface{}, opts ...*grequests.RequestOptions) (*Response, error) {
-	//a.Req.Header("Expect", "")
 	return a.call(http.MethodPost, api, params, opts...)
 }
 

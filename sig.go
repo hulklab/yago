@@ -49,11 +49,9 @@ func (a *App) startSignal() {
 			}
 		}
 	}
-
 }
 
 func RestartApp() error {
-
 	execSpec := &syscall.ProcAttr{
 		Env:   os.Environ(),
 		Files: []uintptr{os.Stdin.Fd(), os.Stdout.Fd(), os.Stderr.Fd()},

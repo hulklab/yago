@@ -5,9 +5,8 @@ import (
 	"github.com/hulklab/yago/base/basemodel"
 	"github.com/hulklab/yago/coms/orm"
 	"github.com/hulklab/yago/example/app/g"
-	"github.com/hulklab/yago/libs/date"
-
 	"github.com/hulklab/yago/example/app/modules/home/homedao"
+	"github.com/hulklab/yago/libs/date"
 )
 
 type UserModel struct {
@@ -31,7 +30,6 @@ func NewUserModel(opts ...basemodel.Option) *UserModel {
 }
 
 func (m *UserModel) Add(username, phone string, options map[string]interface{}) (int64, error) {
-
 	// 判断 name 是否已存在
 	exist := &homedao.UserDao{Username: username}
 
@@ -110,7 +108,6 @@ func (m *UserModel) GetDetail(id int64) (*homedao.UserDao, error) {
 }
 
 func (m *UserModel) GetList(q string, page, pageSize int) (int64, []*homedao.UserDao) {
-
 	var users []*homedao.UserDao
 	var total int64
 

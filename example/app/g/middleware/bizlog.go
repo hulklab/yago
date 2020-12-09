@@ -17,7 +17,6 @@ const (
 )
 
 func BizLog(c *yago.Ctx) {
-
 	setParam(c)
 
 	c.Next()
@@ -36,6 +35,7 @@ func BizLog(c *yago.Ctx) {
 				"params":  params,
 				"header":  c.Request.Header,
 				"user_ip": c.ClientIP(),
+				"resp":    resp,
 			}).Error(c.GetError())
 		} else {
 			logger.Ins().Category("http.biz.info").WithFields(logrus.Fields{
@@ -62,7 +62,7 @@ func setParam(c *yago.Ctx) {
 			return
 		}
 
-		err = req.Body.Close() //  must close
+		err = req.Body.Close() // must close
 		if err != nil {
 			log.Println("close body:", err.Error())
 			return
@@ -82,7 +82,6 @@ func setParam(c *yago.Ctx) {
 		}
 
 		c.Set(paramKey, string(bs))
-
 	case gin.MIMEMultipartPOSTForm:
 		err := req.ParseMultipartForm(32 << 20)
 		if err != nil {
@@ -96,5 +95,4 @@ func setParam(c *yago.Ctx) {
 			c.Set(paramKey, string(bs))
 		}
 	}
-
 }

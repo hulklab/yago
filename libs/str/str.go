@@ -38,7 +38,7 @@ func UniqueId() string {
 	return Md5(node.Generate().String())
 }
 
-// 全局唯一 短id
+// 全局唯一短 id
 func UniqueIdShort() string {
 	return node.Generate().Base58()
 }
@@ -115,7 +115,7 @@ func KvToStr(m map[string]string, sep, pair string, order ...string) string {
 		o := strings.ToLower(order[0])
 
 		keys := make([]string, 0, len(m))
-		for k, _ := range m {
+		for k := range m {
 			keys = append(keys, k)
 		}
 
@@ -150,5 +150,4 @@ func Split(s string) []string {
 		}
 		return false
 	})
-
 }

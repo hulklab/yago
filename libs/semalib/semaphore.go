@@ -61,7 +61,7 @@ func (s *semaphore) Add(f func() error) {
 			err := f()
 
 			if err != nil {
-				if ! atomic.CompareAndSwapPointer(&s.error, nil, unsafe.Pointer(&err)) {
+				if !atomic.CompareAndSwapPointer(&s.error, nil, unsafe.Pointer(&err)) {
 					return
 				}
 

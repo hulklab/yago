@@ -15,12 +15,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mitchellh/mapstructure"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 	"github.com/robfig/cron"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -234,7 +233,7 @@ func (a *App) Run() {
 	}
 
 	if a.RpcEnable {
-		// 开启 rpc 服务
+		// 开启 rpc
 		go a.runRpc()
 	}
 
@@ -259,7 +258,6 @@ func (a *App) genPid() {
 	if err != nil {
 		log.Fatalf("pidfile check err:%v\n", err)
 		return
-
 	}
 
 	defer pf.Close()
@@ -360,13 +358,13 @@ func (a *App) loadHttpRouter() error {
 			AllowBrowserExtensions: true,
 			AllowWildcard:          true,
 		}))
-
 	}
 
 	// gzip
 	if a.HttpGzipOn {
 		a.httpEngine.Use(gzip.Gzip(a.HttpGzipLevel))
 	}
+
 	// pprof
 	if a.HttpPprof {
 		pprof.Register(a.httpEngine)
@@ -418,7 +416,6 @@ func (a *App) runHttp() {
 				log.Fatalf("listen: %s\n", err)
 			}
 		}()
-
 	} else {
 		go func() {
 			// service connections
@@ -435,11 +432,16 @@ func (a *App) runHttp() {
 	)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		// log
-		log.Println(err)
+		if errors.Is(err, http.ErrServerClosed) {
+			log.Println("http server already closed")
+		} else if errors.Is(err, context.DeadlineExceeded) {
+			log.Println("http server gracefully shutdown timeout")
+		} else {
+			log.Println("http server gracefully shutdown error", err)
+		}
+	} else {
+		a.httpCloseDoneChan <- 1
 	}
-	a.httpCloseDoneChan <- 1
-
 }
 
 func (a *App) loadTaskRouter() error {
