@@ -25,6 +25,23 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type HTTPCodeError int
+
+func (e HTTPCodeError) Code() int {
+	return int(e)
+}
+
+func (e HTTPCodeError) Error() string {
+	code := e.Code()
+	return fmt.Sprintf("%d: %s", code, http.StatusText(code))
+}
+
+// check if err is http code error
+func AsHTTPCodeError(err error) (b bool,e HTTPCodeError) {
+	 b = errors.As(err, &e)
+	 return
+}
+
 type PostFile string
 
 func (p PostFile) Value(name string) (f grequests.FileUpload, e error) {
@@ -502,6 +519,7 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 	}
 
 	logInfo["response_header"] = resp.Header
+	logInfo["status_code"] = resp.StatusCode
 
 	retStr, _ := resp.String()
 
@@ -511,11 +529,11 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 	}
 
 	if !resp.Ok {
-		logInfo["hint"] = fmt.Sprintf("http status err,code:%d", resp.StatusCode)
+		logInfo["hint"] = fmt.Sprintf("http status err,code:%d,body:%s", resp.StatusCode, retStr)
 
 		log.WithFields(logInfo).Error()
 
-		return resp, fmt.Errorf("http status error: %d, body: %s", resp.StatusCode, retStr)
+		return resp, HTTPCodeError(resp.StatusCode)
 	}
 
 	log.WithFields(logInfo).Info()
