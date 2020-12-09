@@ -47,6 +47,7 @@ func init() {
 
 		val.errc = make(chan error)
 		val.lockc = make(chan struct{})
+		val.done = make(chan struct{})
 		return val
 	})
 }
@@ -57,7 +58,6 @@ func (r *redisLock) rIns() *rds.Rds {
 }
 
 func (r *redisLock) autoRenewal(ttl int64, errNotify bool) {
-	r.done = make(chan struct{})
 
 	go func() {
 		ticker := time.NewTicker(time.Duration(ttl)*time.Second - time.Millisecond*800)
@@ -155,6 +155,7 @@ func (r *redisLock) listen() error {
 		return fmt.Errorf("[RedisLock] %s new listener err:%w", r.key, err)
 	}
 
+
 	go func() {
 		err := sub.Subscribe(func(topic string, bytes []byte) {
 			r.lockc <- struct{}{}
@@ -163,6 +164,17 @@ func (r *redisLock) listen() error {
 		if err != nil {
 			log.Println("[RedisLock] redis listen err:", err.Error(), "key:", r.key)
 			r.errc <- fmt.Errorf("listen err %w", err)
+		}
+	}()
+
+	go func() {
+		for {
+			select {
+			case <-r.done:
+				log.Println("[RedisLock] listen done")
+				sub.Close()
+				return
+			}
 		}
 	}()
 
