@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"sync"
 	"time"
 
 	"github.com/hulklab/yago/libs/str"
@@ -30,6 +31,7 @@ type redisLock struct {
 	errc    chan error
 	lockc   chan struct{}
 	sub *rds.Subscriber
+	once sync.Once
 }
 
 func init() {
@@ -121,11 +123,6 @@ func (r *redisLock) Lock(key string, opts ...lock.SessionOption) error {
 
 	var err error
 
-	err = r.listen()
-	if err != nil {
-		return err
-	}
-
 	for i := 0; i < r.retry; i++ {
 		err = r.tryLock(ops.TTL)
 		if err == nil {
@@ -151,25 +148,30 @@ func (r *redisLock) topicKey() string {
 }
 
 func (r *redisLock) listen() error {
-	sub, err := r.rIns().NewSubscriber(r.topicKey())
-	if err != nil {
-		return fmt.Errorf("[RedisLock] %s new listener err:%w", r.key, err)
-	}
-
-	r.sub = sub
-
-	go func() {
-		err := r.sub.Subscribe(func(topic string, bytes []byte) {
-			r.lockc <- struct{}{}
-		})
-
-		if err != nil {
-			log.Println("[RedisLock] redis listen err:", err.Error(), "key:", r.key)
-			r.errc <- fmt.Errorf("listen err %w", err)
+	var err error
+	r.once.Do(func() {
+		sub, err1 := r.rIns().NewSubscriber(r.topicKey())
+		if err1 != nil {
+			err = fmt.Errorf("[RedisLock] %s new listener err:%w", r.key, err1)
+			return
 		}
-	}()
 
-	return nil
+		r.sub = sub
+
+		go func() {
+			err := r.sub.Subscribe(func(topic string, bytes []byte) {
+				r.lockc <- struct{}{}
+			})
+
+			if err != nil {
+				log.Println("[RedisLock] redis listen err:", err.Error(), "key:", r.key)
+				r.errc <- fmt.Errorf("listen err %w", err)
+			}
+		}()
+
+	})
+
+	return err
 }
 
 func (r *redisLock) tryLock(timeout int64) error {
@@ -180,6 +182,11 @@ func (r *redisLock) tryLock(timeout int64) error {
 
 	if ok {
 		return nil
+	}
+
+	err = r.listen()
+	if err != nil {
+		return err
 	}
 
 	for {
