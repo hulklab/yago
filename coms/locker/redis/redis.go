@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"sync"
 	"time"
 
 	"github.com/hulklab/yago/libs/str"
@@ -20,15 +21,18 @@ import (
 //const timeDelta = 0
 
 type redisLock struct {
-	rInsId  string
-	retry   int
-	key     string
-	expired int64
-	token   string
-	ctx     context.Context
-	done    chan struct{}
-	errc    chan error
-	lockc   chan struct{}
+	rInsId     string
+	retry      int
+	key        string
+	expired    int64
+	token      string
+	ctx        context.Context
+	done       chan struct{}
+	errc       chan error
+	lockc      chan struct{}
+	sub        *rds.Subscriber
+	renewTimer *time.Timer
+	once       sync.Once
 }
 
 func init() {
@@ -47,6 +51,7 @@ func init() {
 
 		val.errc = make(chan error)
 		val.lockc = make(chan struct{})
+		val.done = make(chan struct{})
 		return val
 	})
 }
@@ -57,46 +62,59 @@ func (r *redisLock) rIns() *rds.Rds {
 }
 
 func (r *redisLock) autoRenewal(ttl int64, errNotify bool) {
-	r.done = make(chan struct{})
+	// 拿锁超过 ttl 才会进入 goroutine
+	period := time.Duration(ttl)*time.Second - time.Millisecond*900
+	r.renewTimer = time.AfterFunc(period, func() {
+		go func() {
+			ticker := time.NewTicker(period)
+			//log.Println("now:", time.Now())
+			defer ticker.Stop()
 
-	go func() {
-		ticker := time.NewTicker(time.Duration(ttl)*time.Second - time.Millisecond*800)
-		//log.Println("now:", time.Now())
-		defer ticker.Stop()
+			for {
+				select {
+				case <-r.done:
+					log.Println("[RedisLock] renewal done")
+					return
+				case <-ticker.C:
 
-		for {
-			select {
-			case <-r.done:
-				log.Println("[RedisLock] renewal done")
-				return
-			case <-ticker.C:
-
-				//log.Println("ticker:", time.Now())
-				reply, err := redis.Int64(r.rIns().Expire(r.key, ttl))
-				//log.Printf("[Redislock] %d %v", reply, err)
-				if err != nil {
-					log.Printf("[RedisLock] renewal err: %s\n", err.Error())
-					if errNotify {
-						go func() {
-							r.errc <- fmt.Errorf("%s:%w", "lock renewal err", err)
-						}()
+					//log.Println("ticker:", time.Now())
+					b := r.renewal(ttl, errNotify)
+					if !b {
+						break
 					}
-					break
-				} else if reply == 0 {
-					//  续约失败
-					log.Printf("[RedisLock] renewal fail: key %s is not exists", r.key)
-					if errNotify {
-						go func() {
-							r.errc <- fmt.Errorf("%s:%w", "lock renewal err", err)
-						}()
-					}
-					break
 				}
-
 			}
-		}
-	}()
+		}()
 
+		// 先续约一次
+		r.renewal(ttl, errNotify)
+	})
+
+}
+
+func (r *redisLock) renewal(ttl int64, errNotify bool) (b bool) {
+	reply, err := redis.Int64(r.rIns().Expire(r.key, ttl))
+	//log.Printf("[Redislock] %d %v", reply, err)
+	if err != nil {
+		log.Printf("[RedisLock] renewal err: %s\n", err.Error())
+		if errNotify {
+			go func() {
+				r.errc <- fmt.Errorf("%s:%w", "lock renewal err", err)
+			}()
+		}
+		return false
+	} else if reply == 0 {
+		//  续约失败
+		log.Printf("[RedisLock] renewal fail: key %s is not exists", r.key)
+		if errNotify {
+			go func() {
+				r.errc <- fmt.Errorf("%s:%w", "lock renewal err", err)
+			}()
+		}
+		return false
+	}
+
+	return true
 }
 
 func (r *redisLock) Lock(key string, opts ...lock.SessionOption) error {
@@ -119,11 +137,6 @@ func (r *redisLock) Lock(key string, opts ...lock.SessionOption) error {
 	r.key = key
 
 	var err error
-
-	err = r.listen()
-	if err != nil {
-		return err
-	}
 
 	for i := 0; i < r.retry; i++ {
 		err = r.tryLock(ops.TTL)
@@ -150,23 +163,30 @@ func (r *redisLock) topicKey() string {
 }
 
 func (r *redisLock) listen() error {
-	sub, err := r.rIns().NewSubscriber(r.topicKey())
-	if err != nil {
-		return fmt.Errorf("[RedisLock] %s new listener err:%w", r.key, err)
-	}
-
-	go func() {
-		err := sub.Subscribe(func(topic string, bytes []byte) {
-			r.lockc <- struct{}{}
-		})
-
-		if err != nil {
-			log.Println("[RedisLock] redis listen err:", err.Error(), "key:", r.key)
-			r.errc <- fmt.Errorf("listen err %w", err)
+	var err error
+	r.once.Do(func() {
+		sub, err1 := r.rIns().NewSubscriber(r.topicKey())
+		if err1 != nil {
+			err = fmt.Errorf("[RedisLock] %s new listener err:%w", r.key, err1)
+			return
 		}
-	}()
 
-	return nil
+		r.sub = sub
+
+		go func() {
+			err := r.sub.Subscribe(func(topic string, bytes []byte) {
+				r.lockc <- struct{}{}
+			})
+
+			if err != nil {
+				log.Println("[RedisLock] redis listen err:", err.Error(), "key:", r.key)
+				r.errc <- fmt.Errorf("listen err %w", err)
+			}
+		}()
+
+	})
+
+	return err
 }
 
 func (r *redisLock) tryLock(timeout int64) error {
@@ -177,6 +197,11 @@ func (r *redisLock) tryLock(timeout int64) error {
 
 	if ok {
 		return nil
+	}
+
+	err = r.listen()
+	if err != nil {
+		return err
 	}
 
 	for {
@@ -246,6 +271,14 @@ func (r *redisLock) Unlock() {
 	if r.done != nil {
 		close(r.done)
 		r.done = nil
+	}
+
+	if r.sub != nil {
+		r.sub.Close()
+	}
+
+	if r.renewTimer != nil {
+		r.renewTimer.Stop()
 	}
 
 	rc := r.rIns().GetConn()

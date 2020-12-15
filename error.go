@@ -1,7 +1,9 @@
 package yago
 
 import (
+	"errors"
 	"fmt"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -101,4 +103,21 @@ func WrapErr(ye Err, err error) error {
 		return NewErr("ye can not be OK when use yago.WrapErr()")
 	}
 	return fmt.Errorf("%w: %s", ye, err)
+}
+
+type HTTPCodeError int
+
+func (e HTTPCodeError) Code() int {
+	return int(e)
+}
+
+func (e HTTPCodeError) Error() string {
+	code := e.Code()
+	return fmt.Sprintf("%d: %s", code, http.StatusText(code))
+}
+
+// check if err is http code error
+func AsHTTPCodeError(err error) (b bool,e HTTPCodeError) {
+	b = errors.As(err, &e)
+	return
 }
