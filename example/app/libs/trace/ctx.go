@@ -48,7 +48,6 @@ func (t *Context) SetTraceId(traceId string) {
 }
 
 func (t *Context) Logger() *logrus.Entry {
-
 	field := g.Hash{
 		"trace_id": t.GetTraceId(),
 	}

@@ -133,7 +133,6 @@ func (g *HttpGroupRouter) Use(middlewares ...HttpHandlerFunc) {
 }
 
 func (g *HttpGroupRouter) addHttpRouter(url, method string, actions ...HttpHandlerFunc) *HttpRouter {
-
 	router := &HttpRouter{
 		Path:    url,
 		Method:  method,
@@ -199,7 +198,13 @@ type ICmdArg interface {
 	SetFlag(cmd *cobra.Command)
 }
 
-type CmdArg = CmdStringArg
+func markFlagRequired(required bool, cmd *cobra.Command, name string) {
+	if required {
+		if err := cmd.MarkFlagRequired(name); err != nil {
+			log.Printf("cmd arg %s mark flag failed: %s", name, err.Error())
+		}
+	}
+}
 
 type CmdStringArg struct {
 	Name      string
@@ -207,14 +212,6 @@ type CmdStringArg struct {
 	Usage     string
 	Required  bool
 	Value     string
-}
-
-func markFlagRequired(required bool, cmd *cobra.Command, name string) {
-	if required {
-		if err := cmd.MarkFlagRequired(name); err != nil {
-			log.Printf("cmd arg %s mark flag failed: %s", name, err.Error())
-		}
-	}
 }
 
 func (c CmdStringArg) SetFlag(cmd *cobra.Command) {

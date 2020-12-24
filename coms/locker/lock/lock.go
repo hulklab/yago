@@ -68,5 +68,4 @@ func LoadLocker(name string) (NewFunc, bool) {
 
 	newFunc, _ := val.(NewFunc)
 	return newFunc, true
-
 }

@@ -9,16 +9,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hulklab/yago/libs/str"
-
-	"github.com/hulklab/yago/coms/locker/lock"
-
 	"github.com/garyburd/redigo/redis"
 	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/coms/locker/lock"
 	"github.com/hulklab/yago/coms/rds"
+	"github.com/hulklab/yago/libs/str"
 )
 
-//const timeDelta = 0
+// const timeDelta = 0
 
 type redisLock struct {
 	rInsId     string
@@ -42,10 +40,10 @@ func init() {
 		if retry == 0 {
 			retry = 3
 		}
-		//rIns := rds.Ins(driverInsId)
+		// rIns := rds.Ins(driverInsId)
 		val := &redisLock{
 			rInsId: driverInsId,
-			//rIns:   rIns,
+			// rIns:   rIns,
 			retry: retry,
 		}
 
@@ -58,7 +56,6 @@ func init() {
 
 func (r *redisLock) rIns() *rds.Rds {
 	return rds.Ins(r.rInsId)
-
 }
 
 func (r *redisLock) autoRenewal(ttl int64, errNotify bool) {
@@ -206,13 +203,13 @@ func (r *redisLock) tryLock(timeout int64) error {
 
 	for {
 		rn := rand.Int63n(timeout) + 1
-		//log.Println(r.key, rn)
+		// log.Println(r.key, rn)
 
 		select {
 		case <-r.ctx.Done():
 			return r.ctx.Err()
 		case <-r.lockc:
-			//log.Println("[RedisLock] redis get unlock topic:", r.topicKey())
+			// log.Println("[RedisLock] redis get unlock topic:", r.topicKey())
 			ok, err := r.lock(timeout)
 			if err != nil {
 				return err
@@ -222,7 +219,7 @@ func (r *redisLock) tryLock(timeout int64) error {
 				return nil
 			}
 		case <-time.After(time.Second * time.Duration(rn)):
-			//log.Printf("[RedisLock] try to get lock %s after time %d", r.key, rn)
+			// log.Printf("[RedisLock] try to get lock %s after time %d", r.key, rn)
 			ok, err := r.lock(timeout)
 			if err != nil {
 				return err
@@ -231,7 +228,6 @@ func (r *redisLock) tryLock(timeout int64) error {
 			if ok {
 				return nil
 			}
-
 		}
 	}
 }
@@ -251,7 +247,7 @@ func (r *redisLock) lock(timeout int64) (ok bool, err error) {
 
 	if status == "OK" {
 		r.token = token
-		//log.Println("ok:", time.Now())
+		// log.Println("ok:", time.Now())
 		return true, nil
 	}
 
@@ -302,7 +298,6 @@ func (r *redisLock) Unlock() {
 			log.Printf("[RedisLock] lock %s release and broadcast err %v", r.key, err)
 		}
 	}
-
 }
 
 func (r *redisLock) ErrC() <-chan error {

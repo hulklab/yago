@@ -15,7 +15,6 @@ func CheckUserName(c *yago.Ctx) {
 }
 
 func Compute(c *yago.Ctx) {
-
 	// before request
 	c.Set("number", 1)
 

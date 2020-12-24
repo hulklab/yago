@@ -5,10 +5,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/libs/validatelib"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type defaultValidator struct {
@@ -57,6 +56,6 @@ func (v *defaultValidator) lazyinit() {
 			return name
 
 		})
-		//v.validate.SetTagName("binding")
+		// v.validate.SetTagName("binding")
 	})
 }

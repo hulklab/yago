@@ -23,7 +23,6 @@ func GetLang() string {
 		l = "zh"
 	}
 	return l
-
 }
 
 func GetTranslator(lang ...string) ut.Translator {

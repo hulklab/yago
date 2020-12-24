@@ -2,11 +2,12 @@ package logger
 
 import (
 	"fmt"
+	"runtime"
+	"strings"
+
 	"github.com/hulklab/yago"
 	"github.com/natefinch/lumberjack"
 	"github.com/sirupsen/logrus"
-	"runtime"
-	"strings"
 )
 
 type Logger struct {

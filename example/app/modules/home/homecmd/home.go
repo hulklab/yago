@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hulklab/yago/example/app/third/homeapi"
-
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basecmd"
+	"github.com/hulklab/yago/example/app/third/homeapi"
 	"github.com/spf13/cobra"
 )
 
@@ -42,10 +41,10 @@ func init() {
 func (c *HomeCmd) TestAction(cmd *cobra.Command, args []string) {
 	homeapi.Ins().Hello("")
 	homeapi.Ins().Hello("zhangsan")
-	//time.Sleep(1 * time.Second)
-	//homeapi.InsRpc().Hello()
-	//time.Sleep(1 * time.Second)
-	//homeapi.InsRpc().HelloStream()
+	// time.Sleep(1 * time.Second)
+	// homeapi.InsRpc().Hello()
+	// time.Sleep(1 * time.Second)
+	// homeapi.InsRpc().HelloStream()
 }
 
 // ./example demo -a=hello -i 11 -x 66 -d 10ms -b=false -y=java,php -z=1,2,3 -f 3.14
@@ -77,5 +76,4 @@ func (c *HomeCmd) DemoAction(cmd *cobra.Command, args []string) {
 
 	z, err := cmd.Flags().GetIntSlice("int_slice")
 	fmt.Println(z, err)
-
 }

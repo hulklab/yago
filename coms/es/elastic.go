@@ -1,10 +1,11 @@
 package es
 
 import (
+	"log"
+
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/olivere/elastic/v7"
-	"log"
 )
 
 type Elastic struct {

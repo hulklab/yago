@@ -23,7 +23,6 @@ func TestApi(t *testing.T) {
 			t.Log("test exists ok")
 		} else {
 			t.Error("test exists fail")
-
 		}
 	}
 
@@ -119,10 +118,9 @@ func TestApi(t *testing.T) {
 }
 
 func TestString(t *testing.T) {
-
 	rc := Ins()
 	// 用完后返回连接池
-	//defer rc.Close()
+	// defer rc.Close()
 
 	reply, err := rc.Do("set", "test_key", "zjl", "NX")
 	fmt.Printf("%T,%v,%T,%s\n", reply, reply, err, err)
@@ -156,11 +154,9 @@ func TestExpire(t *testing.T) {
 	rc.Do("expire", key, 5)
 
 	for i := 0; i < 5; i++ {
-
 		v, _ := redis.String(rc.Do("get", key))
 		fmt.Println("v:", v)
 		time.Sleep(1 * time.Second)
-
 	}
 
 	v, err := redis.String(rc.Do("get", key))
@@ -174,7 +170,7 @@ func TestExpire(t *testing.T) {
 // 测试列表
 func TestList(t *testing.T) {
 	rc := Ins()
-	//defer rc.Close()
+	// defer rc.Close()
 
 	key := "test_list_key"
 
@@ -191,13 +187,12 @@ func TestList(t *testing.T) {
 	} else {
 		t.Error("test expire fail,v:", v1, v2, v3)
 	}
-
 }
 
 // 测试 hash
 func TestMap(t *testing.T) {
 	rc := Ins()
-	//defer rc.Close()
+	// defer rc.Close()
 
 	key := "test_map_key"
 
@@ -217,7 +212,7 @@ func TestMap(t *testing.T) {
 // 测试 set
 func TestSet(t *testing.T) {
 	rc := Ins()
-	//defer rc.Close()
+	// defer rc.Close()
 
 	key := "test_set_key"
 
@@ -239,60 +234,59 @@ func TestSet(t *testing.T) {
 		t.Log("test set succ", b)
 	} else {
 		t.Error("test set fail", b)
-
 	}
 }
 
 // 原生 sub 调用
-//func TestPubSub(t *testing.T) {
+// func TestPubSub(t *testing.T) {
 //
-//	rc := Ins()
-//	defer rc.Close()
+// 	rc := Ins()
+// 	defer rc.Close()
 //
-//	pubrc := Ins()
-//	defer pubrc.Close()
+// 	pubrc := Ins()
+// 	defer pubrc.Close()
 //
-//	topic := "test_subscribe"
+// 	topic := "test_subscribe"
 //
-//	var wg sync.WaitGroup
-//	wg.Add(2)
+// 	var wg sync.WaitGroup
+// 	wg.Add(2)
 //
-//	prc := redis.PubSubConn{Conn: rc}
+// 	prc := redis.PubSubConn{Conn: rc}
 //
-//	prc.Subscribe(topic)
+// 	prc.Subscribe(topic)
 //
-//	go func() {
-//		defer wg.Done()
+// 	go func() {
+// 		defer wg.Done()
 //
-//		for {
-//			switch v := prc.Receive().(type) {
-//			case redis.Message:
-//				fmt.Printf("%s: message: %s\n", v.Channel, v.Data)
-//			case redis.Subscription:
-//				fmt.Printf("%s: %s %d\n", v.Channel, v.Kind, v.Count)
-//				if v.Count == 0 {
-//					return
-//				}
-//			case error:
-//				fmt.Println("err:", v)
-//				return
+// 		for {
+// 			switch v := prc.Receive().(type) {
+// 			case redis.Message:
+// 				fmt.Printf("%s: message: %s\n", v.Channel, v.Data)
+// 			case redis.Subscription:
+// 				fmt.Printf("%s: %s %d\n", v.Channel, v.Kind, v.Count)
+// 				if v.Count == 0 {
+// 					return
+// 				}
+// 			case error:
+// 				fmt.Println("err:", v)
+// 				return
 //
-//			}
-//		}
+// 			}
+// 		}
 //
-//	}()
+// 	}()
 //
-//	go func() {
-//		defer wg.Done()
+// 	go func() {
+// 		defer wg.Done()
 //
-//		pubrc.Do("publish", topic, "hello")
-//		pubrc.Do("publish", topic, "world")
+// 		pubrc.Do("publish", topic, "hello")
+// 		pubrc.Do("publish", topic, "world")
 //
-//		prc.Unsubscribe(topic)
-//	}()
+// 		prc.Unsubscribe(topic)
+// 	}()
 //
-//	wg.Wait()
-//}
+// 	wg.Wait()
+// }
 
 func TestTrans(t *testing.T) {
 	c := Ins().GetConn()
@@ -344,7 +338,7 @@ func TestPubSub(t *testing.T) {
 
 	go func() {
 		r := Ins()
-		//defer r.Close()
+		// defer r.Close()
 		for i := 0; i < 4; i++ {
 			time.Sleep(time.Second)
 			if i%2 == 0 {

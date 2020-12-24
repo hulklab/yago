@@ -12,7 +12,7 @@ func TestSemaphore(t *testing.T) {
 
 	for i := 0; i < 10; i++ {
 		fmt.Printf("sema.AvailablePermits : %d \n", sema.AvailablePermits())
-		sema.Acquire() //数量不足，阻塞等待
+		sema.Acquire() // 数量不足，阻塞等待
 		go func() {
 			defer sema.Release()
 			fmt.Println("sema")
@@ -32,7 +32,7 @@ func TestTrySemaphore(t *testing.T) {
 
 	for i := 0; i < 10; i++ {
 		fmt.Printf("sema.AvailablePermits : %d \n", sema.AvailablePermits())
-		if sema.TryAcquire() { //不阻塞等待
+		if sema.TryAcquire() { // 不阻塞等待
 			go func() {
 				defer sema.Release()
 				fmt.Println("sema")

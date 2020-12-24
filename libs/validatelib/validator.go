@@ -13,7 +13,6 @@ var v *validator.Validate
 var once sync.Once
 
 func Ins(trans ut.Translator) *validator.Validate {
-
 	once.Do(func() {
 		v = validator.New()
 	})

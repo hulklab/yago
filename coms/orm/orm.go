@@ -10,12 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"xorm.io/xorm"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
+	"xorm.io/xorm"
 	xormLog "xorm.io/xorm/log"
 )
 
@@ -232,7 +231,6 @@ func Ins(id ...string) *Orm {
 }
 
 func getLogger(show bool) *Logger {
-
 	entry := logger.Ins().WithFields(logrus.Fields{"category": "orm.sql"})
 
 	lg := &Logger{

@@ -62,7 +62,7 @@ task_stop_time_wait = 10
 com_stop_time_wait = 10
 
 ##########################################
-#  以下自定义配置区
+# 以下自定义配置区
 ##########################################
 
 ##########################################
@@ -117,7 +117,7 @@ mongodb_uri = "mongodb://user:password@127.0.0.1:27017/?connectTimeoutMS=5000&so
 database = "test"
 
 [kafka]
-cluster = "127.0.0.1:39092"
+cluster = "127.0.0.1:9092"
 
 [etcd]
 endpoints    = ["127.0.0.1:2379"]
@@ -131,7 +131,7 @@ dial_timeout = 2
 # cert_ca_file = "conf/ssl/etcd_ca.pem"
 
 [elastic]
-urls = ["http://127.0.0.1:9200/", "http://127.0.0.1:9300"]
+urls = ["http://127.0.0.1:9200", "http://127.0.0.1:9300"]
 # username = ""
 # password = ""
 # sniff_enable = false

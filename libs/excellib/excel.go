@@ -254,7 +254,7 @@ func Export(req *ExportReq) (*excelize.File, error) {
 				fitColWidth = 9
 			}
 
-			//fmt.Println("col:",colName,"width:",fitColWidth)
+			// fmt.Println("col:",colName,"width:",fitColWidth)
 
 			_ = handle.SetColWidth(req.GetSheetName(), colName, colName, fitColWidth)
 		}

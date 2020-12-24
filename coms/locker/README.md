@@ -14,6 +14,3 @@ max_idle = 5
 idle_timeout = 30
 ```
 >注: driver_instance_id 表示配置文件中的 redis 组件名
-
-
-

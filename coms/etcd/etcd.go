@@ -3,11 +3,12 @@ package etcd
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"github.com/hulklab/yago"
-	"go.etcd.io/etcd/clientv3"
 	"io/ioutil"
 	"log"
 	"time"
+
+	"github.com/hulklab/yago"
+	"go.etcd.io/etcd/clientv3"
 )
 
 type Etcd struct {
