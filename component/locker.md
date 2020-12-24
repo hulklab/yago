@@ -7,7 +7,7 @@ locker 组件采用 driver 的机制，目前支持的 driver 有 redis, etcd。
 
 ```go
 // yago-coms/locker/locker.go
-type ILocker struct {
+type ILocker interface {
 	Lock(key string, opts ...SessionOption) error
 	Unlock()
 }
