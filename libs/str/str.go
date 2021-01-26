@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/bwmarrin/snowflake"
 )
@@ -150,4 +151,33 @@ func Split(s string) []string {
 		}
 		return false
 	})
+}
+
+func Substr(str string, start int, length int) string {
+	// 获取 str 的长度
+	l := utf8.RuneCountInString(str)
+
+	if l == 0 || length == 0 {
+		return ""
+	}
+
+	b := start
+
+	// eg. -1
+	if start < 0 {
+		b = l + start
+		if b < 0 {
+			b = 0
+		}
+	}
+
+	ret := make([]rune, 0)
+
+	for i, r := range []rune(str) {
+		if i >= b && len(ret) < length {
+			ret = append(ret, r)
+		}
+	}
+
+	return string(ret)
 }
