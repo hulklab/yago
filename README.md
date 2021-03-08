@@ -68,3 +68,7 @@ sh env.init.sh yourname
 [xorm](http://github.com/go-xorm/xorm)
 [logrus](https://github.com/sirupsen/logrus)
 [beego](https://github.com/astaxie/beego)
+
+
+## 特别鸣谢
+[![Idea](http://p0.qhimg.com/dm/90_90_/t014911f4d8b018b939.png)](https://www.jetbrains.com)
