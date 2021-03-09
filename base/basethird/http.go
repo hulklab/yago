@@ -24,6 +24,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const defaultMaxLoggedBodyLength int64 = 1000 * 1000 // 1MB
 
 type PostFile string
 
@@ -90,6 +91,7 @@ type HttpThird struct {
 	password                  string
 	tlsCfg                    *tls.Config
 	logInfoOff                bool
+	maxLoggedBodyLength       int64
 	once                      sync.Once
 	maxIdleConnsPerHost       int
 	maxConnsPerHost           int
@@ -109,6 +111,7 @@ func (a *HttpThird) InitConfig(configSection string) error {
 	a.ConnectTimeout = yago.Config.GetInt(configSection + ".conn_timeout")
 	a.SslOn = yago.Config.GetBool(configSection + ".ssl_on")
 	a.CertFile = yago.Config.GetString(configSection + ".cert_file")
+	a.maxLoggedBodyLength = defaultMaxLoggedBodyLength
 	if a.SslOn {
 		if a.CertFile == "" {
 			return fmt.Errorf("cert file is required in config section %s", configSection)
@@ -254,12 +257,15 @@ func (a *HttpThird) SetTLSInsecure() {
 	}
 }
 
-// 设置是否要关闭 info 日志
-func (a *HttpThird) SetLogInfoFlag(on bool) {
+// 设置是否要关闭 info 日志，maxBodyLength可选参数用来设置允许打印的最大的response body的长度，单位Byte
+func (a *HttpThird) SetLogInfoFlag(on bool, maxLoggedBodyLengthOpt ...int64) {
 	if on {
 		a.logInfoOff = false
 	} else {
 		a.logInfoOff = true
+	}
+	if len(maxLoggedBodyLengthOpt) != 0 && maxLoggedBodyLengthOpt[0] > 0  {
+		a.maxLoggedBodyLength = maxLoggedBodyLengthOpt[0]
 	}
 }
 
@@ -503,7 +509,10 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 	logInfo["response_header"] = resp.Header
 	logInfo["status_code"] = resp.StatusCode
 
-	retStr, _ := resp.String()
+	retStr :=  fmt.Sprintf("response body is too long to show, content length %d", resp.RawResponse.ContentLength)
+	if resp.RawResponse.ContentLength < a.maxLoggedBodyLength {
+		retStr, _ = resp.String()
+	}
 
 	// 默认是日志没关
 	if !a.logInfoOff {
@@ -511,7 +520,7 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 	}
 
 	if !resp.Ok {
-		logInfo["hint"] = fmt.Sprintf("http status err,code:%d,body:%s", resp.StatusCode, retStr)
+		logInfo["hint"] = fmt.Sprintf("http status err, code:%d, body:%s", resp.StatusCode, retStr)
 
 		log.WithFields(logInfo).Error()
 
