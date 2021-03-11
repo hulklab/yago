@@ -148,6 +148,7 @@ hostname = "localhost"
 timeout = 10
 # ssl_on = true
 # cert_file = "./conf/server.pem"
+# max_logged_resp_size_kb = 10
 
 [home_rpc_api]
 address = "127.0.0.1:50051"

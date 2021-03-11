@@ -24,6 +24,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const defaultMaxLoggedRespMsgSizeKB int64 = 1024 // 1MB
 
 type PostFile string
 
@@ -90,6 +91,7 @@ type HttpThird struct {
 	password                  string
 	tlsCfg                    *tls.Config
 	logInfoOff                bool
+	maxLoggedRespMsgSizeKB    int64
 	once                      sync.Once
 	maxIdleConnsPerHost       int
 	maxConnsPerHost           int
@@ -109,6 +111,10 @@ func (a *HttpThird) InitConfig(configSection string) error {
 	a.ConnectTimeout = yago.Config.GetInt(configSection + ".conn_timeout")
 	a.SslOn = yago.Config.GetBool(configSection + ".ssl_on")
 	a.CertFile = yago.Config.GetString(configSection + ".cert_file")
+	a.maxLoggedRespMsgSizeKB = yago.Config.GetInt64(configSection + ".max_logged_resp_size_kb")
+	if a.maxLoggedRespMsgSizeKB <= 0 {
+		a.maxLoggedRespMsgSizeKB = defaultMaxLoggedRespMsgSizeKB
+	}
 	if a.SslOn {
 		if a.CertFile == "" {
 			return fmt.Errorf("cert file is required in config section %s", configSection)
@@ -503,7 +509,10 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 	logInfo["response_header"] = resp.Header
 	logInfo["status_code"] = resp.StatusCode
 
-	retStr, _ := resp.String()
+	retStr :=  fmt.Sprintf("response body is too long to show, content length %d", resp.RawResponse.ContentLength)
+	if resp.RawResponse.ContentLength < a.maxLoggedRespMsgSizeKB * 1024 {
+		retStr, _ = resp.String()
+	}
 
 	// 默认是日志没关
 	if !a.logInfoOff {
@@ -511,7 +520,7 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 	}
 
 	if !resp.Ok {
-		logInfo["hint"] = fmt.Sprintf("http status err,code:%d,body:%s", resp.StatusCode, retStr)
+		logInfo["hint"] = fmt.Sprintf("http status err, code:%d, body:%s", resp.StatusCode, retStr)
 
 		log.WithFields(logInfo).Error()
 
