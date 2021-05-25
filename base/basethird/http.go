@@ -112,9 +112,7 @@ func (a *HttpThird) InitConfig(configSection string) error {
 	a.SslOn = yago.Config.GetBool(configSection + ".ssl_on")
 	a.CertFile = yago.Config.GetString(configSection + ".cert_file")
 	a.maxLoggedRespMsgSizeKB = yago.Config.GetInt64(configSection + ".max_logged_resp_size_kb")
-	if a.maxLoggedRespMsgSizeKB <= 0 {
-		a.maxLoggedRespMsgSizeKB = defaultMaxLoggedRespMsgSizeKB
-	}
+
 	if a.SslOn {
 		if a.CertFile == "" {
 			return fmt.Errorf("cert file is required in config section %s", configSection)
@@ -178,6 +176,18 @@ func (a *HttpThird) getRequestTimeout() time.Duration {
 		wtimeout = a.ReadWriteTimeout
 	}
 	return time.Duration(wtimeout) * time.Second
+}
+
+func (a *HttpThird) SetMaxLoggedRespSizeKb(size int64) {
+	a.maxLoggedRespMsgSizeKB = size
+}
+
+func (a *HttpThird) getMaxLoggedRespSizeKb() int64 {
+	if a.maxLoggedRespMsgSizeKB <= 0 {
+		return defaultMaxLoggedRespMsgSizeKB
+	}
+
+	return a.maxLoggedRespMsgSizeKB
 }
 
 func (a *HttpThird) getClient() *http.Client {
@@ -509,8 +519,8 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 	logInfo["response_header"] = resp.Header
 	logInfo["status_code"] = resp.StatusCode
 
-	retStr :=  fmt.Sprintf("response body is too long to show, content length %d", resp.RawResponse.ContentLength)
-	if resp.RawResponse.ContentLength < a.maxLoggedRespMsgSizeKB * 1024 {
+	retStr := fmt.Sprintf("response body is too long to show, content length %d", resp.RawResponse.ContentLength)
+	if resp.RawResponse.ContentLength < a.getMaxLoggedRespSizeKb()*1024 {
 		retStr, _ = resp.String()
 	}
 
