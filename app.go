@@ -26,6 +26,15 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
+// support custom app before run
+type AppInitHook func(app *App) error
+
+var appInitHooks = make([]AppInitHook, 0)
+
+func AddAppInitHook(f AppInitHook) {
+	appInitHooks = append(appInitHooks, f)
+}
+
 type App struct {
 	// 是否开启debug模式
 	DebugMode bool
@@ -226,7 +235,20 @@ func init() {
 	initGrpcServer()
 }
 
+func (a *App) HttpEngine() *gin.Engine {
+	return a.httpEngine
+}
+
 func (a *App) Run() {
+	if len(appInitHooks) > 0 {
+		for _, f := range appInitHooks {
+			err := f(a)
+			if err != nil {
+				log.Fatalf("init err:%s", err.Error())
+			}
+		}
+	}
+
 	if a.TaskEnable {
 		// 开启 task
 		go a.runTask()
