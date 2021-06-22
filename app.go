@@ -31,8 +31,8 @@ type AppInitHook func(app *App) error
 
 var appInitHooks = make([]AppInitHook, 0)
 
-func AddAppInitHook(f AppInitHook) {
-	appInitHooks = append(appInitHooks, f)
+func AddAppInitHook(hs ...AppInitHook) {
+	appInitHooks = append(appInitHooks, hs...)
 }
 
 type App struct {

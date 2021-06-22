@@ -4,7 +4,6 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"html/template"
 	"net/http"
 
@@ -15,7 +14,6 @@ import (
 var f embed.FS
 
 func init() {
-	fmt.Println("here")
 	yago.AddAppInitHook(func(app *yago.App) error {
 		httpEngine := app.HttpEngine()
 
