@@ -163,13 +163,9 @@ var newCmd = &cobra.Command{
 		app := curDir[len(curDir)-1]
 
 		module, _ := cmd.Flags().GetString("module")
-		advance, _ := cmd.Flags().GetBool("advance")
 
 		log.Println("create module", module)
-		dirs := []string{"cmd", "dao", "http", "model", "rpc", "task"}
-		if advance {
-			dirs = append(dirs, "service")
-		}
+		dirs := []string{"cmd", "dao", "http", "model", "service", "rpc", "task"}
 
 		for _, d := range dirs {
 			// dirPath := fmt.Sprintf("app/modules/%s/%s%s", module, module, d)
@@ -520,7 +516,6 @@ func init() {
 
 	// module cmd
 	newCmd.Flags().StringP("module", "m", "", "module name")
-	newCmd.Flags().BoolP("advance", "a", false, "gen advance module which include service")
 	_ = newCmd.MarkFlagRequired("module")
 
 	// gen cmd

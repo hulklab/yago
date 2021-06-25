@@ -103,7 +103,8 @@ type {{LNAME}}Model struct {
 }
 
 func New{{NAME}}Model() *{{LNAME}}Model {
-	return &{{LNAME}}Model{}
+	m := &{{LNAME}}Model{}
+	return m
 }
 
 `
@@ -114,7 +115,8 @@ type {{LNAME}}Service struct {
 }
 
 func New{{NAME}}Service() *{{LNAME}}Service {
-	return &{{LNAME}}Service{}
+	s := &{{LNAME}}Service{}
+	return s
 }
 
 `

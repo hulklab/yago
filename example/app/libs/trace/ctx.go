@@ -16,6 +16,13 @@ type Context struct {
 	context.Context
 }
 
+func New() *Context {
+	c := &Context{
+		Context: context.Background(),
+	}
+	return c
+}
+
 func NewWithCtx(ctx context.Context) *Context {
 	c := &Context{
 		Context: ctx,

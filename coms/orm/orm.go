@@ -159,26 +159,32 @@ func Ins(id ...string) *Orm {
 
 		// 注：从 Config 里面取出的整型是 int64
 		conf := yago.Config.GetStringMap(name)
+		var dsn string
 
-		dbHost := conf["host"].(string)
-		dbPort := conf["port"].(string)
-		dbUser := conf["user"].(string)
-		dbPassword := conf["password"].(string)
-		dbName := conf["database"].(string)
-		charset := conf["charset"].(string)
+		dsnVal, b := conf["dsn"]
+		if !b {
+			dbHost := conf["host"].(string)
+			dbPort := conf["port"].(string)
+			dbUser := conf["user"].(string)
+			dbPassword := conf["password"].(string)
+			dbName := conf["database"].(string)
+			charset := conf["charset"].(string)
 
-		if dbHost == "" {
-			log.Fatalf("Fatal error: Sql host is empty")
-		}
-		if dbPort == "" {
-			log.Fatalf("Fatal error: Sql port is empty")
-		}
+			if dbHost == "" {
+				log.Fatalf("Fatal error: Sql host is empty")
+			}
+			if dbPort == "" {
+				log.Fatalf("Fatal error: Sql port is empty")
+			}
 
-		dsn := dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName + "?charset=" + charset
+			dsn = dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName + "?charset=" + charset
 
-		timezone, ok := conf["timezone"]
-		if ok {
-			dsn = dsn + "&loc=" + url.QueryEscape(timezone.(string))
+			timezone, ok := conf["timezone"]
+			if ok {
+				dsn = dsn + "&loc=" + url.QueryEscape(timezone.(string))
+			}
+		} else {
+			dsn = dsnVal.(string)
 		}
 
 		driver, ok := conf["driver"]
