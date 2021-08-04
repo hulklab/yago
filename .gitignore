@@ -12,3 +12,4 @@ _book
 example/app.toml
 example/conf/app.local.toml
 example/example
+example/example.exe
