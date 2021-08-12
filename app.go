@@ -580,8 +580,10 @@ func (a *App) runRpc() {
 }
 
 func (a *App) Close() {
+	close(StopChan)
+
 	if a.TaskEnable {
-		close(TaskCloseChan)
+		//close(TaskCloseChan)
 		a.taskCloseChan <- 1
 		<-a.taskCloseDoneChan
 		log.Println("Task Server Stop OK")
@@ -617,4 +619,5 @@ func (a *App) Close() {
 	}
 }
 
-var TaskCloseChan = make(chan int)
+//var TaskCloseChan = make(chan int)
+var StopChan = make(chan struct{})
