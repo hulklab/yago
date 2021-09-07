@@ -22,7 +22,6 @@ require (
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
 	github.com/hulklab/cast v1.9.0
-	github.com/kisielk/errcheck v1.2.0 // indirect
 	github.com/levigross/grequests v0.0.0-20190130132859-37c80f76a0da
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/natefinch/lumberjack v2.0.0+incompatible
@@ -32,13 +31,10 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.4.0
 	github.com/tidwall/pretty v1.0.1 // indirect
-	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
-	github.com/xdg/stringprep v1.0.0 // indirect
 	go.etcd.io/etcd v0.5.0-alpha.5.0.20191023171146-3cf2f69b5738
 	go.mongodb.org/mongo-driver v1.5.1
 	golang.org/x/net v0.0.0-20200506145744-7e3656a0809f
 	google.golang.org/grpc v1.23.1
-	gopkg.in/go-playground/validator.v9 v9.29.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	xorm.io/builder v0.3.7
 	xorm.io/xorm v1.0.2
