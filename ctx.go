@@ -92,6 +92,11 @@ func (c *Ctx) setError(err Err) {
 }
 
 func (c *Ctx) SetError(err interface{}) {
+	if err == nil {
+		c.SetData(nil)
+		return
+	}
+
 	c.Set(ErrorKey, err)
 
 	switch v := err.(type) {
