@@ -88,32 +88,20 @@ compress = true
 # stdout_enable = true
 
 [db]
-# host = "127.0.0.1"
-# user = "user"
-# password = "password"
-# port = "3306"
-# database = "db"
-# timezone = "Asia/Shanghai"
-# charset = "utf8"
-# # dsn = "test.db"  # 当 driver 为 sqlite3 时，直接使用 dsn
-# # driver = "sqlite3"
-# max_life_time = 8
-# max_idle_conn = 20
-# max_open_conn = 500
-# show_log = true
-
-host = "mysql11593w.yun.qianxin-inc.cn"
-user = "polaris"
-password = "1281d22ceaf98387"
-port = "11593"
-database = "sys"
-prefix = ""
+host = "127.0.0.1"
+user = "user"
+password = "password"
+port = "3306"
+database = "db"
 timezone = "Asia/Shanghai"
 charset = "utf8"
+# dsn = "test.db"  # 当 driver 为 sqlite3 时，直接使用 dsn
+# driver = "sqlite3"
 max_life_time = 8
 max_idle_conn = 20
-max_open_conn = 149
+max_open_conn = 500
 show_log = true
+
 
 [redis]
 addr = "127.0.0.1:6379"
