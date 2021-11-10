@@ -40,7 +40,7 @@ http_stop_time_wait = 10
 # http_static_paths = [{route="/static",path="static/js"}]
 
 # 是否开启rpc服务
-rpc_enable = true
+rpc_enable = false
 # rpc服务地址
 rpc_addr = ":50051"
 # rpc服务关闭最大等待时长, 秒
@@ -99,7 +99,7 @@ charset = "utf8"
 # driver = "sqlite3"
 max_life_time = 8
 max_idle_conn = 20
-max_open_conn = 500
+max_open_conn = 149
 show_log = true
 
 
