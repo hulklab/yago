@@ -1,4 +1,4 @@
-package homerpc
+package demorpc
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/hulklab/yago"
 
-	pb "github.com/hulklab/yago/example/app/modules/home/homerpc/homepb"
+	pb "github.com/hulklab/yago/example/app/modules/demo/demorpc/demopb"
 )
 
 type HomeRpc struct {

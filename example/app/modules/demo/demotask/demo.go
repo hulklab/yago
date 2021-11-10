@@ -1,4 +1,4 @@
-package hometask
+package demotask
 
 import (
 	"log"
@@ -8,17 +8,17 @@ import (
 	"github.com/hulklab/yago/base/basetask"
 )
 
-type HomeTask struct {
+type DemoTask struct {
 	basetask.BaseTask
 }
 
 func init() {
-	homeTask := new(HomeTask)
-	yago.AddTaskRouter("@loop", homeTask.HelloLoopAction)
-	yago.AddTaskRouter("0 */1 * * * *", homeTask.HelloSchduleAction)
+	t := new(DemoTask)
+	yago.AddTaskRouter("@loop", t.HelloLoopAction)
+	yago.AddTaskRouter("0 */1 * * * *", t.HelloSchduleAction)
 }
 
-func (t *HomeTask) HelloLoopAction() {
+func (t *DemoTask) HelloLoopAction() {
 	t.RunLoop(func() {
 		log.Println("Start Task homeTask.HelloLoopAction")
 		log.Println("Doing Task homeTask.HelloLoopAction")
@@ -27,7 +27,7 @@ func (t *HomeTask) HelloLoopAction() {
 	})
 }
 
-func (t *HomeTask) HelloSchduleAction() {
+func (t *DemoTask) HelloSchduleAction() {
 	log.Println("Start Task homeTask.HelloSchduleAction")
 	log.Println("Doing Task homeTask.HelloSchduleAction")
 	time.Sleep(time.Second * time.Duration(1))

@@ -17,3 +17,7 @@ func (h *BaseHttp) GetTraceCtx(c *yago.Ctx) *trace.Context {
 
 // 全局 routeGroup
 var Root = yago.NewHttpGroupRouter("/", BizLog)
+
+type HttpMetadata struct {
+	Label string `json:"label"`
+}

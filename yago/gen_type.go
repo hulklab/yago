@@ -143,8 +143,6 @@ func (d *typeGen) Gen() (err error) {
 }
 
 func genTypeCmd() *cobra.Command {
-	var typeName string
-
 	// 定义二级命令: model
 	var cmd = &cobra.Command{
 		Use:   "gen-type",
@@ -158,7 +156,7 @@ func genTypeCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&typeName, "typeName", "t", "", "type 名称,eg. Status")
+	cmd.Flags().StringP("typeName", "t", "", "type 名称,eg. Status")
 	cmd.Flags().StringP("file", "f", getGoFile(), "file path,eg. ./ab_c.go")
 
 	return cmd

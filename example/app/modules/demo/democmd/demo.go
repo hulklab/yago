@@ -1,4 +1,4 @@
-package homecmd
+package democmd
 
 import (
 	"fmt"
@@ -6,18 +6,17 @@ import (
 
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basecmd"
-	"github.com/hulklab/yago/example/app/third/homeapi"
 	"github.com/spf13/cobra"
 )
 
-type HomeCmd struct {
+type DemoCmd struct {
 	basecmd.BaseCmd
 }
 
 func init() {
-	homeCmd := new(HomeCmd)
+	c := new(DemoCmd)
 	// 注册路由
-	yago.AddCmdRouter("demo", "Demo action", homeCmd.DemoAction, yago.CmdStringArg{
+	yago.AddCmdRouter("demo", "Demo action", c.DemoAction, yago.CmdStringArg{
 		Name: "arg", Shorthand: "a", Value: "value", Usage: "参数", Required: true,
 	}, yago.CmdIntArg{
 		Name: "int", Shorthand: "i", Value: 1, Usage: "整数", Required: false,
@@ -35,12 +34,13 @@ func init() {
 		Name: "int_slice", Shorthand: "z", Value: nil, Usage: "整型数组", Required: false,
 	})
 
-	yago.AddCmdRouter("test", "test action", homeCmd.TestAction)
+	yago.AddCmdRouter("test", "test action", c.TestAction)
+
 }
 
-func (c *HomeCmd) TestAction(cmd *cobra.Command, args []string) {
-	homeapi.Ins().Hello("")
-	homeapi.Ins().Hello("zhangsan")
+func (c *DemoCmd) TestAction(cmd *cobra.Command, args []string) {
+	// homeapi.Ins().Hello("")
+	// homeapi.Ins().Hello("zhangsan")
 	// time.Sleep(1 * time.Second)
 	// homeapi.InsRpc().Hello()
 	// time.Sleep(1 * time.Second)
@@ -48,7 +48,7 @@ func (c *HomeCmd) TestAction(cmd *cobra.Command, args []string) {
 }
 
 // ./example demo -a=hello -i 11 -x 66 -d 10ms -b=false -y=java,php -z=1,2,3 -f 3.14
-func (c *HomeCmd) DemoAction(cmd *cobra.Command, args []string) {
+func (c *DemoCmd) DemoAction(cmd *cobra.Command, args []string) {
 
 	if arg, err := cmd.Flags().GetString("arg"); err != nil {
 		fmt.Println(err)

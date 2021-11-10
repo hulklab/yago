@@ -113,11 +113,41 @@ func getModuleNameByFile(file string) string {
 
 	pathList := strings.Split(path, string(filepath.Separator))
 
-	if len(pathList) < 3 {
-		log.Fatalf("module name is not found in path %s", path)
+	for i, v := range pathList {
+		if v == "modules" {
+			return pathList[i+1]
+		}
 	}
 
-	return pathList[2]
+	// log.Fatalf("module name is not found in path %s", path)
+
+	return ""
+}
+
+func getModulePathByFile(file string) string {
+	rootPath := getProjectRootPathByFile(file)
+
+	path := strings.TrimPrefix(strings.Replace(file, rootPath, "", 1), string(filepath.Separator))
+
+	pathList := strings.Split(path, string(filepath.Separator))
+
+	modulePath := []string{rootPath}
+	hasModule := false
+	for i, v := range pathList {
+		modulePath = append(modulePath, v)
+		if v == "modules" {
+			modulePath = append(modulePath, pathList[i+1])
+			hasModule = true
+			break
+		}
+	}
+
+	if !hasModule {
+		log.Fatalf("can not found modules in the file path %s", file)
+	}
+
+	return filepath.Join(modulePath...)
+
 }
 
 func getFileNameByFile(file string) string {
@@ -472,8 +502,10 @@ func (g *BaseGen) Init(conf *viper.Viper) {
 	g.RootPath = getProjectRootPathByFile(file)
 	g.ModName = getModNameByFile(file)
 	g.ModuleName = getModuleNameByFile(file)
-	g.ModulePath = fmt.Sprintf("%s/app/modules/%s", g.RootPath, g.ModuleName)
-	g.ModuleImportPath = fmt.Sprintf("%s/app/modules/%s", g.ModName, g.ModuleName)
+	if len(g.ModuleName) > 0 {
+		g.ModulePath = getModulePathByFile(file)
+		g.ModuleImportPath = fmt.Sprintf("%s/%s", g.ModName, strings.TrimPrefix(strings.Replace(g.ModulePath, g.RootPath, "", 1), string(filepath.Separator)))
+	}
 
 }
 

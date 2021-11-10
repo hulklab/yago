@@ -8,7 +8,7 @@ import (
 
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/base/basethird"
-	pb "github.com/hulklab/yago/example/app/modules/home/homerpc/homepb"
+	pb "github.com/hulklab/yago/example/app/modules/demo/demorpc/demopb"
 	"google.golang.org/grpc"
 )
 

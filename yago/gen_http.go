@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"strings"
 
@@ -71,10 +70,7 @@ func (h *httpGen) Gen() (err error) {
 
 	content := ExecuteTemplate(HttpTemplate, data)
 
-	err = ioutil.WriteFile(h.HttpFile, []byte(content), 0644)
-	if err != nil {
-		return err
-	}
+	writeFileAppendOrCreate(h.HttpFile, content)
 
 	gofmt(h.HttpFile)
 
@@ -94,10 +90,6 @@ func (h *httpGen) genHttpRoutesByMethod(method string) string {
 }
 
 func genHttpCmd() *cobra.Command {
-	var daoName string
-	var entry string
-	var overwrite bool
-
 	// 定义二级命令: http
 	var cmd = &cobra.Command{
 		Use:   "gen-http",
@@ -111,9 +103,9 @@ func genHttpCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&daoName, "daoName", "t", "", "Dao 名称")
-	cmd.Flags().StringVarP(&entry, "entry", "e", "", "入口,admin front api open")
-	cmd.Flags().BoolVarP(&overwrite, "overwrite", "o", false, "是否覆盖已存在文件")
+	cmd.Flags().StringP("daoName", "t", "", "Dao 名称")
+	cmd.Flags().StringP("entry", "e", "", "入口,admin front api open")
+	cmd.Flags().BoolP("overwrite", "o", false, "是否覆盖已存在文件")
 	cmd.Flags().StringP("file", "f", getGoFile(), "file path,eg. ./ab_c.go")
 
 	return cmd

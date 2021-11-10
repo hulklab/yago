@@ -16,6 +16,7 @@ import (
 type httpMethodGen struct {
 	BaseGen
 	Entry      string
+	Group      string
 	name       string
 	httpFile   string
 	methodInfo *ServiceMethodInfo
@@ -253,17 +254,14 @@ func (s *httpMethodGen) genHttpRouteMethod() string {
 		LispName:   lispString(s.name),
 		LispMethod: lispString(s.methodInfo.Name),
 		Method:     s.methodInfo.Name,
+		Group:      s.Group,
 	}
-
-	// @todo Entry -> Group
 
 	content := ExecuteTemplate(HttpRouteTemplate, data)
 	return content
 }
 
 func genHttpMethodCmd() *cobra.Command {
-	var entry string
-
 	var cmd = &cobra.Command{
 		Use:   "gen-http-method",
 		Short: "Gen http-method code",
@@ -276,7 +274,8 @@ func genHttpMethodCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&entry, "entry", "e", "", "入口, admin front api open")
+	cmd.Flags().StringP("entry", "e", "", "入口, admin front api open")
+	cmd.Flags().StringP("group", "g", "", "http route group name")
 	cmd.Flags().StringP("file", "f", getGoFile(), "file path,eg. ./ab_c.go")
 
 	return cmd

@@ -114,9 +114,6 @@ func (s *serviceGen) Gen() (err error) {
 }
 
 func genServiceCmd() *cobra.Command {
-	var daoName string
-	var overwrite bool
-
 	// 定义二级命令: service
 	var cmd = &cobra.Command{
 		Use:   "gen-service",
@@ -130,8 +127,8 @@ func genServiceCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&daoName, "daoName", "t", "", "Dao 名称")
-	cmd.Flags().BoolVarP(&overwrite, "overwrite", "o", false, "是否覆盖已存在文件")
+	cmd.Flags().StringP("daoName", "t", "", "Dao 名称")
+	cmd.Flags().BoolP("overwrite", "o", false, "是否覆盖已存在文件")
 	cmd.Flags().StringP("file", "f", getGoFile(), "file path,eg. ./ab_c.go")
 
 	return cmd

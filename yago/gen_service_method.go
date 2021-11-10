@@ -230,9 +230,6 @@ func (s *serviceMethodGen) genHttpRouteMethod() string {
 }
 
 func genServiceMethodCmd() *cobra.Command {
-	var method, structName, entry string
-	var needReq, needResp, needErr, needHttp bool
-
 	// 定义二级命令: service-method
 	var cmd = &cobra.Command{
 		Use:   "gen-service-method",
@@ -246,13 +243,13 @@ func genServiceMethodCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&method, "name", "n", "", "方法名称")
-	cmd.Flags().StringVarP(&structName, "structName", "s", "", "结构体名称")
-	cmd.Flags().StringVarP(&entry, "entry", "e", "", "入口,admin front api openapi")
-	cmd.Flags().BoolVar(&needReq, "req", true, "是否需要 request 参数")
-	cmd.Flags().BoolVar(&needResp, "resp", true, "是否需要返回 resp 参数")
-	cmd.Flags().BoolVar(&needErr, "err", true, "是否需要返回 error 参数")
-	cmd.Flags().BoolVar(&needHttp, "http", true, "是否需要 http 方法")
+	cmd.Flags().StringP("name", "n", "", "方法名称")
+	cmd.Flags().StringP("structName", "s", "", "结构体名称")
+	cmd.Flags().StringP("entry", "e", "", "入口,admin front api openapi")
+	cmd.Flags().Bool("req", true, "是否需要 request 参数")
+	cmd.Flags().Bool("resp", true, "是否需要返回 resp 参数")
+	cmd.Flags().Bool("err", true, "是否需要返回 error 参数")
+	cmd.Flags().Bool("http", true, "是否需要 http 方法")
 	cmd.Flags().StringP("file", "f", getGoFile(), "file path,eg. ./ab_c.go")
 
 	_ = cmd.MarkFlagRequired("name")

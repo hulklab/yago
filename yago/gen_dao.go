@@ -320,8 +320,6 @@ func (t *%s) TableName() string {
 }
 
 func genDaoCmd() *cobra.Command {
-	var tableName string
-	var db string
 	var cmd = &cobra.Command{
 		Use:   "gen-dao",
 		Short: "Gen dao code",
@@ -334,8 +332,8 @@ func genDaoCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&tableName, "tableName", "t", "", "表名称")
-	cmd.Flags().StringVarP(&db, "db", "d", "db", "数据库组件配置")
+	cmd.Flags().StringP("tableName", "t", "", "表名称")
+	cmd.Flags().StringP("db", "d", "db", "数据库组件配置")
 	cmd.Flags().StringP("file", "f", getGoFile(), "file path,eg. ./ab_c.go")
 
 	_ = cmd.MarkFlagRequired("tableName")
