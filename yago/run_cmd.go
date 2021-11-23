@@ -23,7 +23,7 @@ var (
 func readDir(dir string, files *[]string) error {
 	err := filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
 		if f == nil {
-			return err
+			return nil
 		}
 
 		if strings.HasPrefix(f.Name(), ".") {
@@ -39,7 +39,7 @@ func readDir(dir string, files *[]string) error {
 			return nil
 		}
 
-		// fmt.Println(path, f.Name())
+		// fmt.Println(path, f.Name(), "----------------------------------------------")
 		*files = append(*files, path)
 		return nil
 	})
@@ -97,6 +97,7 @@ var runCmd = &cobra.Command{
 		go func() {
 			for {
 				err := readDir(pwd, &files)
+
 				if err != nil {
 					log.Fatalln("[FATAL] read dir err", err)
 				}
