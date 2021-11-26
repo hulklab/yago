@@ -20,6 +20,18 @@ var (
 	cmd            *exec.Cmd
 )
 
+func isWatchedSuffix(name string) bool {
+	if strings.HasSuffix(name, ".go") {
+		return true
+	}
+
+	if strings.HasSuffix(name, ".toml") {
+		return true
+	}
+
+	return false
+}
+
 func readDir(dir string, files *[]string) error {
 	err := filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
 		if f == nil {
@@ -35,7 +47,7 @@ func readDir(dir string, files *[]string) error {
 		}
 
 		// 只取以 .go 结尾的文件
-		if !strings.HasSuffix(f.Name(), ".go") {
+		if !isWatchedSuffix(f.Name()) {
 			return nil
 		}
 
@@ -68,7 +80,7 @@ var runCmd = &cobra.Command{
 			for {
 				select {
 				case event := <-watcher.Events:
-					if !strings.HasSuffix(event.Name, ".go") {
+					if !isWatchedSuffix(event.Name) {
 						continue
 					}
 
