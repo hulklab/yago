@@ -3,6 +3,7 @@ package yago
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,13 +21,13 @@ type AppConfig struct {
 func (c *AppConfig) ReadFileConfig(cfgPath string) error {
 	err := c.ReadInConfig() // Find and read the config file
 	if err != nil {         // Handle errors reading the config file
-		return fmt.Errorf("Fatal error config file: %s \n, \"--help\" gives usage information", err)
+		return fmt.Errorf("fatal error config file: %s \n, \"--help\" gives usage information", err)
 	}
 
 	// deal with import file
 	importFiles, err := c.readImportFiles(cfgPath)
 	if err != nil {
-		return fmt.Errorf("Fatal error merge import config file: %s ", err)
+		return fmt.Errorf("fatal error merge import config file: %s ", err)
 	}
 
 	if len(importFiles) >= 2 {
@@ -193,4 +194,16 @@ func getPidFile() (string, bool) {
 		return "", false
 	}
 	return pidfile, true
+}
+
+func debug(v ...interface{}) {
+	if Config.GetBool("app.debug") {
+		log.Println(v...)
+	}
+}
+
+func debugf(format string, v ...interface{}) {
+	if Config.GetBool("app.debug") {
+		log.Printf(format, v...)
+	}
 }
