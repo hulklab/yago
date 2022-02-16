@@ -431,6 +431,15 @@ func (a *App) runHttp() {
 		Handler: a.httpEngine,
 	}
 
+	// defend slow dos attack
+	if Config.IsSet("app.http_read_timeout") {
+		srv.ReadTimeout = Config.GetDuration("app.http_read_timeout")
+	}
+
+	if Config.IsSet("app.http_read_header_timeout") {
+		srv.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+	}
+
 	if a.HttpSslOn {
 		go func() {
 			// service connections
