@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.2.0
+	github.com/Shelnutt2/db2struct v1.0.2 // indirect
 	github.com/Shopify/sarama v1.19.0
 	github.com/bsm/sarama-cluster v2.1.15+incompatible
 	github.com/bwmarrin/snowflake v0.3.0
@@ -12,7 +13,7 @@ require (
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-contrib/gzip v0.0.1
 	github.com/gin-contrib/pprof v1.2.1
-	github.com/gin-gonic/gin v1.7.0
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
@@ -29,6 +30,7 @@ require (
 	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.5
+	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/spf13/viper v1.4.0
 	github.com/tidwall/pretty v1.0.1 // indirect
 	go.etcd.io/etcd v0.5.0-alpha.5.0.20191023171146-3cf2f69b5738

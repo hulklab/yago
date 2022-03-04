@@ -49,7 +49,7 @@ func (a *homeApi) Hello(name string) {
 		params["name"] = name
 	}
 
-	req, err := a.Get("/home/hello", params)
+	req, err := a.Get("/hello", params)
 
 	fmt.Println("req:", req, "err:", err)
 	// if err != nil {
@@ -79,7 +79,7 @@ func (a *homeApi) UploadFile(filepath string) string {
 		"file": basethird.PostFile(filepath),
 	}
 
-	req, err := a.Post("/home/user/upload", params)
+	req, err := a.Post("/upload", params)
 	if err != nil {
 		return err.Error()
 	} else {

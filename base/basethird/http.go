@@ -163,7 +163,7 @@ func (a *HttpThird) getMaxConnsPerHost() int {
 }
 
 func (a *HttpThird) getConnTimeout() time.Duration {
-	ctimeout := 3
+	ctimeout := 30
 	if a.ConnectTimeout != 0 {
 		ctimeout = a.ConnectTimeout
 	}
@@ -171,7 +171,7 @@ func (a *HttpThird) getConnTimeout() time.Duration {
 }
 
 func (a *HttpThird) getRequestTimeout() time.Duration {
-	wtimeout := 20
+	wtimeout := 30
 	if a.ReadWriteTimeout != 0 {
 		wtimeout = a.ReadWriteTimeout
 	}

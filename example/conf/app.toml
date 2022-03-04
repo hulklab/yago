@@ -13,6 +13,11 @@ http_addr = ":8080"
 # http服务关闭最大等待时长, 秒
 http_stop_time_wait = 10
 
+# http_server 超时时间
+#http_read_timeout = "60s"
+#http_read_header_timeout = "10s"
+
+
 # http ssl config
 # http_ssl_on = true
 # http_cert_file = "./yourdomain.crt"
@@ -40,13 +45,13 @@ http_stop_time_wait = 10
 # http_static_paths = [{route="/static",path="static/js"}]
 
 # 是否开启rpc服务
-rpc_enable = true
+rpc_enable = false
 # rpc服务地址
 rpc_addr = ":50051"
 # rpc服务关闭最大等待时长, 秒
 rpc_stop_time_wait = 10
 # rpc reflection
-# rpc_reflect_on = true
+rpc_reflect_on = true
 
 # rpc ssl config
 # rpc_ssl_on = true
@@ -99,8 +104,9 @@ charset = "utf8"
 # driver = "sqlite3"
 max_life_time = 8
 max_idle_conn = 20
-max_open_conn = 500
+max_open_conn = 149
 show_log = true
+
 
 [redis]
 addr = "127.0.0.1:6379"

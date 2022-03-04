@@ -1,8 +1,8 @@
 package route
 
 import (
-	_ "github.com/hulklab/yago/example/app/modules/home/homecmd"
-	_ "github.com/hulklab/yago/example/app/modules/home/homehttp"
-	_ "github.com/hulklab/yago/example/app/modules/home/homerpc"
-	_ "github.com/hulklab/yago/example/app/modules/home/hometask"
+	_ "github.com/hulklab/yago/example/app/modules/demo/democmd"
+	_ "github.com/hulklab/yago/example/app/modules/demo/demohttp"
+	_ "github.com/hulklab/yago/example/app/modules/demo/demorpc"
+	_ "github.com/hulklab/yago/example/app/modules/demo/demotask"
 )

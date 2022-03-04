@@ -291,7 +291,7 @@ func (a *App) genPid() {
 		return
 	}
 
-	log.Println("app is running with pid:", newPid)
+	debug("app is running with pid:", newPid)
 }
 
 func (a *App) registerHttpRouter(g *HttpGroupRouter) {
@@ -310,7 +310,7 @@ func (a *App) registerHttpRouter(g *HttpGroupRouter) {
 		}
 
 		name := runtime.FuncForPC(reflect.ValueOf(actions[len(actions)-1]).Pointer()).Name()
-		log.Printf("[HTTP] %-6s %-25s --> %s\n", method, r.Url(), strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
+		debugf("[HTTP] %-6s %-25s --> %s\n", method, r.Url(), strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
 
 		switch method {
 		case http.MethodGet:
@@ -431,16 +431,30 @@ func (a *App) runHttp() {
 		Handler: a.httpEngine,
 	}
 
+	// defend slow dos attack
+	if Config.IsSet("app.http_read_timeout") {
+		srv.ReadTimeout = Config.GetDuration("app.http_read_timeout")
+	}
+
+	if Config.IsSet("app.http_read_header_timeout") {
+		srv.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+	}
+
 	if a.HttpSslOn {
 		go func() {
 			// service connections
+			debugf("https listen on: %s", srv.Addr)
+
 			if err := srv.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
 				log.Fatalf("listen: %s\n", err)
+			} else {
 			}
 		}()
 	} else {
 		go func() {
 			// service connections
+			debugf("http listen on: %s", srv.Addr)
+
 			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 				log.Fatalf("listen: %s\n", err)
 			}
@@ -455,11 +469,11 @@ func (a *App) runHttp() {
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {
-			log.Println("http server already closed")
+			debug("http server already closed")
 		} else if errors.Is(err, context.DeadlineExceeded) {
-			log.Println("http server gracefully shutdown timeout")
+			debug("http server gracefully shutdown timeout")
 		} else {
-			log.Println("http server gracefully shutdown error", err)
+			debug("http server gracefully shutdown error", err)
 		}
 	} else {
 		a.httpCloseDoneChan <- 1
@@ -495,7 +509,7 @@ func (a *App) runTask() {
 			go func() {
 				defer wg.Done()
 				action()
-				log.Printf("[TASK] %-32s --> %s\n", "stop", name)
+				debugf("[TASK] %-32s --> %s\n", "stop", name)
 			}()
 		} else {
 			err := c.AddFunc(router.Spec, func() {
@@ -507,7 +521,7 @@ func (a *App) runTask() {
 				continue
 			}
 		}
-		log.Printf("[TASK] %-32s --> %s\n", router.Spec, name)
+		debugf("[TASK] %-32s --> %s\n", router.Spec, name)
 	}
 
 	c.Start()
@@ -558,7 +572,7 @@ func (a *App) runRpc() {
 
 	for k, v := range a.rpcEngine.GetServiceInfo() {
 		for _, method := range v.Methods {
-			log.Printf("[TASK] %-32s --> %s\n", k, method.Name)
+			debugf("[TASK] %-32s --> %s\n", k, method.Name)
 		}
 	}
 
@@ -571,6 +585,8 @@ func (a *App) runRpc() {
 	go func() {
 		if err := a.rpcEngine.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
+		} else {
+			debugf("rpc listen on: %s", rpcAddr)
 		}
 	}()
 
@@ -580,8 +596,10 @@ func (a *App) runRpc() {
 }
 
 func (a *App) Close() {
+	close(StopChan)
+
 	if a.TaskEnable {
-		close(TaskCloseChan)
+		//close(TaskCloseChan)
 		a.taskCloseChan <- 1
 		<-a.taskCloseDoneChan
 		log.Println("Task Server Stop OK")
@@ -617,4 +635,5 @@ func (a *App) Close() {
 	}
 }
 
-var TaskCloseChan = make(chan int)
+//var TaskCloseChan = make(chan int)
+var StopChan = make(chan struct{})
