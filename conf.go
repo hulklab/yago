@@ -134,8 +134,14 @@ func Hostname() string {
 }
 
 func defaultCfgPath() string {
+	if p := os.Getenv("YAGO_CONF"); len(p) > 0 {
+		return p
+	}
+
 	defaultDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
-	return fmt.Sprintf("%s/app.toml", defaultDir)
+	path := fmt.Sprintf("%s/app.toml", defaultDir)
+
+	return path
 }
 
 var cfgPath *string
@@ -148,7 +154,7 @@ func initConfig() {
 	_ = flag.Bool("help", false, "help")
 	flag.Parse()
 
-	noConf := *cfgPath == defaultCfgPath
+	noConf := *cfgPath == defaultCfgPath && len(os.Getenv("YAGO_CONF")) == 0
 
 	if noConf && isInTests() {
 		Config = &AppConfig{viper.New()}
