@@ -1,6 +1,7 @@
 package yago
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"mime/multipart"
@@ -108,7 +109,8 @@ func (c *Ctx) SetError(err interface{}) {
 			c.setError(Err(e))
 			return
 		}
-	// case json.UnmarshalTypeError:
+	case *json.UnmarshalTypeError:
+		c.setError(NewErr(ErrParam, v.Error()))
 	case error:
 		var ye Err
 		e := errors.As(v, &ye)
