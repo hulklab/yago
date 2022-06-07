@@ -20,6 +20,7 @@ http_stop_time_wait = 10
 
 # http ssl config
 # http_ssl_on = true
+# https_addr = ":8443" 
 # http_cert_file = "./yourdomain.crt"
 # http_key_file = "./yourdomain.key"
 

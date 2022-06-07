@@ -425,37 +425,60 @@ func (a *App) runHttp() {
 		return
 	}
 
-	// listen and serve
-	srv := &http.Server{
-		Addr:    Config.GetString("app.http_addr"),
-		Handler: a.httpEngine,
+	if a.HttpSslOn && !Config.IsSet("app.https_addr") {
+		log.Fatalf("https_addr is required when http_ssl_on is true\n")
 	}
 
-	// defend slow dos attack
-	if Config.IsSet("app.http_read_timeout") {
-		srv.ReadTimeout = Config.GetDuration("app.http_read_timeout")
-	}
+	hasHttp := Config.IsSet("app.http_addr")
+	hasHttps := Config.IsSet("app.https_addr")
+	var srv, srvs *http.Server
 
-	if Config.IsSet("app.http_read_header_timeout") {
-		srv.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
-	}
+	if hasHttp {
+		// listen and serve
+		srv = &http.Server{
+			Addr:    Config.GetString("app.http_addr"),
+			Handler: a.httpEngine,
+		}
 
-	if a.HttpSslOn {
-		go func() {
-			// service connections
-			debugf("https listen on: %s", srv.Addr)
+		// defend slow dos attack
+		if Config.IsSet("app.http_read_timeout") {
+			srv.ReadTimeout = Config.GetDuration("app.http_read_timeout")
+		}
 
-			if err := srv.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
-				log.Fatalf("listen: %s\n", err)
-			} else {
-			}
-		}()
-	} else {
+		if Config.IsSet("app.http_read_header_timeout") {
+			srv.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+		}
+
 		go func() {
 			// service connections
 			debugf("http listen on: %s", srv.Addr)
 
 			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("listen: %s\n", err)
+			}
+		}()
+	}
+
+	if hasHttps {
+		srvs = &http.Server{
+			Addr:    Config.GetString("app.https_addr"),
+			Handler: a.httpEngine,
+		}
+
+		// defend slow dos attack
+		if Config.IsSet("app.http_read_timeout") {
+			srvs.ReadTimeout = Config.GetDuration("app.http_read_timeout")
+		}
+
+		if Config.IsSet("app.http_read_header_timeout") {
+			srvs.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+		}
+
+		go func() {
+			// service connections
+			debugf("https listen on: %s", srvs.Addr)
+
+			if err := srvs.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
 				log.Fatalf("listen: %s\n", err)
 			}
 		}()
@@ -467,17 +490,31 @@ func (a *App) runHttp() {
 		time.Duration(Config.GetInt64("app.http_stop_time_wait"))*time.Second,
 	)
 	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		if errors.Is(err, http.ErrServerClosed) {
-			debug("http server already closed")
-		} else if errors.Is(err, context.DeadlineExceeded) {
-			debug("http server gracefully shutdown timeout")
-		} else {
-			debug("http server gracefully shutdown error", err)
+	if hasHttp {
+		if err := srv.Shutdown(ctx); err != nil {
+			if errors.Is(err, http.ErrServerClosed) {
+				debug("http server already closed")
+			} else if errors.Is(err, context.DeadlineExceeded) {
+				debug("http server gracefully shutdown timeout")
+			} else {
+				debug("http server gracefully shutdown error", err)
+			}
 		}
-	} else {
-		a.httpCloseDoneChan <- 1
 	}
+
+	if hasHttps {
+		if err := srvs.Shutdown(ctx); err != nil {
+			if errors.Is(err, http.ErrServerClosed) {
+				debug("http server already closed")
+			} else if errors.Is(err, context.DeadlineExceeded) {
+				debug("http server gracefully shutdown timeout")
+			} else {
+				debug("http server gracefully shutdown error", err)
+			}
+		}
+	}
+
+	a.httpCloseDoneChan <- 1
 }
 
 func (a *App) loadTaskRouter() error {
