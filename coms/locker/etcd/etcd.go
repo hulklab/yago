@@ -11,7 +11,7 @@ import (
 	"github.com/hulklab/yago"
 	"github.com/hulklab/yago/coms/etcd"
 	"github.com/hulklab/yago/coms/locker/lock"
-	"go.etcd.io/etcd/clientv3/concurrency"
+	"go.etcd.io/etcd/client/v3/concurrency"
 )
 
 func init() {
@@ -36,7 +36,6 @@ type etcdLock struct {
 	// eIns  *etcd.Etcd
 	eInsId string
 	retry  int
-	key    string
 	ctx    context.Context
 	mu     sync.Mutex
 	mutex  *concurrency.Mutex
@@ -124,7 +123,7 @@ func (e *etcdLock) lock(key string, ttl int64, errNotify bool) error {
 		return fmt.Errorf("etcd judge mutex is owner err: %w", err)
 	}
 
-	if res.Succeeded == false {
+	if !res.Succeeded {
 		return errors.New("mutex is not belongs to you")
 	}
 
@@ -147,9 +146,11 @@ func (e *etcdLock) Unlock() {
 	defer e.mu.Unlock()
 
 	if e.mutex != nil {
-		log.Println("[EtcdLock] unlock start")
+		log.Println("[EtcdLock] unlock key ", e.mutex.Key())
 		err := e.mutex.Unlock(e.ctx)
-		log.Println("[EtcdLock] unlock err:", err)
+		if err != nil {
+			log.Println("[EtcdLock] unlock err:", err)
+		}
 		e.mutex = nil
 	}
 }

@@ -505,11 +505,11 @@ func (a *App) runHttp() {
 	if hasHttps {
 		if err := srvs.Shutdown(ctx); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
-				debug("http server already closed")
+				debug("https server already closed")
 			} else if errors.Is(err, context.DeadlineExceeded) {
-				debug("http server gracefully shutdown timeout")
+				debug("https server gracefully shutdown timeout")
 			} else {
-				debug("http server gracefully shutdown error", err)
+				debug("https server gracefully shutdown error", err)
 			}
 		}
 	}
