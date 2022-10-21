@@ -138,7 +138,7 @@ func NewApp() *App {
 				httpStaticPaths := make([]httpStaticPath, 0)
 				err := mapstructure.Decode(hsp, &httpStaticPaths)
 				if err != nil {
-					log.Fatalln("parse http static paths err:", err.Error())
+					fatalln("parse http static paths err:", err.Error())
 				}
 
 				for _, staticPath := range httpStaticPaths {
@@ -244,7 +244,7 @@ func (a *App) Run() {
 		for _, f := range appInitHooks {
 			err := f(a)
 			if err != nil {
-				log.Fatalf("init err:%s", err.Error())
+				fatalln("init err:", err.Error())
 			}
 		}
 	}
@@ -278,7 +278,7 @@ func (a *App) genPid() {
 
 	pf, err := os.Create(pidFile)
 	if err != nil {
-		log.Fatalf("pidfile check err:%v\n", err)
+		fatalln("pidfile check err:", err.Error())
 		return
 	}
 
@@ -287,7 +287,7 @@ func (a *App) genPid() {
 	newPid := os.Getpid()
 	_, err = pf.Write([]byte(fmt.Sprintf("%d", newPid)))
 	if err != nil {
-		log.Fatalf("write pid err:%v\n", err)
+		fatalln("write pid err:", err.Error())
 		return
 	}
 
@@ -426,7 +426,7 @@ func (a *App) runHttp() {
 	}
 
 	if a.HttpSslOn && !Config.IsSet("app.https_addr") {
-		log.Fatalf("https_addr is required when http_ssl_on is true\n")
+		fatalln("https_addr is required when http_ssl_on is true")
 	}
 
 	hasHttp := Config.IsSet("app.http_addr")
@@ -451,10 +451,10 @@ func (a *App) runHttp() {
 
 		go func() {
 			// service connections
-			debugf("http listen on: %s", srv.Addr)
+			debugf("http listen on: %s\n", srv.Addr)
 
 			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-				log.Fatalf("listen: %s\n", err)
+				fatalln("http listen err: ", err.Error())
 			}
 		}()
 	}
@@ -476,10 +476,10 @@ func (a *App) runHttp() {
 
 		go func() {
 			// service connections
-			debugf("https listen on: %s", srvs.Addr)
+			debugf("https listen on: %s\n", srvs.Addr)
 
 			if err := srvs.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
-				log.Fatalf("listen: %s\n", err)
+				fatalf("https listen err: %s\n", err)
 			}
 		}()
 	}
@@ -582,11 +582,11 @@ func initGrpcServer() {
 		certFile := Config.GetString("app.rpc_cert_file")
 		keyFile := Config.GetString("app.rpc_key_file")
 		if certFile == "" || keyFile == "" {
-			log.Fatalln("rpc ssl cert file or key file is required when rpc ssl on")
+			fatalln("rpc ssl cert file or key file is required when rpc ssl on")
 		}
 		cred, err := credentials.NewServerTLSFromFile(certFile, keyFile)
 		if err != nil {
-			log.Fatalf("Failed to generate credentials %v", err)
+			fatalf("Failed to generate credentials %v", err)
 		}
 
 		// 实例化 grpc Server, 并开启 TSL 认证
@@ -602,7 +602,7 @@ func (a *App) runRpc() {
 	rpcAddr := Config.GetString("app.rpc_addr")
 	lis, err := net.Listen("tcp", rpcAddr)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		fatalf("failed to listen: %v", err)
 	}
 
 	a.rpcEngine = RpcServer
@@ -621,9 +621,9 @@ func (a *App) runRpc() {
 
 	go func() {
 		if err := a.rpcEngine.Serve(lis); err != nil {
-			log.Fatalf("failed to serve: %v", err)
+			fatalf("failed to serve: %v\n", err)
 		} else {
-			debugf("rpc listen on: %s", rpcAddr)
+			debugf("rpc listen on: %s\n", rpcAddr)
 		}
 	}()
 

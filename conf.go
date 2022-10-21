@@ -3,7 +3,6 @@ package yago
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -204,12 +203,22 @@ func getPidFile() (string, bool) {
 
 func debug(v ...interface{}) {
 	if Config.GetBool("app.debug") {
-		log.Println(v...)
+		fmt.Println(v...)
 	}
 }
 
 func debugf(format string, v ...interface{}) {
 	if Config.GetBool("app.debug") {
-		log.Printf(format, v...)
+		fmt.Printf(format, v...)
 	}
+}
+
+func fatalln(v ...interface{}) {
+	fmt.Println(v...)
+	os.Exit(1)
+}
+
+func fatalf(format string, v ...interface{}) {
+	fmt.Printf(format, v...)
+	os.Exit(1)
 }

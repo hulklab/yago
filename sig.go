@@ -34,7 +34,7 @@ func (a *App) startSignal() {
 			err := RestartApp()
 
 			if err != nil {
-				log.Fatalln("Process", pid, "Restart err")
+				fatalln("Process", pid, "Restart err")
 			}
 
 			log.Println("Process", pid, "Restart ok")
