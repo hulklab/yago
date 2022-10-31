@@ -1,6 +1,7 @@
 package yago
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"mime/multipart"
@@ -23,7 +24,7 @@ const (
 type ResponseBody struct {
 	ErrNo  int         `json:"errno"`
 	ErrMsg string      `json:"errmsg"`
-	Data   interface{} `json:"data"`
+	Data   interface{} `json:"data,omitempty"`
 }
 
 func newCtx(c *gin.Context) *Ctx {
@@ -83,23 +84,21 @@ func (c *Ctx) setError(err Err) {
 	resp := &ResponseBody{
 		ErrNo:  err.Code(),
 		ErrMsg: err.Error(),
-		Data:   map[string]interface{}{},
+		Data:   nil,
 	}
 
-	c.Set(ErrorKey, resp)
+	c.Set(ResponseKey, resp)
 
 	c.JSON(http.StatusOK, resp)
 }
 
-func (c *Ctx) GetError() error {
-	err, exist := c.Get(ErrorKey)
-	if !exist {
-		return nil
-	}
-	return err.(error)
-}
-
 func (c *Ctx) SetError(err interface{}) {
+	if err == nil {
+		c.SetData(nil)
+		return
+	}
+
+	c.Set(ErrorKey, err)
 
 	switch v := err.(type) {
 	case Err:
@@ -110,7 +109,8 @@ func (c *Ctx) SetError(err interface{}) {
 			c.setError(Err(e))
 			return
 		}
-	//case json.UnmarshalTypeError:
+	case *json.UnmarshalTypeError:
+		c.setError(NewErr(ErrParam, v.Error()))
 	case error:
 		var ye Err
 		e := errors.As(v, &ye)
@@ -143,8 +143,23 @@ func (c *Ctx) SetDataOrErr(data interface{}, err interface{}) {
 	}
 }
 
+// Abort in the middleware with yago error or error
+func (c *Ctx) AbortWithE(err error) {
+	c.Abort()
+	c.SetError(err)
+}
+
+func (c *Ctx) GetError() error {
+	err, exist := c.Get(ErrorKey)
+	if !exist {
+		return nil
+	}
+	return err.(error)
+}
+
 func (c *Ctx) GetResponse() (*ResponseBody, bool) {
 	resp, exist := c.Get(ResponseKey)
+
 	if !exist {
 		return nil, false
 	}

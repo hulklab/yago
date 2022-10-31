@@ -19,11 +19,12 @@ import (
 	"time"
 
 	"github.com/hulklab/yago"
-
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/levigross/grequests"
 	"github.com/sirupsen/logrus"
 )
+
+const defaultMaxLoggedRespMsgSizeKB int64 = 1024 // 1MB
 
 type PostFile string
 
@@ -90,6 +91,7 @@ type HttpThird struct {
 	password                  string
 	tlsCfg                    *tls.Config
 	logInfoOff                bool
+	maxLoggedRespMsgSizeKB    int64
 	once                      sync.Once
 	maxIdleConnsPerHost       int
 	maxConnsPerHost           int
@@ -109,6 +111,8 @@ func (a *HttpThird) InitConfig(configSection string) error {
 	a.ConnectTimeout = yago.Config.GetInt(configSection + ".conn_timeout")
 	a.SslOn = yago.Config.GetBool(configSection + ".ssl_on")
 	a.CertFile = yago.Config.GetString(configSection + ".cert_file")
+	a.maxLoggedRespMsgSizeKB = yago.Config.GetInt64(configSection + ".max_logged_resp_size_kb")
+
 	if a.SslOn {
 		if a.CertFile == "" {
 			return fmt.Errorf("cert file is required in config section %s", configSection)
@@ -159,7 +163,7 @@ func (a *HttpThird) getMaxConnsPerHost() int {
 }
 
 func (a *HttpThird) getConnTimeout() time.Duration {
-	ctimeout := 3
+	ctimeout := 30
 	if a.ConnectTimeout != 0 {
 		ctimeout = a.ConnectTimeout
 	}
@@ -167,11 +171,23 @@ func (a *HttpThird) getConnTimeout() time.Duration {
 }
 
 func (a *HttpThird) getRequestTimeout() time.Duration {
-	wtimeout := 20
+	wtimeout := 30
 	if a.ReadWriteTimeout != 0 {
 		wtimeout = a.ReadWriteTimeout
 	}
 	return time.Duration(wtimeout) * time.Second
+}
+
+func (a *HttpThird) SetMaxLoggedRespSizeKb(size int64) {
+	a.maxLoggedRespMsgSizeKB = size
+}
+
+func (a *HttpThird) getMaxLoggedRespSizeKb() int64 {
+	if a.maxLoggedRespMsgSizeKB <= 0 {
+		return defaultMaxLoggedRespMsgSizeKB
+	}
+
+	return a.maxLoggedRespMsgSizeKB
 }
 
 func (a *HttpThird) getClient() *http.Client {
@@ -334,7 +350,7 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 	dataParams := make(map[string]string)
 
 	for k, v := range params {
-		//logParams[k] = v
+		// logParams[k] = v
 		switch val := v.(type) {
 		case PostFile: // 文件上传
 			uf, err := val.Value(k)
@@ -357,6 +373,8 @@ func (a *HttpThird) call(method string, api string, params map[string]interface{
 			dataParams[k] = fmt.Sprintf("%v", val)
 		case []byte:
 			dataParams[k] = string(val)
+		case bool:
+			dataParams[k] = strconv.FormatBool(val)
 		default:
 			err := errors.New("unsupported type" + fmt.Sprintf("%T", val))
 			return ErrResponse(err), err
@@ -389,7 +407,6 @@ func (a *HttpThird) AddInterceptor(hi HttpInterceptor) {
 }
 
 func (a *HttpThird) getInterceptors() []HttpInterceptor {
-
 	a.onceInter.Do(func() {
 		// 注册日志插件(放到最后)
 		if !a.disableDefaultInterceptor {
@@ -453,7 +470,7 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 		}
 	}
 
-	//log.Printf("before invoker. method: %+v, request:%+v", method, req)
+	// log.Printf("before invoker. method: %+v, request:%+v", method, req)
 	begin := time.Now()
 
 	resp, err := call(method, uri, ro)
@@ -467,7 +484,7 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 		"params":         logParams,
 		"consume":        consume,
 		"request_header": ro.Headers,
-		//"response_header": resp.Header,
+		// "response_header": resp.Header,
 	}
 
 	if ro.JSON != nil {
@@ -500,8 +517,12 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 	}
 
 	logInfo["response_header"] = resp.Header
+	logInfo["status_code"] = resp.StatusCode
 
-	retStr, _ := resp.String()
+	retStr := fmt.Sprintf("response body is too long to show, content length %d", resp.RawResponse.ContentLength)
+	if resp.RawResponse.ContentLength < a.getMaxLoggedRespSizeKb()*1024 {
+		retStr, _ = resp.String()
+	}
 
 	// 默认是日志没关
 	if !a.logInfoOff {
@@ -509,11 +530,11 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 	}
 
 	if !resp.Ok {
-		logInfo["hint"] = fmt.Sprintf("http status err,code:%d", resp.StatusCode)
+		logInfo["hint"] = fmt.Sprintf("http status err, code:%d, body:%s", resp.StatusCode, retStr)
 
 		log.WithFields(logInfo).Error()
 
-		return resp, fmt.Errorf("http status error: %d, body: %s", resp.StatusCode, retStr)
+		return resp, yago.HTTPCodeError(resp.StatusCode)
 	}
 
 	log.WithFields(logInfo).Info()
@@ -522,7 +543,6 @@ func (a *HttpThird) logInterceptor(method, uri string, ro *grequests.RequestOpti
 }
 
 func (a *HttpThird) Post(api string, params map[string]interface{}, opts ...*grequests.RequestOptions) (*Response, error) {
-	//a.Req.Header("Expect", "")
 	return a.call(http.MethodPost, api, params, opts...)
 }
 

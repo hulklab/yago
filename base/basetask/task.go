@@ -7,11 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hulklab/yago/coms/locker/lock"
-
-	"github.com/hulklab/yago/coms/locker"
-
 	"github.com/hulklab/yago"
+	"github.com/hulklab/yago/coms/locker"
+	"github.com/hulklab/yago/coms/locker/lock"
 )
 
 type BaseTask struct{}
@@ -26,7 +24,7 @@ func (b BaseTask) RunLoop(handlerFunc func(), interval ...time.Duration) {
 
 	for {
 		select {
-		case <-yago.TaskCloseChan:
+		case <-yago.StopChan:
 			return
 		case <-time.After(intervalOne):
 			handlerFunc()
@@ -127,7 +125,7 @@ HEAVEN:
 		}(mu, ch)
 
 		select {
-		case <-yago.TaskCloseChan:
+		case <-yago.StopChan:
 			return
 		case b := <-ch:
 			if b {
@@ -146,7 +144,7 @@ HELL:
 
 	for {
 		select {
-		case <-yago.TaskCloseChan:
+		case <-yago.StopChan:
 			return
 		case err := <-mu.ErrC():
 			log.Println("[RunLoopWithLock] some err occur in lock:", err)
@@ -160,7 +158,7 @@ HELL:
 
 func (b BaseTask) Wait(cb func()) {
 	select {
-	case <-yago.TaskCloseChan:
+	case <-yago.StopChan:
 		if cb != nil {
 			cb()
 		}

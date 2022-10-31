@@ -7,11 +7,9 @@ import (
 	"log"
 
 	"github.com/hulklab/yago"
-
-	"google.golang.org/grpc"
-
 	"github.com/hulklab/yago/base/basethird"
-	pb "github.com/hulklab/yago/example/app/modules/home/homerpc/homepb"
+	pb "github.com/hulklab/yago/example/app/modules/demo/demorpc/demopb"
+	"google.golang.org/grpc"
 )
 
 type homeRpcApi struct {
@@ -51,7 +49,6 @@ func InsRpc() *homeRpcApi {
 
 // eg. homeapi.InsRpc().Hello()
 func (a *homeRpcApi) Hello() {
-
 	var name = "zhangsan"
 
 	req := &pb.HelloRequest{Name: name}
@@ -71,7 +68,6 @@ func (a *homeRpcApi) Hello() {
 }
 
 func (a *homeRpcApi) HelloStream() {
-
 	var name = "zhangsan"
 	req := &pb.HelloRequest{Name: name}
 

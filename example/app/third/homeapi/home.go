@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/levigross/grequests"
-
 	"github.com/hulklab/yago"
-
 	"github.com/hulklab/yago/base/basethird"
+	"github.com/levigross/grequests"
 )
 
 type homeApi struct {
@@ -45,26 +43,24 @@ func Ins() *homeApi {
 }
 
 func (a *homeApi) Hello(name string) {
-
 	params := map[string]interface{}{}
 
 	if name != "" {
 		params["name"] = name
 	}
 
-	req, err := a.Get("/home/hello", params)
+	req, err := a.Get("/hello", params)
 
 	fmt.Println("req:", req, "err:", err)
-	//if err != nil {
-	//	fmt.Println(err.Error())
-	//} else {
-	//	s, _ := req.String()
-	//	fmt.Println(s)
-	//}
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// } else {
+	// 	s, _ := req.String()
+	// 	fmt.Println(s)
+	// }
 }
 
 func (a *homeApi) GetUserById(id int64) string {
-
 	params := map[string]interface{}{
 		"id": id,
 	}
@@ -79,12 +75,11 @@ func (a *homeApi) GetUserById(id int64) string {
 }
 
 func (a *homeApi) UploadFile(filepath string) string {
-
 	params := map[string]interface{}{
 		"file": basethird.PostFile(filepath),
 	}
 
-	req, err := a.Post("/home/user/upload", params)
+	req, err := a.Post("/upload", params)
 	if err != nil {
 		return err.Error()
 	} else {

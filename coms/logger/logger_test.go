@@ -1,20 +1,21 @@
 package logger
 
 import (
-	"github.com/hulklab/yago"
-	"github.com/sirupsen/logrus"
 	"testing"
 	"time"
+
+	"github.com/hulklab/yago"
+	"github.com/sirupsen/logrus"
 )
 
-//  go test -v ./coms/logger -bench="."  -args "-c=${PWD}/example/conf/app.toml"
+// go test -v ./coms/logger -bench="."  -args "-c=${PWD}/example/conf/app.toml"
 
 func TestPlainText(t *testing.T) {
 	Ins().Info("this is a info level msg")
 	Ins().Warn("this is a warn level msg")
 	Ins().Error("this is a error level msg")
-	//Ins().Panic("this is a panic level msg")
-	//Ins().Fatal("this is a fatal level msg")
+	// Ins().Panic("this is a panic level msg")
+	// Ins().Fatal("this is a fatal level msg")
 }
 
 func TestLogFieldText(t *testing.T) {
@@ -41,7 +42,6 @@ func TestLogHook(t *testing.T) {
 }
 
 func BenchmarkFile(b *testing.B) {
-
 	for i := 0; i < b.N; i++ {
 		Ins().WithFields(logrus.Fields{
 			"hello": "logger",

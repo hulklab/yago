@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/bwmarrin/snowflake"
 )
@@ -38,7 +39,7 @@ func UniqueId() string {
 	return Md5(node.Generate().String())
 }
 
-// 全局唯一 短id
+// 全局唯一短 id
 func UniqueIdShort() string {
 	return node.Generate().Base58()
 }
@@ -115,7 +116,7 @@ func KvToStr(m map[string]string, sep, pair string, order ...string) string {
 		o := strings.ToLower(order[0])
 
 		keys := make([]string, 0, len(m))
-		for k, _ := range m {
+		for k := range m {
 			keys = append(keys, k)
 		}
 
@@ -150,5 +151,33 @@ func Split(s string) []string {
 		}
 		return false
 	})
+}
 
+func Substr(str string, start int, length int) string {
+	// 获取 str 的长度
+	l := utf8.RuneCountInString(str)
+
+	if l == 0 || length == 0 {
+		return ""
+	}
+
+	b := start
+
+	// eg. -1
+	if start < 0 {
+		b = l + start
+		if b < 0 {
+			b = 0
+		}
+	}
+
+	ret := make([]rune, 0)
+
+	for i, r := range []rune(str) {
+		if i >= b && len(ret) < length {
+			ret = append(ret, r)
+		}
+	}
+
+	return string(ret)
 }

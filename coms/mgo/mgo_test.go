@@ -1,9 +1,10 @@
 package mgo
 
 import (
+	"testing"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"testing"
 )
 
 // go test -v ./coms/mgo -run TestCollection_InsertOne -args "-c=${PWD}/example/conf/app.toml"

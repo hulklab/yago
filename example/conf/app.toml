@@ -13,8 +13,14 @@ http_addr = ":8080"
 # http服务关闭最大等待时长, 秒
 http_stop_time_wait = 10
 
+# http_server 超时时间
+#http_read_timeout = "60s"
+#http_read_header_timeout = "10s"
+
+
 # http ssl config
 # http_ssl_on = true
+# https_addr = ":8443" 
 # http_cert_file = "./yourdomain.crt"
 # http_key_file = "./yourdomain.key"
 
@@ -40,13 +46,13 @@ http_stop_time_wait = 10
 # http_static_paths = [{route="/static",path="static/js"}]
 
 # 是否开启rpc服务
-rpc_enable = true
+rpc_enable = false
 # rpc服务地址
 rpc_addr = ":50051"
 # rpc服务关闭最大等待时长, 秒
 rpc_stop_time_wait = 10
 # rpc reflection
-# rpc_reflect_on = true
+rpc_reflect_on = true
 
 # rpc ssl config
 # rpc_ssl_on = true
@@ -62,7 +68,7 @@ task_stop_time_wait = 10
 com_stop_time_wait = 10
 
 ##########################################
-#  以下自定义配置区
+# 以下自定义配置区
 ##########################################
 
 ##########################################
@@ -95,10 +101,13 @@ port = "3306"
 database = "db"
 timezone = "Asia/Shanghai"
 charset = "utf8"
+# dsn = "test.db"  # 当 driver 为 sqlite3 时，直接使用 dsn
+# driver = "sqlite3"
 max_life_time = 8
 max_idle_conn = 20
-max_open_conn = 500
+max_open_conn = 149
 show_log = true
+
 
 [redis]
 addr = "127.0.0.1:6379"
@@ -107,13 +116,17 @@ db = 0
 max_idle = 5
 idle_timeout = 30
 
+[locker]
+driver = "redis"
+driver_instance_id = "redis"
+
 [mongodb]
 # https://docs.mongodb.com/manual/reference/connection-string/
 mongodb_uri = "mongodb://user:password@127.0.0.1:27017/?connectTimeoutMS=5000&socketTimeoutMS=5000&maxPoolSize=100"
 database = "test"
 
 [kafka]
-cluster = "127.0.0.1:39092"
+cluster = "127.0.0.1:9092"
 
 [etcd]
 endpoints    = ["127.0.0.1:2379"]
@@ -127,7 +140,7 @@ dial_timeout = 2
 # cert_ca_file = "conf/ssl/etcd_ca.pem"
 
 [elastic]
-urls = ["http://127.0.0.1:9200/", "http://127.0.0.1:9300"]
+urls = ["http://127.0.0.1:9200", "http://127.0.0.1:9300"]
 # username = ""
 # password = ""
 # sniff_enable = false
@@ -144,6 +157,7 @@ hostname = "localhost"
 timeout = 10
 # ssl_on = true
 # cert_file = "./conf/server.pem"
+# max_logged_resp_size_kb = 10
 
 [home_rpc_api]
 address = "127.0.0.1:50051"

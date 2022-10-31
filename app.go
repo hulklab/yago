@@ -15,17 +15,25 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mitchellh/mapstructure"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 	"github.com/robfig/cron"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
 )
+
+// support custom app before run
+type AppInitHook func(app *App) error
+
+var appInitHooks = make([]AppInitHook, 0)
+
+func AddAppInitHook(hs ...AppInitHook) {
+	appInitHooks = append(appInitHooks, hs...)
+}
 
 type App struct {
 	// 是否开启debug模式
@@ -102,7 +110,7 @@ func NewApp() *App {
 	// init http
 	app.HttpEnable = Config.GetBool("app.http_enable")
 	if app.HttpEnable {
-		if app.DebugMode == true {
+		if app.DebugMode {
 			app.HttpRunMode = gin.DebugMode
 		} else {
 			app.HttpRunMode = gin.ReleaseMode
@@ -110,7 +118,7 @@ func NewApp() *App {
 		gin.SetMode(app.HttpRunMode)
 		app.httpEngine = gin.New()
 		// use logger
-		if app.DebugMode == true {
+		if app.DebugMode {
 			app.httpEngine.Use(gin.Logger())
 		} else {
 			app.httpEngine.Use(gin.Recovery())
@@ -227,14 +235,27 @@ func init() {
 	initGrpcServer()
 }
 
+func (a *App) HttpEngine() *gin.Engine {
+	return a.httpEngine
+}
+
 func (a *App) Run() {
+	if len(appInitHooks) > 0 {
+		for _, f := range appInitHooks {
+			err := f(a)
+			if err != nil {
+				log.Fatalf("init err:%s", err.Error())
+			}
+		}
+	}
+
 	if a.TaskEnable {
 		// 开启 task
 		go a.runTask()
 	}
 
 	if a.RpcEnable {
-		// 开启 rpc 服务
+		// 开启 rpc
 		go a.runRpc()
 	}
 
@@ -256,14 +277,12 @@ func (a *App) genPid() {
 	}
 
 	pf, err := os.Create(pidFile)
-
-	defer pf.Close()
-
 	if err != nil {
 		log.Fatalf("pidfile check err:%v\n", err)
 		return
-
 	}
+
+	defer pf.Close()
 
 	newPid := os.Getpid()
 	_, err = pf.Write([]byte(fmt.Sprintf("%d", newPid)))
@@ -272,38 +291,44 @@ func (a *App) genPid() {
 		return
 	}
 
-	log.Println("app is running with pid:", newPid)
+	debug("app is running with pid:", newPid)
 }
 
 func (a *App) registerHttpRouter(g *HttpGroupRouter) {
 	for _, r := range g.HttpRouterList {
 		method := strings.ToUpper(r.Method)
-		action := r.Action
-		handler := func(c *gin.Context) {
-			ctx := newCtx(c)
-			action(ctx)
+		actions := r.Actions
+
+		var handlers []gin.HandlerFunc
+
+		for _, handler := range actions {
+			do := handler
+			handlers = append(handlers, func(c *gin.Context) {
+				ctx, _ := getCtxFromGin(c)
+				do(ctx)
+			})
 		}
 
-		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
-		log.Printf("[HTTP] %-6s %-25s --> %s\n", method, r.Url(), strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
+		name := runtime.FuncForPC(reflect.ValueOf(actions[len(actions)-1]).Pointer()).Name()
+		debugf("[HTTP] %-6s %-25s --> %s\n", method, r.Url(), strings.NewReplacer("(", "", ")", "", "*", "").Replace(name))
 
 		switch method {
 		case http.MethodGet:
-			g.GinGroup.GET(r.Path, handler)
+			g.GinGroup.GET(r.Path, handlers...)
 		case http.MethodPost:
-			g.GinGroup.POST(r.Path, handler)
+			g.GinGroup.POST(r.Path, handlers...)
 		case http.MethodDelete:
-			g.GinGroup.DELETE(r.Path, handler)
+			g.GinGroup.DELETE(r.Path, handlers...)
 		case http.MethodPut:
-			g.GinGroup.PUT(r.Path, handler)
+			g.GinGroup.PUT(r.Path, handlers...)
 		case http.MethodOptions:
-			g.GinGroup.OPTIONS(r.Path, handler)
+			g.GinGroup.OPTIONS(r.Path, handlers...)
 		case http.MethodPatch:
-			g.GinGroup.PATCH(r.Path, handler)
+			g.GinGroup.PATCH(r.Path, handlers...)
 		case http.MethodHead:
-			g.GinGroup.HEAD(r.Path, handler)
+			g.GinGroup.HEAD(r.Path, handlers...)
 		default:
-			g.GinGroup.Any(r.Path, handler)
+			g.GinGroup.Any(r.Path, handlers...)
 		}
 	}
 }
@@ -316,8 +341,8 @@ func (a *App) registerHttpGroupRouter(group map[string]*HttpGroupRouter) {
 			g.GinGroup = g.Parent.GinGroup.Group(g.Prefix)
 		}
 
-		if len(g.Middleware) > 0 {
-			for _, m := range g.Middleware {
+		if len(g.Middlewares) > 0 {
+			for _, m := range g.Middlewares {
 				handler := m
 				g.GinGroup.Use(func(c *gin.Context) {
 					ctx, err := getCtxFromGin(c)
@@ -342,7 +367,7 @@ func (a *App) loadHttpRouter() error {
 	}
 
 	// cors
-	if a.HttpCorsAllowAllOrigins == true || len(a.HttpCorsAllowOrigins) != 0 {
+	if a.HttpCorsAllowAllOrigins || len(a.HttpCorsAllowOrigins) != 0 {
 		a.httpEngine.Use(cors.New(cors.Config{
 			AllowAllOrigins:        a.HttpCorsAllowAllOrigins,
 			AllowOrigins:           a.HttpCorsAllowOrigins,
@@ -355,13 +380,13 @@ func (a *App) loadHttpRouter() error {
 			AllowBrowserExtensions: true,
 			AllowWildcard:          true,
 		}))
-
 	}
 
 	// gzip
 	if a.HttpGzipOn {
 		a.httpEngine.Use(gzip.Gzip(a.HttpGzipLevel))
 	}
+
 	// pprof
 	if a.HttpPprof {
 		pprof.Register(a.httpEngine)
@@ -400,41 +425,96 @@ func (a *App) runHttp() {
 		return
 	}
 
-	// listen and serve
-	srv := &http.Server{
-		Addr:    Config.GetString("app.http_addr"),
-		Handler: a.httpEngine,
+	if a.HttpSslOn && !Config.IsSet("app.https_addr") {
+		log.Fatalf("https_addr is required when http_ssl_on is true\n")
 	}
 
-	if a.HttpSslOn {
-		go func() {
-			// service connections
-			if err := srv.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
-				log.Fatalf("listen: %s\n", err)
-			}
-		}()
+	hasHttp := Config.IsSet("app.http_addr")
+	hasHttps := Config.IsSet("app.https_addr")
+	var srv, srvs *http.Server
 
-	} else {
+	if hasHttp {
+		// listen and serve
+		srv = &http.Server{
+			Addr:    Config.GetString("app.http_addr"),
+			Handler: a.httpEngine,
+		}
+
+		// defend slow dos attack
+		if Config.IsSet("app.http_read_timeout") {
+			srv.ReadTimeout = Config.GetDuration("app.http_read_timeout")
+		}
+
+		if Config.IsSet("app.http_read_header_timeout") {
+			srv.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+		}
+
 		go func() {
 			// service connections
+			debugf("http listen on: %s", srv.Addr)
+
 			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 				log.Fatalf("listen: %s\n", err)
 			}
 		}()
 	}
 
-	select {
-	case <-a.httpCloseChan:
-		ctx, cancel := context.WithTimeout(
-			context.Background(),
-			time.Duration(Config.GetInt64("app.http_stop_time_wait"))*time.Second,
-		)
-		defer cancel()
-		if err := srv.Shutdown(ctx); err != nil {
-			// log
+	if hasHttps {
+		srvs = &http.Server{
+			Addr:    Config.GetString("app.https_addr"),
+			Handler: a.httpEngine,
 		}
-		a.httpCloseDoneChan <- 1
+
+		// defend slow dos attack
+		if Config.IsSet("app.http_read_timeout") {
+			srvs.ReadTimeout = Config.GetDuration("app.http_read_timeout")
+		}
+
+		if Config.IsSet("app.http_read_header_timeout") {
+			srvs.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+		}
+
+		go func() {
+			// service connections
+			debugf("https listen on: %s", srvs.Addr)
+
+			if err := srvs.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("listen: %s\n", err)
+			}
+		}()
 	}
+
+	<-a.httpCloseChan
+	ctx, cancel := context.WithTimeout(
+		context.Background(),
+		time.Duration(Config.GetInt64("app.http_stop_time_wait"))*time.Second,
+	)
+	defer cancel()
+	if hasHttp {
+		if err := srv.Shutdown(ctx); err != nil {
+			if errors.Is(err, http.ErrServerClosed) {
+				debug("http server already closed")
+			} else if errors.Is(err, context.DeadlineExceeded) {
+				debug("http server gracefully shutdown timeout")
+			} else {
+				debug("http server gracefully shutdown error", err)
+			}
+		}
+	}
+
+	if hasHttps {
+		if err := srvs.Shutdown(ctx); err != nil {
+			if errors.Is(err, http.ErrServerClosed) {
+				debug("https server already closed")
+			} else if errors.Is(err, context.DeadlineExceeded) {
+				debug("https server gracefully shutdown timeout")
+			} else {
+				debug("https server gracefully shutdown error", err)
+			}
+		}
+	}
+
+	a.httpCloseDoneChan <- 1
 }
 
 func (a *App) loadTaskRouter() error {
@@ -462,37 +542,36 @@ func (a *App) runTask() {
 		name := runtime.FuncForPC(reflect.ValueOf(action).Pointer()).Name()
 		name = strings.NewReplacer("(", "", ")", "", "*", "").Replace(name)
 		if router.Spec == "@loop" {
+			wg.Add(1)
 			go func() {
-				wg.Add(1)
+				defer wg.Done()
 				action()
-				log.Printf("[TASK] %-32s --> %s\n", "stop", name)
-				wg.Done()
+				debugf("[TASK] %-32s --> %s\n", "stop", name)
 			}()
 		} else {
 			err := c.AddFunc(router.Spec, func() {
 				wg.Add(1)
+				defer wg.Done()
 				action()
-				wg.Done()
 			})
 			if err != nil {
 				continue
 			}
 		}
-		log.Printf("[TASK] %-32s --> %s\n", router.Spec, name)
+		debugf("[TASK] %-32s --> %s\n", router.Spec, name)
 	}
 
 	c.Start()
 
-	select {
-	case <-a.taskCloseChan:
-		go func() {
-			c.Stop()
-			wg.Wait()
-			a.taskCloseDoneChan <- 1
-		}()
-		time.Sleep(time.Duration(Config.GetInt64("app.task_stop_time_wait")) * time.Second)
+	<-a.taskCloseChan
+	go func() {
+		c.Stop()
+		wg.Wait()
 		a.taskCloseDoneChan <- 1
-	}
+	}()
+	time.Sleep(time.Duration(Config.GetInt64("app.task_stop_time_wait")) * time.Second)
+	a.taskCloseDoneChan <- 1
+
 }
 
 var RpcServer *grpc.Server
@@ -505,13 +584,13 @@ func initGrpcServer() {
 		if certFile == "" || keyFile == "" {
 			log.Fatalln("rpc ssl cert file or key file is required when rpc ssl on")
 		}
-		creds, err := credentials.NewServerTLSFromFile(certFile, keyFile)
+		cred, err := credentials.NewServerTLSFromFile(certFile, keyFile)
 		if err != nil {
 			log.Fatalf("Failed to generate credentials %v", err)
 		}
 
 		// 实例化 grpc Server, 并开启 TSL 认证
-		RpcServer = grpc.NewServer(grpc.Creds(creds))
+		RpcServer = grpc.NewServer(grpc.Creds(cred))
 
 	} else {
 		RpcServer = grpc.NewServer()
@@ -530,7 +609,7 @@ func (a *App) runRpc() {
 
 	for k, v := range a.rpcEngine.GetServiceInfo() {
 		for _, method := range v.Methods {
-			log.Printf("[TASK] %-32s --> %s\n", k, method.Name)
+			debugf("[TASK] %-32s --> %s\n", k, method.Name)
 		}
 	}
 
@@ -543,19 +622,21 @@ func (a *App) runRpc() {
 	go func() {
 		if err := a.rpcEngine.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
+		} else {
+			debugf("rpc listen on: %s", rpcAddr)
 		}
 	}()
 
-	select {
-	case <-a.rpcCloseChan:
-		a.rpcEngine.GracefulStop()
-		a.rpcCloseDoneChan <- 1
-	}
+	<-a.rpcCloseChan
+	a.rpcEngine.GracefulStop()
+	a.rpcCloseDoneChan <- 1
 }
 
 func (a *App) Close() {
+	close(StopChan)
+
 	if a.TaskEnable {
-		close(TaskCloseChan)
+		//close(TaskCloseChan)
 		a.taskCloseChan <- 1
 		<-a.taskCloseDoneChan
 		log.Println("Task Server Stop OK")
@@ -591,4 +672,5 @@ func (a *App) Close() {
 	}
 }
 
-var TaskCloseChan = make(chan int)
+//var TaskCloseChan = make(chan int)
+var StopChan = make(chan struct{})

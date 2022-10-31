@@ -7,16 +7,13 @@ import (
 	"sync"
 	"time"
 
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-
+	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/hulklab/yago"
-
-	"google.golang.org/grpc/metadata"
-
 	"github.com/hulklab/yago/coms/logger"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 )
 
 type UnaryClientInterceptor func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error
@@ -83,11 +80,11 @@ func (a *RpcThird) GetConn() (*grpc.ClientConn, error) {
 		}
 
 		if len(a.unaryClientInterceptors) > 0 {
-			dialOptions = append(dialOptions, grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(a.unaryClientInterceptors...)))
+			dialOptions = append(dialOptions, grpc.WithUnaryInterceptor(grpcMiddleware.ChainUnaryClient(a.unaryClientInterceptors...)))
 		}
 
 		if len(a.streamClientInterceptors) > 0 {
-			dialOptions = append(dialOptions, grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(a.streamClientInterceptors...)))
+			dialOptions = append(dialOptions, grpc.WithStreamInterceptor(grpcMiddleware.ChainStreamClient(a.streamClientInterceptors...)))
 		}
 
 		if !a.SslOn {
@@ -127,7 +124,6 @@ func (a *RpcThird) AddStreamClientInterceptor(sci grpc.StreamClientInterceptor) 
 }
 
 func (a *RpcThird) GetCtx() (context.Context, context.CancelFunc) {
-
 	if a.Timeout == 0 {
 		a.Timeout = 12
 	}
@@ -153,7 +149,6 @@ func (a *RpcThird) DisableDefaultStreamInterceptor() {
 }
 
 func (a *RpcThird) unaryClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-
 	logInfo := logrus.Fields{
 		"address":  a.Address,
 		"timeout":  a.Timeout,
@@ -167,7 +162,7 @@ func (a *RpcThird) unaryClientInterceptor(ctx context.Context, method string, re
 	if ok {
 		logInfo["metadata"] = md
 	}
-	//log.Printf("before invoker. method: %+v, request:%+v", method, req)
+	// log.Printf("before invoker. method: %+v, request:%+v", method, req)
 	begin := time.Now()
 
 	err := invoker(ctx, method, req, reply, cc, opts...)

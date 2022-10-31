@@ -2,10 +2,11 @@ package mgo
 
 import (
 	"context"
+	"log"
+
 	"github.com/hulklab/yago"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 type Mgo struct {

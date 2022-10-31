@@ -3,15 +3,15 @@ package yago
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 
 	"github.com/hulklab/yago/libs/arr"
-
 	"github.com/spf13/viper"
-	//_ "github.com/spf13/viper/remote"
+	// _ "github.com/spf13/viper/remote"
 )
 
 type AppConfig struct {
@@ -20,18 +20,18 @@ type AppConfig struct {
 
 func (c *AppConfig) ReadFileConfig(cfgPath string) error {
 	err := c.ReadInConfig() // Find and read the config file
-	if err != nil { // Handle errors reading the config file
-		return fmt.Errorf("Fatal error config file: %s \n, \"--help\" gives usage information", err)
+	if err != nil {         // Handle errors reading the config file
+		return fmt.Errorf("fatal error config file: %s \n, \"--help\" gives usage information", err)
 	}
 
 	// deal with import file
 	importFiles, err := c.readImportFiles(cfgPath)
 	if err != nil {
-		return fmt.Errorf("Fatal error merge import config file: %s ", err)
+		return fmt.Errorf("fatal error merge import config file: %s ", err)
 	}
 
 	if len(importFiles) >= 2 {
-		//log.Println("import configs:", importFiles)
+		// log.Println("import configs:", importFiles)
 		// the last one don't need merge
 		for i := len(importFiles) - 2; i >= 0; i-- {
 			importFile := importFiles[i]
@@ -97,12 +97,12 @@ func NewAppConfig(cfgPath string) *AppConfig {
 	cfg := &AppConfig{viper.New()}
 
 	// 设置远程配置
-	//err := cfg.AddRemoteProvider("etcd", "http://127.0.0.1:2379", "/yago/conf/app.toml")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//cfg.SetConfigType("toml")
-	//err = cfg.ReadRemoteConfig()
+	// err := cfg.AddRemoteProvider("etcd", "http://127.0.0.1:2379", "/yago/conf/app.toml")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// cfg.SetConfigType("toml")
+	// err = cfg.ReadRemoteConfig()
 
 	cfg.SetConfigFile(cfgPath)
 	err := cfg.ReadFileConfig(cfgPath)
@@ -134,8 +134,14 @@ func Hostname() string {
 }
 
 func defaultCfgPath() string {
+	if p := os.Getenv("YAGO_CONF"); len(p) > 0 {
+		return p
+	}
+
 	defaultDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
-	return fmt.Sprintf("%s/app.toml", defaultDir)
+	path := fmt.Sprintf("%s/app.toml", defaultDir)
+
+	return path
 }
 
 var cfgPath *string
@@ -148,7 +154,7 @@ func initConfig() {
 	_ = flag.Bool("help", false, "help")
 	flag.Parse()
 
-	noConf := *cfgPath == defaultCfgPath
+	noConf := *cfgPath == defaultCfgPath && len(os.Getenv("YAGO_CONF")) == 0
 
 	if noConf && isInTests() {
 		Config = &AppConfig{viper.New()}
@@ -158,7 +164,6 @@ func initConfig() {
 	}
 
 	Config = NewAppConfig(*cfgPath)
-
 }
 
 func isInTests() bool {
@@ -195,4 +200,16 @@ func getPidFile() (string, bool) {
 		return "", false
 	}
 	return pidfile, true
+}
+
+func debug(v ...interface{}) {
+	if Config.GetBool("app.debug") {
+		log.Println(v...)
+	}
+}
+
+func debugf(format string, v ...interface{}) {
+	if Config.GetBool("app.debug") {
+		log.Printf(format, v...)
+	}
 }

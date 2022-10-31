@@ -91,7 +91,7 @@ func (q *Kafka) NewConsumer(group string, topics ...string) (*Consumer, error) {
 		}
 	}()
 
-	//defer consumer.Close()
+	// defer consumer.Close()
 
 	c := new(Consumer)
 	c.closeChan = make(chan bool)

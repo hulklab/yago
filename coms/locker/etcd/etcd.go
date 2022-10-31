@@ -9,22 +9,19 @@ import (
 	"time"
 
 	"github.com/hulklab/yago"
-	"github.com/hulklab/yago/coms/locker/lock"
-
 	"github.com/hulklab/yago/coms/etcd"
-	"go.etcd.io/etcd/clientv3/concurrency"
+	"github.com/hulklab/yago/coms/locker/lock"
+	"go.etcd.io/etcd/client/v3/concurrency"
 )
 
 func init() {
 	lock.RegisterLocker("etcd", func(name string) lock.ILocker {
-		//driver := yago.Config.GetString(name + ".driver")
-
 		driverInsId := yago.Config.GetString(name + ".driver_instance_id")
 		retry := yago.Config.GetInt(name + ".retry")
 		if retry == 0 {
 			retry = 3
 		}
-		//eIns := etcd.Ins(driverInsId)
+		// eIns := etcd.Ins(driverInsId)
 		val := &etcdLock{
 			eInsId: driverInsId,
 			retry:  retry,
@@ -33,14 +30,12 @@ func init() {
 		val.errc = make(chan error)
 		return val
 	})
-
 }
 
 type etcdLock struct {
-	//eIns  *etcd.Etcd
+	// eIns  *etcd.Etcd
 	eInsId string
 	retry  int
-	key    string
 	ctx    context.Context
 	mu     sync.Mutex
 	mutex  *concurrency.Mutex
@@ -49,7 +44,6 @@ type etcdLock struct {
 
 func (e *etcdLock) eIns() *etcd.Etcd {
 	return etcd.Ins(e.eInsId)
-
 }
 
 func (e *etcdLock) Lock(key string, opts ...lock.SessionOption) error {
@@ -72,7 +66,6 @@ func (e *etcdLock) Lock(key string, opts ...lock.SessionOption) error {
 	var err error
 
 	for i := 0; i < e.retry; i++ {
-
 		err = e.lock(key, ops.TTL, ops.ErrorNotify)
 		if err == nil {
 			break
@@ -120,17 +113,17 @@ func (e *etcdLock) lock(key string, ttl int64, errNotify bool) error {
 
 	log.Printf("[EtcdLock] lock key: %s\n", mutex.Key())
 
-	//get, err := e.eIns().Get(e.ctx, mutex.Key())
-	//log.Printf("get: %v,%s,%s\n", get.Kvs, mutex.Key(), err)
+	// get, err := e.eIns().Get(e.ctx, mutex.Key())
+	// log.Printf("get: %v,%s,%s\n", get.Kvs, mutex.Key(), err)
 
 	res, err := e.eIns().Txn(e.ctx).If(mutex.IsOwner()).Commit()
-	//log.Printf("if: %v,%s,%s,%+v\n", res.Succeeded, mutex.Key(), err, mutex)
+	// log.Printf("if: %v,%s,%s,%+v\n", res.Succeeded, mutex.Key(), err, mutex)
 
 	if err != nil {
 		return fmt.Errorf("etcd judge mutex is owner err: %w", err)
 	}
 
-	if res.Succeeded == false {
+	if !res.Succeeded {
 		return errors.New("mutex is not belongs to you")
 	}
 
@@ -153,10 +146,11 @@ func (e *etcdLock) Unlock() {
 	defer e.mu.Unlock()
 
 	if e.mutex != nil {
-
-		log.Println("[EtcdLock] unlock start")
+		log.Println("[EtcdLock] unlock key ", e.mutex.Key())
 		err := e.mutex.Unlock(e.ctx)
-		log.Println("[EtcdLock] unlock err:", err)
+		if err != nil {
+			log.Println("[EtcdLock] unlock err:", err)
+		}
 		e.mutex = nil
 	}
 }
