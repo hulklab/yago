@@ -3,8 +3,9 @@ package treelib
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/tidwall/pretty"
 	"testing"
+
+	"github.com/tidwall/pretty"
 )
 
 type ExampleNode struct {
@@ -22,8 +23,8 @@ func (n ExampleNode) GetParentId() int64 {
 	return n.ParentId
 }
 
-func (n ExampleNode) GetTitle() string {
-	return n.Name
+func (n ExampleNode) GetSeq() int64 {
+	return n.Id
 }
 
 func (n ExampleNode) IsRoot() bool {
@@ -35,10 +36,8 @@ func (n *ExampleNode) SetChildren(nodes INodes) {
 	n.Children = append(n.Children, nodes...)
 }
 
-type ExampleNodes []*ExampleNode
-
 // ConvertToINodeArray 将当前数组转换成父类 INode 接口 数组
-func (ns ExampleNodes) ConvertToINodeArray() (nodes []INode) {
+func ConvertToINodeArray(ns []*ExampleNode) (nodes []INode) {
 	for _, v := range ns {
 		nodes = append(nodes, v)
 	}
@@ -90,7 +89,7 @@ func TestGenTree(t *testing.T) {
 	}
 
 	// 生成完全树
-	resp := GenerateTree(ExampleNodes.ConvertToINodeArray(list))
+	resp := GenerateTree(ConvertToINodeArray(list))
 	bytes, _ := json.MarshalIndent(resp, "", "\t")
 	fmt.Println(string(pretty.Color(pretty.PrettyOptions(bytes, pretty.DefaultOptions), nil)))
 }
