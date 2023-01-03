@@ -40,6 +40,8 @@ type App struct {
 	DebugMode bool
 	// http web 引擎
 	httpEngine *gin.Engine
+	httpServer *http.Server
+	httpsServer *http.Server
 	// http run mode
 	HttpRunMode string
 	// 开启http服务
@@ -204,6 +206,16 @@ func NewApp() *App {
 		app.HttpPprof = Config.GetBool("app.http_pprof_on")
 	}
 
+	hasHttp := Config.IsSet("app.http_addr")
+	hasHttps := Config.IsSet("app.https_addr")
+	if hasHttp {
+		app.httpServer = &http.Server{}
+	}
+
+	if hasHttps {
+		app.httpsServer = &http.Server{}
+	}
+
 	// init rpc
 	app.RpcEnable = Config.GetBool("app.rpc_enable")
 	if app.RpcEnable {
@@ -237,6 +249,14 @@ func init() {
 
 func (a *App) HttpEngine() *gin.Engine {
 	return a.httpEngine
+}
+
+func (a *App) HTTPServer() *http.Server {
+	return a.httpServer
+}
+
+func (a *App) HTTPSServer() *http.Server {
+	return a.httpsServer
 }
 
 func (a *App) Run() {
@@ -431,54 +451,49 @@ func (a *App) runHttp() {
 
 	hasHttp := Config.IsSet("app.http_addr")
 	hasHttps := Config.IsSet("app.https_addr")
-	var srv, srvs *http.Server
 
 	if hasHttp {
 		// listen and serve
-		srv = &http.Server{
-			Addr:    Config.GetString("app.http_addr"),
-			Handler: a.httpEngine,
-		}
+		a.httpServer.Addr = Config.GetString("app.http_addr")
+		a.httpServer.Handler = a.httpEngine
 
 		// defend slow dos attack
 		if Config.IsSet("app.http_read_timeout") {
-			srv.ReadTimeout = Config.GetDuration("app.http_read_timeout")
+			a.httpServer.ReadTimeout = Config.GetDuration("app.http_read_timeout")
 		}
 
 		if Config.IsSet("app.http_read_header_timeout") {
-			srv.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+			a.httpServer.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
 		}
 
 		go func() {
 			// service connections
-			debugf("http listen on: %s\n", srv.Addr)
+			debugf("http listen on: %s\n", a.httpServer.Addr)
 
-			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			if err := a.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 				fatalln("http listen err: ", err.Error())
 			}
 		}()
 	}
 
 	if hasHttps {
-		srvs = &http.Server{
-			Addr:    Config.GetString("app.https_addr"),
-			Handler: a.httpEngine,
-		}
+		a.httpsServer.Addr = Config.GetString("app.http_addr")
+		a.httpsServer.Handler = a.httpEngine
 
 		// defend slow dos attack
 		if Config.IsSet("app.http_read_timeout") {
-			srvs.ReadTimeout = Config.GetDuration("app.http_read_timeout")
+			a.httpsServer.ReadTimeout = Config.GetDuration("app.http_read_timeout")
 		}
 
 		if Config.IsSet("app.http_read_header_timeout") {
-			srvs.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+			a.httpsServer.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
 		}
 
 		go func() {
 			// service connections
-			debugf("https listen on: %s\n", srvs.Addr)
+			debugf("https listen on: %s\n", a.httpsServer.Addr)
 
-			if err := srvs.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
+			if err := a.httpsServer.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
 				fatalf("https listen err: %s\n", err)
 			}
 		}()
@@ -491,7 +506,7 @@ func (a *App) runHttp() {
 	)
 	defer cancel()
 	if hasHttp {
-		if err := srv.Shutdown(ctx); err != nil {
+		if err := a.httpServer.Shutdown(ctx); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				debug("http server already closed")
 			} else if errors.Is(err, context.DeadlineExceeded) {
@@ -503,7 +518,7 @@ func (a *App) runHttp() {
 	}
 
 	if hasHttps {
-		if err := srvs.Shutdown(ctx); err != nil {
+		if err := a.httpsServer.Shutdown(ctx); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				debug("https server already closed")
 			} else if errors.Is(err, context.DeadlineExceeded) {
