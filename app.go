@@ -477,7 +477,7 @@ func (a *App) runHttp() {
 	}
 
 	if hasHttps {
-		a.httpsServer.Addr = Config.GetString("app.http_addr")
+		a.httpsServer.Addr = Config.GetString("app.https_addr")
 		a.httpsServer.Handler = a.httpEngine
 
 		// defend slow dos attack
