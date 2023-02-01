@@ -46,7 +46,7 @@ func (a *homeApi) Hello(name string) {
 	params := map[string]interface{}{}
 
 	if name != "" {
-		params["name"] = name
+		params["username"] = name
 	}
 
 	req, err := a.Get("/hello", params)
