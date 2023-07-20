@@ -116,9 +116,9 @@ func (a *HttpThird) InitConfig(configSection string) error {
 
 	proxy := yago.Config.GetString(configSection + ".proxy")
 	if len(proxy) > 0 {
-		proxyURL,err := url.Parse(proxy)
+		proxyURL, err := url.Parse(proxy)
 		if err != nil {
-			return fmt.Errorf("parse proxy url err:%s",err.Error())
+			return fmt.Errorf("parse proxy url err:%s", err.Error())
 		}
 
 		a.proxy = proxyURL
@@ -247,10 +247,18 @@ func (a *HttpThird) newRo() *grequests.RequestOptions {
 	}
 
 	if len(a.headers) > 0 {
-		ro.Headers = a.headers
+		ro.Headers = CopyMap(a.headers)
 	}
 
 	return ro
+}
+
+func CopyMap(original map[string]string) map[string]string {
+	newMap := make(map[string]string)
+	for key, value := range original {
+		newMap[key] = value
+	}
+	return newMap
 }
 
 func (a *HttpThird) genUri(api string) string {
@@ -277,6 +285,13 @@ func (a *HttpThird) SetBaseAuth(username, password string) {
 
 func (a *HttpThird) SetHeader(headers map[string]string) {
 	a.headers = headers
+}
+
+func (a *HttpThird) AddHeader(key, value string) {
+	if len(a.headers) == 0 {
+		a.headers = make(map[string]string)
+	}
+	a.headers[key] = value
 }
 
 func (a *HttpThird) SetTLSClientConfig(cfg *tls.Config) {
