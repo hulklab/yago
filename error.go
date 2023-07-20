@@ -57,6 +57,7 @@ func (e Err) HasErr() bool {
 }
 
 // 生成通用错误, 接受通用的 error 类型或者是 string 类型
+// eg. yago.NewErr(404, "record is not exists")
 // eg. yago.NewErr(yago.Forbidden, "you are not permitted")
 // eg. yago.NewErr(errors.New("err occur"))
 // eg. yago.NewErr("something is error")
@@ -77,6 +78,16 @@ func NewErr(err interface{}, args ...interface{}) Err {
 			}
 		} else {
 			return e
+		}
+	case int:
+		if e == 0 {
+			return ok
+		}
+
+		if len(args) > 0 {
+			s = fmt.Sprintf("%d=%s",e,args[0])
+		} else {
+			s = fmt.Sprintf("%d=",e)
 		}
 	case error:
 		if e == nil {

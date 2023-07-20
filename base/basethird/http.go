@@ -81,6 +81,7 @@ type HttpInterceptor func(method, uri string, ro *grequests.RequestOptions, call
 type HttpThird struct {
 	client                    *http.Client
 	Address                   string
+	proxy                     *url.URL
 	Hostname                  string
 	ConnectTimeout            int
 	ReadWriteTimeout          int
@@ -112,6 +113,16 @@ func (a *HttpThird) InitConfig(configSection string) error {
 	a.SslOn = yago.Config.GetBool(configSection + ".ssl_on")
 	a.CertFile = yago.Config.GetString(configSection + ".cert_file")
 	a.maxLoggedRespMsgSizeKB = yago.Config.GetInt64(configSection + ".max_logged_resp_size_kb")
+
+	proxy := yago.Config.GetString(configSection + ".proxy")
+	if len(proxy) > 0 {
+		proxyURL,err := url.Parse(proxy)
+		if err != nil {
+			return fmt.Errorf("parse proxy url err:%s",err.Error())
+		}
+
+		a.proxy = proxyURL
+	}
 
 	if a.SslOn {
 		if a.CertFile == "" {
@@ -149,6 +160,14 @@ func (a *HttpThird) getMaxIdleConnsPerHost() int {
 		return 20
 	}
 	return a.maxIdleConnsPerHost
+}
+
+func (a *HttpThird) getProxy() func(*http.Request) (*url.URL, error) {
+	if a.proxy == nil {
+		return http.ProxyFromEnvironment
+	}
+
+	return http.ProxyURL(a.proxy)
 }
 
 func (a *HttpThird) SetMaxConnsPerHost(num int) {
@@ -194,7 +213,7 @@ func (a *HttpThird) getClient() *http.Client {
 	a.once.Do(func() {
 		a.client = &http.Client{
 			Transport: &http.Transport{
-				Proxy:               http.ProxyFromEnvironment,
+				Proxy:               a.getProxy(),
 				MaxIdleConnsPerHost: a.getMaxIdleConnsPerHost(),
 				MaxConnsPerHost:     a.getMaxConnsPerHost(),
 				IdleConnTimeout:     90 * time.Second,

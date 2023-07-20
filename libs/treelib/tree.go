@@ -1,6 +1,6 @@
 package treelib
 
-// ConvertToINodeArray 其他的结构体想要生成树，直接实现这个接口
+// 其他的结构体想要生成树，直接实现这个接口
 type INode interface {
 	// GetId获取id
 	GetId() int64
@@ -8,20 +8,26 @@ type INode interface {
 	GetParentId() int64
 	// IsRoot 判断当前节点是否是顶层根节点
 	IsRoot() bool
+	// node seq
+	GetSeq() int64
 	// SetChildren 设置子节点
 	SetChildren(n INodes)
 }
+
 type INodes []INode
 
 func (nodes INodes) Len() int {
 	return len(nodes)
 }
+
 func (nodes INodes) Swap(i, j int) {
 	nodes[i], nodes[j] = nodes[j], nodes[i]
 }
+
 func (nodes INodes) Less(i, j int) bool {
-	return nodes[i].GetId() < nodes[j].GetId()
+	return nodes[i].GetSeq() < nodes[j].GetSeq()
 }
+
 func GenerateTree(nodes []INode) (trees INodes) {
 	trees = INodes{}
 	// 定义顶层根和子节点
@@ -41,6 +47,7 @@ func GenerateTree(nodes []INode) (trees INodes) {
 	}
 	return
 }
+
 func RecursiveTree(root INode, nodes INodes) {
 	var children INodes
 	for _, v := range nodes {

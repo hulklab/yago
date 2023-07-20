@@ -39,7 +39,7 @@ func (c *Cmd) LoadCmdRouter() {
 		length := len(useSlice)
 
 		if length == 0 {
-			log.Fatalf("add cmd router failed: %s", use)
+			fatalf("add cmd router failed: %s", use)
 		}
 
 		var baseCmdSlice []string

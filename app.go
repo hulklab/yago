@@ -40,6 +40,8 @@ type App struct {
 	DebugMode bool
 	// http web 引擎
 	httpEngine *gin.Engine
+	httpServer *http.Server
+	httpsServer *http.Server
 	// http run mode
 	HttpRunMode string
 	// 开启http服务
@@ -138,7 +140,7 @@ func NewApp() *App {
 				httpStaticPaths := make([]httpStaticPath, 0)
 				err := mapstructure.Decode(hsp, &httpStaticPaths)
 				if err != nil {
-					log.Fatalln("parse http static paths err:", err.Error())
+					fatalln("parse http static paths err:", err.Error())
 				}
 
 				for _, staticPath := range httpStaticPaths {
@@ -204,6 +206,16 @@ func NewApp() *App {
 		app.HttpPprof = Config.GetBool("app.http_pprof_on")
 	}
 
+	hasHttp := Config.IsSet("app.http_addr")
+	hasHttps := Config.IsSet("app.https_addr")
+	if hasHttp {
+		app.httpServer = &http.Server{}
+	}
+
+	if hasHttps {
+		app.httpsServer = &http.Server{}
+	}
+
 	// init rpc
 	app.RpcEnable = Config.GetBool("app.rpc_enable")
 	if app.RpcEnable {
@@ -239,12 +251,20 @@ func (a *App) HttpEngine() *gin.Engine {
 	return a.httpEngine
 }
 
+func (a *App) HTTPServer() *http.Server {
+	return a.httpServer
+}
+
+func (a *App) HTTPSServer() *http.Server {
+	return a.httpsServer
+}
+
 func (a *App) Run() {
 	if len(appInitHooks) > 0 {
 		for _, f := range appInitHooks {
 			err := f(a)
 			if err != nil {
-				log.Fatalf("init err:%s", err.Error())
+				fatalln("init err:", err.Error())
 			}
 		}
 	}
@@ -278,7 +298,7 @@ func (a *App) genPid() {
 
 	pf, err := os.Create(pidFile)
 	if err != nil {
-		log.Fatalf("pidfile check err:%v\n", err)
+		fatalln("pidfile check err:", err.Error())
 		return
 	}
 
@@ -287,7 +307,7 @@ func (a *App) genPid() {
 	newPid := os.Getpid()
 	_, err = pf.Write([]byte(fmt.Sprintf("%d", newPid)))
 	if err != nil {
-		log.Fatalf("write pid err:%v\n", err)
+		fatalln("write pid err:", err.Error())
 		return
 	}
 
@@ -426,60 +446,55 @@ func (a *App) runHttp() {
 	}
 
 	if a.HttpSslOn && !Config.IsSet("app.https_addr") {
-		log.Fatalf("https_addr is required when http_ssl_on is true\n")
+		fatalln("https_addr is required when http_ssl_on is true")
 	}
 
 	hasHttp := Config.IsSet("app.http_addr")
 	hasHttps := Config.IsSet("app.https_addr")
-	var srv, srvs *http.Server
 
 	if hasHttp {
 		// listen and serve
-		srv = &http.Server{
-			Addr:    Config.GetString("app.http_addr"),
-			Handler: a.httpEngine,
-		}
+		a.httpServer.Addr = Config.GetString("app.http_addr")
+		a.httpServer.Handler = a.httpEngine
 
 		// defend slow dos attack
 		if Config.IsSet("app.http_read_timeout") {
-			srv.ReadTimeout = Config.GetDuration("app.http_read_timeout")
+			a.httpServer.ReadTimeout = Config.GetDuration("app.http_read_timeout")
 		}
 
 		if Config.IsSet("app.http_read_header_timeout") {
-			srv.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+			a.httpServer.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
 		}
 
 		go func() {
 			// service connections
-			debugf("http listen on: %s", srv.Addr)
+			debugf("http listen on: %s\n", a.httpServer.Addr)
 
-			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-				log.Fatalf("listen: %s\n", err)
+			if err := a.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				fatalln("http listen err: ", err.Error())
 			}
 		}()
 	}
 
 	if hasHttps {
-		srvs = &http.Server{
-			Addr:    Config.GetString("app.https_addr"),
-			Handler: a.httpEngine,
-		}
+		a.httpsServer.Addr = Config.GetString("app.https_addr")
+		a.httpsServer.Handler = a.httpEngine
 
 		// defend slow dos attack
 		if Config.IsSet("app.http_read_timeout") {
-			srvs.ReadTimeout = Config.GetDuration("app.http_read_timeout")
+			a.httpsServer.ReadTimeout = Config.GetDuration("app.http_read_timeout")
 		}
 
 		if Config.IsSet("app.http_read_header_timeout") {
-			srvs.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+			a.httpsServer.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
 		}
 
 		go func() {
 			// service connections
-			debugf("https listen on: %s", srvs.Addr)
+			debugf("https listen on: %s\n", a.httpsServer.Addr)
 
-			if err := srvs.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
-				log.Fatalf("listen: %s\n", err)
+			if err := a.httpsServer.ListenAndServeTLS(a.HttpCertFile, a.HttpKeyFile); err != nil && err != http.ErrServerClosed {
+				fatalf("https listen err: %s\n", err)
 			}
 		}()
 	}
@@ -491,7 +506,7 @@ func (a *App) runHttp() {
 	)
 	defer cancel()
 	if hasHttp {
-		if err := srv.Shutdown(ctx); err != nil {
+		if err := a.httpServer.Shutdown(ctx); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				debug("http server already closed")
 			} else if errors.Is(err, context.DeadlineExceeded) {
@@ -503,7 +518,7 @@ func (a *App) runHttp() {
 	}
 
 	if hasHttps {
-		if err := srvs.Shutdown(ctx); err != nil {
+		if err := a.httpsServer.Shutdown(ctx); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				debug("https server already closed")
 			} else if errors.Is(err, context.DeadlineExceeded) {
@@ -582,11 +597,11 @@ func initGrpcServer() {
 		certFile := Config.GetString("app.rpc_cert_file")
 		keyFile := Config.GetString("app.rpc_key_file")
 		if certFile == "" || keyFile == "" {
-			log.Fatalln("rpc ssl cert file or key file is required when rpc ssl on")
+			fatalln("rpc ssl cert file or key file is required when rpc ssl on")
 		}
 		cred, err := credentials.NewServerTLSFromFile(certFile, keyFile)
 		if err != nil {
-			log.Fatalf("Failed to generate credentials %v", err)
+			fatalf("Failed to generate credentials %v", err)
 		}
 
 		// 实例化 grpc Server, 并开启 TSL 认证
@@ -602,7 +617,7 @@ func (a *App) runRpc() {
 	rpcAddr := Config.GetString("app.rpc_addr")
 	lis, err := net.Listen("tcp", rpcAddr)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		fatalf("failed to listen: %v", err)
 	}
 
 	a.rpcEngine = RpcServer
@@ -621,9 +636,9 @@ func (a *App) runRpc() {
 
 	go func() {
 		if err := a.rpcEngine.Serve(lis); err != nil {
-			log.Fatalf("failed to serve: %v", err)
+			fatalf("failed to serve: %v\n", err)
 		} else {
-			debugf("rpc listen on: %s", rpcAddr)
+			debugf("rpc listen on: %s\n", rpcAddr)
 		}
 	}()
 
