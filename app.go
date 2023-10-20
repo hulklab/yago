@@ -463,7 +463,7 @@ func (a *App) runHttp() {
 		}
 
 		if Config.IsSet("app.http_read_header_timeout") {
-			a.httpServer.ReadTimeout = Config.GetDuration("app.http_read_header_timeout")
+			a.httpServer.ReadHeaderTimeout= Config.GetDuration("app.http_read_header_timeout")
 		}
 
 		go func() {
