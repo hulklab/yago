@@ -188,7 +188,7 @@ func NewApp() *App {
 		if Config.IsSet("app.http_gzip_on") {
 			app.HttpGzipOn = Config.GetBool("app.http_gzip_on")
 		} else {
-			app.HttpGzipOn = true
+			app.HttpGzipOn = false
 		}
 		if app.HttpGzipOn {
 			switch Config.GetInt("app.http_gzip_level") {
