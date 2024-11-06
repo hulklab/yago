@@ -13,6 +13,8 @@ import (
 // http
 type HttpHandlerFunc func(c *Ctx)
 
+type HTTPErrRespHandleFunc func(err error) *ResponseBody
+
 type HttpRouter struct {
 	Group    *HttpGroupRouter
 	Path     string
@@ -30,6 +32,10 @@ func SetHttpNoRouter(action HttpHandlerFunc) {
 	httpNoRouterHandler = action
 }
 
+func SetHTTPErrRespHandleFunc(action HTTPErrRespHandleFunc) {
+	httpErrRespHandleFunc = action 
+}
+
 type HttpGlobalMiddleware []HttpHandlerFunc
 
 func HttpUse(middleware ...HttpHandlerFunc) {
@@ -44,6 +50,7 @@ var (
 	httpGlobalMiddleware HttpGlobalMiddleware
 	httpGroupRouterMap   = make(map[string]*HttpGroupRouter)
 	httpNoRouterHandler  HttpHandlerFunc
+	httpErrRespHandleFunc  HTTPErrRespHandleFunc
 )
 
 func (h *HttpRouter) Url() string {

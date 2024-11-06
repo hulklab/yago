@@ -22,9 +22,10 @@ const (
 )
 
 type ResponseBody struct {
-	ErrNo  int         `json:"errno"`
-	ErrMsg string      `json:"errmsg"`
-	Data   interface{} `json:"data,omitempty"`
+	ErrNo     int         `json:"errno"`
+	ErrMsg    string      `json:"errmsg"`
+	Data      interface{} `json:"data,omitempty"`
+	ErrDetail interface{} `json:"err_detail,omitempty"`
 }
 
 func newCtx(c *gin.Context) *Ctx {
@@ -116,9 +117,19 @@ func (c *Ctx) SetError(err interface{}) {
 		e := errors.As(v, &ye)
 		if e {
 			c.setError(ye)
-		} else {
-			c.setError(NewErr(v.Error()))
+			return
 		}
+
+		if httpErrRespHandleFunc != nil {
+			resp := httpErrRespHandleFunc(v)
+
+			c.Set(ResponseKey, resp)
+
+			c.JSON(http.StatusOK, resp)
+			return
+		}
+
+		c.setError(NewErr(v.Error()))
 	default:
 		c.setError(ErrUnknown)
 	}
